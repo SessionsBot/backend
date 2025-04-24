@@ -9,11 +9,11 @@ const client = new Client({
 });
 
 // Load Up:
-client.once('ready', () => {
+client.once('ready', async () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 
   // Reset Commands:
-    client.application.commands.set([]);  // This removes all registered commands
+  await client.application.commands.set([]);  // This removes all registered commands
 
   // Set new Commands:
   const commands = [
@@ -24,7 +24,7 @@ client.once('ready', () => {
   ].map(command => command.toJSON()); // <== convert to JSON
 
 
-  client.application.commands.set(commands);
+  await client.application.commands.set(commands);
   console.log(`✅ Commands Registerd!`);
 });
 
