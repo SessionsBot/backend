@@ -13,7 +13,7 @@ client.once('ready', async () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
 
   // Reset Commands:
-  await client.application.commands.set([]);  // This removes all registered commands
+  // await client.application.commands.set([]);  // This removes all registered commands
 
   // Set new Commands:
   const commands = [
