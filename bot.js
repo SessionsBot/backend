@@ -11,6 +11,7 @@ const client = new Client({
 // Load Up:
 client.once('ready', async () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
+  console.log(`ℹ️ Version: 0.0.1a`);
 
   // Reset Commands:
   // await client.application.commands.set([]);  // This removes all registered commands
