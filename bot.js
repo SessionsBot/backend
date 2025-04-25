@@ -24,8 +24,14 @@ client.once('ready', async () => {
   ].map(command => command.toJSON()); // <== convert to JSON
 
 
-  await client.application.commands.set(commands);
-  console.log(`✅ Commands Registerd!`);
+  // Register Commands:
+  try {
+    await client.application.commands.set(commands);
+    console.log(`✅ Commands Registered!`);
+  } catch (error) {
+    console.error(`❌ Failed to register commands:`, error);
+  }
+  
 });
 
 // Command Handler:
@@ -38,6 +44,14 @@ client.on(Events.InteractionCreate, async interaction => {
 
     if (interaction.commandName === 'joinsession') {
       await interaction.reply('Please choose a session:');
+    }
+
+    if (interaction.commandName === 'leavesession') {
+      await interaction.reply('Left session:');
+    }
+
+    if (interaction.commandName === 'newsession') {
+      await interaction.reply('Please name the session:');
     }
   });
 
