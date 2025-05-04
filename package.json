@@ -6,7 +6,7 @@
     "fs": "^0.0.1-security"
   },
   "scripts": {
-    "start": "node bot.js"
+    "start": "node index.js"
   },
   "main": "bot.js"
 }
