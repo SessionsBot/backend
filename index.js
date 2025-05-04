@@ -1,7 +1,7 @@
 // ------- [ Variables/Setup: ] -------
 
 require('dotenv').config();
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const botToken = process.env['BOT_TOKEN']
 
