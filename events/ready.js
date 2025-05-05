@@ -1,5 +1,5 @@
 const { Events } = require('discord.js');
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 
 module.exports = {
