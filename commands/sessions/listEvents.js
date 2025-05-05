@@ -5,7 +5,7 @@ module.exports = {
         .setName('list-events')
         .setDescription('Lists all training sessions available/occurring soon.')
         .addStringOption(option =>
-            option.setName('Type')
+            option.setName('type')
                 .setDescription('The session type')
                 .setRequired(true)
                 .addChoices(
