@@ -1,6 +1,6 @@
 // ------- [ Variables/Setup: ] -------
 
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 require('dotenv').config();
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
