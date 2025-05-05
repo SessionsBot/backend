@@ -31,6 +31,37 @@ for (const folder of commandFolders) {
 	}
 }
 
+// ------- [ Initialize Buttons: ] -------
+
+client.buttons = new Collection();
+
+function getAllFiles(dir, ext, fileList = []) {
+	const files = fs.readdirSync(dir);
+	for (const file of files) {
+		const filePath = path.join(dir, file);
+		if (fs.statSync(filePath).isDirectory()) {
+			getAllFiles(filePath, ext, fileList); // Recurse into subfolder
+		} else if (file.endsWith(ext)) {
+			fileList.push(filePath);
+		}
+	}
+	return fileList;
+}
+
+const buttonsPath = path.join(__dirname, 'buttons');
+const buttonFiles = getAllFiles(buttonsPath, '.js');
+
+for (const filePath of buttonFiles) {
+	const button = require(filePath);
+	if ('data' in button && 'execute' in button) {
+		client.buttons.set(button.data.customId, button);
+	} else {
+		console.log(`[WARNING] The button at ${filePath} is missing a required "data" or "execute" property.`);
+	}
+}
+
+
+
 // ------- [ Initialize Events: ] -------
 
 const eventsPath = path.join(__dirname, 'events');

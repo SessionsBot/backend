@@ -50,8 +50,8 @@ module.exports = {
 
                 { name: '\u200B', value: '\u200B' },
 
-                { name: '🎙️ Host:', value: '**Available** (0/1) /n' },
-                { name: '🤝 Trainers:', value: '**Available** (0/3) /n' },
+                { name: '🎙️ Host:', value: '**Available** (0/1)' },
+                { name: '🤝 Trainers:', value: '**Available** (0/3)' },
             )
             // .setTimestamp()
             // .setFooter({ text: `<@${interaction.client.user.id}>`, iconURL: botAvatar });
@@ -60,7 +60,7 @@ module.exports = {
         const eventButtonsRow = new ActionRowBuilder().addComponents(
             // Sign Up:
             new ButtonBuilder()
-                .setCustomId('eventX_signup')
+                .setCustomId('eventSignup')
                 .setLabel('📝 Sign Up')
                 .setStyle(ButtonStyle.Success),
             // Game Link:
