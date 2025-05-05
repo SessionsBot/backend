@@ -66,7 +66,6 @@ module.exports = {
                 .setStyle(ButtonStyle.Success),
             // Game Link:
             new ButtonBuilder()
-                .setCustomId('eventX_gameLink')
                 .setLabel('🎮 Join Game')
                 .setURL('https://www.roblox.com/games/407106466/Munch-V1')
                 .setStyle(ButtonStyle.Link),
