@@ -45,16 +45,16 @@ module.exports = {
             .setColor('Yellow')
             .setAuthor({ name: `${category} Session:`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
             .addFields(
-                { name: '📆 - Date:', value: `<t:${event1timestamp}:F> 
+                { name: '📆 Date:', value: `<t:${event1timestamp}:F> 
                 (<t:${event1timestamp}:R>)` },
-                { name: '📍 - Location:', value: '[Game Link](https://google.com)' },
+                { name: '📍 Location:', value: '[Game Link](https://google.com)' },
 
                 { name: '\u200B', value: '\u200B' },
 
-                { name: '🎙️ - Host:', value: '>*Available (0/1)* ' },
-                { name: '🤝 - Trainers:', value: '>*Available (0/3)*' },
+                { name: '🎙️ Host:', value: '   *Available (0/1)* ' },
+                { name: '🤝 Trainers:', value: '   *Available (0/3)*' },
             )
-            .setFooter({ text: `Session ID: XXXXXXXXXXXXXXXXXXX`, iconURL: botAvatar });
+            .setFooter({ text: `Session ID: XXXXXXXXXXXX`, iconURL: botAvatar });
 
         // Event Buttons:
         const eventButtonsRow = new ActionRowBuilder().addComponents(
