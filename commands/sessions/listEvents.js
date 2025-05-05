@@ -22,27 +22,19 @@ module.exports = {
 
         const category = interaction.options.getString('type');
         const chanel = interaction.channel
+        const botAvatar = interaction.client.user.displayAvatarURL();
 
-        const embed = new EmbedBuilder()
+        const headerEmbed = new EmbedBuilder()
             .setColor('Random')
             .setTitle('Upcoming Sessions:')
             .setURL('https://www.roblox.com/communities/1070447/Red-Robin#!/about')
-            .setAuthor({ name: 'Sessions', iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png', url: 'https://www.roblox.com/communities/1070447/Red-Robin#!/about' })
-            .setDescription('Some description here')
-            .setThumbnail('https://tr.rbxcdn.com/180DAY-ef6ac1fa59052b50cafb1ff605bb35f8/768/432/Image/Webp/noFilter')
-            .addFields(
-                { name: 'Regular field title', value: 'Some value here' },
-                { name: '\u200B', value: '\u200B' },
-                { name: 'Inline field title', value: 'Some value here', inline: true },
-                { name: 'Inline field title', value: 'Some value here', inline: true },
-            )
-            .addFields({ name: 'Inline field title', value: 'Some value here', inline: true })
-            .setImage('https://i.imgur.com/AfFp7pu.png')
+            .setAuthor({ name: 'Sessions', iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
+            .setDescription('Please select a session below to view more details.')
             .setTimestamp()
-            .setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/AfFp7pu.png' });
+            .setFooter({ text: `${interaction.client.user}`, iconURL: botAvatar });
 
         await interaction.reply({
-            embeds: [embed],
+            embeds: [headerEmbed],
             flags: MessageFlags.Ephemeral
         })
     },
