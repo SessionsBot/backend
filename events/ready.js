@@ -1,4 +1,6 @@
 const { Events } = require('discord.js');
+const chalk = require('chalk');
+
 
 module.exports = {
 	name: Events.ClientReady,
@@ -17,7 +19,7 @@ module.exports = {
 			day: '2-digit',
 		});
 
-		console.log(`[✅] Ready! Logged in as @${client.user.tag}`);
+		console.log(chalk.bold('[✅]', chalk.green('READY!'), `Logged in as`, chalk.blue(`@${client.user.tag}`)) );
 		console.log(`[🪪] Client ID: ${client.user.id}`);
 		console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
 	},
