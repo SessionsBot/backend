@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { InteractionContextType, SlashCommandBuilder, MessageFlags } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,10 +12,14 @@ module.exports = {
                     { name: 'Trainings', value: 'trainings_value' },
                     { name: 'Interviews', value: 'interviews_value' },
                     { name: 'Internal', value: 'internal_value' },
-                )),
+                ))
+        .setContexts(InteractionContextType.Guild),
     async execute(interaction){
+
+        const category = interaction.options.getString('type');
+
         await interaction.reply({
-            content: `**Upcoming Events:** /n
+            content: `**Upcoming Events | [${category}]:** /n
             **1.** | **Event Name:** | Event 1 /n
             **2.** | **Event Name:** | Event 2 /n
             **3.** | **Event Name:** | Event 3 /n`,
