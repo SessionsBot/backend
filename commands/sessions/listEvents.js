@@ -52,7 +52,7 @@ module.exports = {
                 { name: '🤝 Trainers:', value: '**Available** (0/3) /n' },
             )
             .setTimestamp()
-            .setFooter({ text: `<@${client.user.id}>`, iconURL: botAvatar });
+            .setFooter({ text: `<@${interaction.client.user.id}>`, iconURL: botAvatar });
 
         // Event Buttons:
         const eventButtonsRow = new ActionRowBuilder().addComponents(
