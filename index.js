@@ -1,7 +1,5 @@
 // ------- [ Variables/Setup: ] -------
 
-import chalk from 'chalk';
-
 require('dotenv').config();
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });

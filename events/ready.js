@@ -18,7 +18,7 @@ module.exports = {
 			day: '2-digit',
 		});
 
-		console.log(chalk.bold('[✅]', chalk.green('READY!'), `Logged in as`, chalk.blue(`@${client.user.tag}`)) );
+		console.log(`[✅] READY! Logged in as @${client.user.tag}`);
 		console.log(`[🪪] Client ID: ${client.user.id}`);
 		console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
 	},
