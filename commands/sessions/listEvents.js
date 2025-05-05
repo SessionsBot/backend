@@ -47,12 +47,14 @@ module.exports = {
             .addFields(
                 { name: '📆 Date:', value: `<t:${event1timestamp}:F> (<t:${event1timestamp}:R>)` },
                 { name: '📍 Location:', value: '[Game Link](https://google.com)' },
-                // { name: '\u200B', value: '\u200B' },
+
+                { name: '\u200B', value: '\u200B' },
+
                 { name: '🎙️ Host:', value: '**Available** (0/1) /n' },
                 { name: '🤝 Trainers:', value: '**Available** (0/3) /n' },
             )
-            .setTimestamp()
-            .setFooter({ text: `<@${interaction.client.user.id}>`, iconURL: botAvatar });
+            // .setTimestamp()
+            // .setFooter({ text: `<@${interaction.client.user.id}>`, iconURL: botAvatar });
 
         // Event Buttons:
         const eventButtonsRow = new ActionRowBuilder().addComponents(
