@@ -73,8 +73,8 @@ module.exports = {
         // Send Message:
         await interaction.reply({
             embeds: [exEvent1Embed],
-            components: [eventButtonsRow]
-            // flags: MessageFlags.Ephemeral
+            components: [eventButtonsRow],
+            flags: MessageFlags.Ephemeral
         })
     },
 }
