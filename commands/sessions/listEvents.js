@@ -47,7 +47,7 @@ module.exports = {
             .addFields(
                 { name: '📆 Date:', value: `<t:${event1timestamp}:F> 
                 (<t:${event1timestamp}:R>)` },
-                { name: '📍 Location:', value: '[Game Link](https://google.com)' },
+                { name: '📍 Location:', value: '[Game Link](https://google.com)', inline: true },
 
                 { name: '\u200B', value: '\u200B' },
 
