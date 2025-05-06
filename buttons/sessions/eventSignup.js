@@ -1,4 +1,4 @@
-const { MessageFlags } = require('discord.js');
+const { MessageFlags, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
 
 module.exports = {
     data: {
@@ -9,19 +9,30 @@ module.exports = {
         // Parese interaction.customId data:
 			const interactionData = interaction.customId.split(':');
 			const interactionCustomId = interactionData[0];
-			const interactionArg2 = interactionData[1];
-			const interactionArg3 = interactionData[2];
+			const interactionEventId = interactionData[1];
+			const interactionRoleSelected = interactionData[2];
 
-        // Debug:
-            console.log('EVENT SIGNUP:')
-            console.log('interaction.customId:', interaction.customId);
-            console.log('interactionCustomId:', interactionCustomId);
-            console.log('interactionArg2:', interactionArg2);
-            console.log('interactionArg3:', interactionArg3);
+        // Create Select Role Menu:
+        const selectRoleMenu = new StringSelectMenuBuilder()
+			.setCustomId(`selectEventRole:${interactionEventId}`)
+			.setPlaceholder('Choose a role!')
+			.addOptions(
+				new StringSelectMenuOptionBuilder()
+					.setLabel('Event Host')
+					.setDescription('The main instructor who shall guide and facilitate the meeting.')
+					.setValue('Host'),
+				new StringSelectMenuOptionBuilder()
+					.setLabel('Assistant')
+					.setDescription('The crew responsible for training employees divided by groups.')
+					.setValue('Assistant'),
+			);
 
         // Respond:
         await interaction.reply({ 
-            content: `✅ (<@${interaction.user.id}>) You've signed up for an event! Selected Position: ${interactionArg3} (ID: ${interactionArg3})`,
+            // content: `<@${interaction.user.id}> | ✅ | You've signed up for an event! 
+            // Selected Position: ${interactionRoleSelected} 
+            // (ID: ${interactionEventId})`,
+            components: [selectRoleMenu],
             flags: MessageFlags.Ephemeral
         });
     }

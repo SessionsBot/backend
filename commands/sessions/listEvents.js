@@ -62,7 +62,7 @@ module.exports = {
                 { name: '🎙️ Host:', value: '   *Available (0/1)* ' },
                 { name: '🤝 Trainers:', value: '   *Available (0/3)*', inline: true },
             )
-            .setFooter({ text: `Session ID: ${eventId}`, iconURL: botAvatar });
+            .setFooter({ text: `ID: ${eventId.toUpperCase()}`, iconURL: botAvatar });
 
         // Event Buttons:
         const eventButtonsRow = new ActionRowBuilder().addComponents(
@@ -73,7 +73,7 @@ module.exports = {
                 .setStyle(ButtonStyle.Success),
             // Game Link:
             new ButtonBuilder()
-                .setLabel('🎮 Join Game')
+                .setLabel('🎮 Game Link')
                 .setURL('https://www.roblox.com/games/407106466/Munch-V1')
                 .setStyle(ButtonStyle.Link),
         )
