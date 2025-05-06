@@ -70,12 +70,12 @@ module.exports = {
             const event1timestamp = Math.floor(event1Date.getTime() / 1000);
 
             const updatedEventEmbed = new EmbedBuilder()
-            .setColor('Pink')
+            .setColor('#DD5BE7')
             .setAuthor({ name: `Updated Session:`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
             .addFields(
                 { name: '📆 Date:', value: `<t:${event1timestamp}:F> 
                 (<t:${event1timestamp}:R>)`, inline: true },
-                { name: '📍 Location:', value: '[Game Link](https://roblox.com)', inline: true },
+                { name: '📍 Location:', value: '   [Game Link](https://roblox.com)', inline: true },
 
             )
             .addFields(
