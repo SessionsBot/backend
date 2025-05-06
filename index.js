@@ -60,8 +60,6 @@ for (const filePath of buttonFiles) {
 	}
 }
 
-
-
 // ------- [ Initialize Events: ] -------
 
 const eventsPath = path.join(__dirname, 'events');
