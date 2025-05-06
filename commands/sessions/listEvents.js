@@ -52,14 +52,15 @@ module.exports = {
             .setAuthor({ name: `${category} Session:`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
             .addFields(
                 { name: '📆 Date:', value: `<t:${event1timestamp}:F> 
-                (<t:${event1timestamp}:R>)` },
+                (<t:${event1timestamp}:R>)`, inline: true },
                 { name: '📍 Location:', value: '[Game Link](https://roblox.com)', inline: true },
 
             )
             .addFields(
-                { name: '\u200B', value: '\u200B' },
-
-                { name: '🎙️ Host:', value: '   *Available (0/1)* ' },
+                { name: '\u200B', value: '\u200B' }, // Spacer
+            )
+            .addFields(
+                { name: '🎙️ Host:', value: '   *Available (0/1)* ', inline: true },
                 { name: '🤝 Trainers:', value: '   *Available (0/3)*', inline: true },
             )
             .setFooter({ text: `ID: ${eventId.toUpperCase()}`, iconURL: botAvatar });

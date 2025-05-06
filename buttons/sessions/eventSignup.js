@@ -63,6 +63,38 @@ module.exports = {
 				components: [],
 			});
 
+            // Event Embed:
+            let event1Date = new Date();
+            event1Date.setHours(event1Date.getHours() + 1);
+            event1Date.setMinutes(event1Date.getMinutes() + 45);
+            const event1timestamp = Math.floor(event1Date.getTime() / 1000);
+
+            const updatedEventEmbed = new EmbedBuilder()
+            .setColor('Pink')
+            .setAuthor({ name: `Updated Session:`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
+            .addFields(
+                { name: '📆 Date:', value: `<t:${event1timestamp}:F> 
+                (<t:${event1timestamp}:R>)`, inline: true },
+                { name: '📍 Location:', value: '[Game Link](https://roblox.com)', inline: true },
+
+            )
+            .addFields(
+                { name: '\u200B', value: '\u200B' }, // Spacer
+            )
+            .addFields(
+                { name: '🎙️ Host:', value: `   *<@${interaction.user.id}>* `, inline: true },
+                { name: '🤝 Trainers:', value: 
+                `   *<@${interaction.user.id}> 
+                (1/3)*`, inline: true },
+            )
+            .setFooter({ text: `ID: ${interactionEventId.toUpperCase()}` });
+
+            // Update Original Event Message:
+            await interaction.message.edit({
+                embeds: [updatedEventEmbed],
+                MessageFlags: MessageFlags.Ephemeral,
+            })
+
 			// Optionally update the original event message if needed
 		});
 
