@@ -49,12 +49,14 @@ module.exports = {
                 (<t:${event1timestamp}:R>)` },
                 { name: '📍 Location:', value: '[Game Link](https://google.com)', inline: true },
 
+            )
+            .addFields(
                 { name: '\u200B', value: '\u200B' },
 
                 { name: '🎙️ Host:', value: '   *Available (0/1)* ' },
-                { name: '🤝 Trainers:', value: '   *Available (0/3)*' },
+                { name: '🤝 Trainers:', value: '   *Available (0/3)*', inline: true },
             )
-            .setFooter({ text: `Session ID: XXXXXXXXXXXX`, iconURL: botAvatar });
+            .setFooter({ text: `Session ID: 1A2B3C4D5E6F7G8H`, iconURL: botAvatar });
 
         // Event Buttons:
         const eventButtonsRow = new ActionRowBuilder().addComponents(
