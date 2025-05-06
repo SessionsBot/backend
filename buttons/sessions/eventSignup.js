@@ -37,8 +37,8 @@ module.exports = {
 		await interaction.reply({
 			content: 'Select your role for this event:',
 			components: [row_selectEventRole],
-			flags: MessageFlags.Ephemeral,
 	        withReply: true, // ✅ replaces fetchReply
+            // flags: MessageFlags.Ephemeral,
 		});
 
         const reply = await interaction.fetchReply();
@@ -91,8 +91,7 @@ module.exports = {
 
             // Update Original Event Message:
             await interaction.message.edit({
-                embeds: [updatedEventEmbed],
-                MessageFlags: MessageFlags.Ephemeral,
+                embeds: [updatedEventEmbed]
             })
 
 			// Optionally update the original event message if needed
