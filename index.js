@@ -3,37 +3,14 @@
 require('dotenv').config();
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-const botToken = process.env['BOT_TOKEN']
+const botToken = process.env['BOT_TOKEN'];
 
 const fs = require('fs');
 const path = require('node:path');
 
 const botVersion = '0.0.2b';
 
-// ------- [ Initialize Commands: ] -------
-
-client.commands = new Collection();
-const foldersPath = path.join(__dirname, 'commands');
-const commandFolders = fs.readdirSync(foldersPath);
-
-for (const folder of commandFolders) {
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
-		// Set a new item in the Collection with the key as the command name and the value as the exported module
-		if ('data' in command && 'execute' in command) {
-			client.commands.set(command.data.name, command);
-		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-		}
-	}
-}
-
-// ------- [ Initialize Buttons: ] -------
-
-client.buttons = new Collection();
+// ------- [ File Loader Utility: ] -------
 
 function getAllFiles(dir, ext, fileList = []) {
 	const files = fs.readdirSync(dir);
@@ -48,8 +25,33 @@ function getAllFiles(dir, ext, fileList = []) {
 	return fileList;
 }
 
-const buttonsPath = path.join(__dirname, 'buttons');
-const buttonFiles = getAllFiles(buttonsPath, '.js');
+// ------- [ Initialize Commands: ] -------
+
+client.commands = new Collection();
+const commandFolders = fs.readdirSync(path.join(__dirname, 'commands'));
+
+for (const folder of commandFolders) {
+	const commandsPath = path.join(__dirname, 'commands', folder);
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+	for (const file of commandFiles) {
+		const filePath = path.join(commandsPath, file);
+		const command = require(filePath);
+
+		if ('data' in command && 'execute' in command) {
+			client.commands.set(command.data.name, command);
+		} else {
+			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+		}
+	}
+}
+
+console.log(`[✅] Loaded ${client.commands.size} command(s).`);
+
+// ------- [ Initialize Buttons: ] -------
+
+client.buttons = new Collection();
+const buttonFiles = getAllFiles(path.join(__dirname, 'buttons'), '.js');
 
 for (const filePath of buttonFiles) {
 	const button = require(filePath);
@@ -60,13 +62,30 @@ for (const filePath of buttonFiles) {
 	}
 }
 
+console.log(`[✅] Loaded ${client.buttons.size} button(s).`);
+
+// ------- [ Initialize Select Menus: ] -------
+
+client.selectMenus = new Collection();
+const selectMenuFiles = getAllFiles(path.join(__dirname, 'selectMenus'), '.js');
+
+for (const filePath of selectMenuFiles) {
+	const selectMenu = require(filePath);
+	if ('data' in selectMenu && 'execute' in selectMenu) {
+		client.selectMenus.set(selectMenu.data.customId, selectMenu);
+	} else {
+		console.log(`[WARNING] The select menu at ${filePath} is missing a required "data" or "execute" property.`);
+	}
+}
+
+console.log(`[✅] Loaded ${client.selectMenus.size} select menu(s).`);
+
 // ------- [ Initialize Events: ] -------
 
-const eventsPath = path.join(__dirname, 'events');
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
+const eventFiles = fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js'));
 
 for (const file of eventFiles) {
-	const filePath = path.join(eventsPath, file);
+	const filePath = path.join(__dirname, 'events', file);
 	const event = require(filePath);
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args));
@@ -75,9 +94,8 @@ for (const file of eventFiles) {
 	}
 }
 
+console.log(`[✅] Loaded ${eventFiles.length} event file(s).`);
+
 // ------- [ Login (via Token): ] -------
 
 client.login(botToken);
-
-
-

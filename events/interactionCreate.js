@@ -26,7 +26,6 @@ module.exports = {
 
 		// Button Interactions:
 		if (interaction.isButton()) {
-
 			// Parese interaction.customId data:
 			const interactionData = interaction.customId.split(':');
 			const interactionCustomId = interactionData[0];
@@ -51,6 +50,34 @@ module.exports = {
 				}
 			}
 		}
+
+		// Select Menu Interactions:
+		if (interaction.isStringSelectMenu()) {
+			// Parese interaction.customId data:
+			const interactionData = interaction.customId.split(':');
+			const interactionCustomId = interactionData[0];
+
+			const selectMenu = interaction.client.selectMenus.get(interactionCustomId);
+
+			// Confirm button:
+			if (!selectMenu) {
+				console.error(`No selectMenu matching ${interactionCustomId} was found.`);
+				return;
+			}
+
+			try {
+				await selectMenu.execute(interaction);
+
+			} catch (error) {
+				console.error(error);
+				if (interaction.replied || interaction.deferred) {
+					await interaction.followUp({ content: 'There was an error while executing this select menu!', flags: MessageFlags.Ephemeral });
+				} else {
+					await interaction.reply({ content: 'There was an error while executing this select menu!', flags: MessageFlags.Ephemeral });
+				}
+			}
+		}
+		
 
 	},
 };

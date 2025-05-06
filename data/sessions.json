@@ -1,0 +1,8 @@
+{
+    "event_123456789": {
+      "host": "UserID1",
+      "assistant": "UserID2",
+      "messageId": "messageId123",
+      "channelId": "channelId123"
+    }
+  }
