@@ -7,7 +7,7 @@ module.exports = {
     async execute(interaction) {
         // Handle button click logic here
         await interaction.reply({ 
-            content: `✅ You've signed up for an event!`,
+            content: `✅ You've(<@${interaction.user.id}>) signed up for an event!`,
             flags: MessageFlags.Ephemeral
         });
     }
