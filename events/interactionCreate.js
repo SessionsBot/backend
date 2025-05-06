@@ -26,15 +26,22 @@ module.exports = {
 
 		// Button Interactions:
 		if (interaction.isButton()) {
-			const button = interaction.client.buttons.get(interaction.customId);
 
+			// Parese interaction.customId data:
+			const interactionData = interaction.customId.split(':');
+			const interactionCustomId = interactionData[0];
+
+			const button = interaction.client.buttons.get(interactionCustomId);
+
+			// Confirm button:
 			if (!button) {
-				console.error(`No button matching ${interaction.customId} was found.`);
+				console.error(`No button matching ${interactionCustomId} was found.`);
 				return;
 			}
 
 			try {
 				await button.execute(interaction);
+
 			} catch (error) {
 				console.error(error);
 				if (interaction.replied || interaction.deferred) {

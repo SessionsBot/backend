@@ -28,11 +28,17 @@ module.exports = {
     // On Execution:
     async execute(interaction){
 
+        // Generate Event Id:
+        function generateId() {
+            return 'evt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        }
+
         // Variables:
         const category = interaction.options.getString('type');
         const chanel = interaction.channel
         const botAvatar = interaction.client.user.displayAvatarURL();
         const botUsername = interaction.client.user.username;
+        const eventId = generateId();
 
 
         // Event Embed:
@@ -47,7 +53,7 @@ module.exports = {
             .addFields(
                 { name: '📆 Date:', value: `<t:${event1timestamp}:F> 
                 (<t:${event1timestamp}:R>)` },
-                { name: '📍 Location:', value: '[Game Link](https://google.com)', inline: true },
+                { name: '📍 Location:', value: '[Game Link](https://roblox.com)', inline: true },
 
             )
             .addFields(
@@ -56,13 +62,13 @@ module.exports = {
                 { name: '🎙️ Host:', value: '   *Available (0/1)* ' },
                 { name: '🤝 Trainers:', value: '   *Available (0/3)*', inline: true },
             )
-            .setFooter({ text: `Session ID: 1A2B3C4D5E6F7G8H`, iconURL: botAvatar });
+            .setFooter({ text: `Session ID: ${eventId}`, iconURL: botAvatar });
 
         // Event Buttons:
         const eventButtonsRow = new ActionRowBuilder().addComponents(
             // Sign Up:
             new ButtonBuilder()
-                .setCustomId('eventSignup')
+                .setCustomId(`eventSignup:${eventId}:'ROLE`)
                 .setLabel('📝 Sign Up')
                 .setStyle(ButtonStyle.Success),
             // Game Link:
