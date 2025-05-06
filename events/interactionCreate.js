@@ -59,9 +59,9 @@ module.exports = {
 
 			const selectMenu = interaction.client.selectMenus.get(interactionCustomId);
 
-			// Confirm button:
+			// Confirm select menu::
 			if (!selectMenu) {
-				console.error(`No selectMenu matching ${interactionCustomId} was found.`);
+				// console.error(`No selectMenu matching ${interactionCustomId} was found.`);
 				return;
 			}
 

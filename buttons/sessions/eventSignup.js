@@ -34,12 +34,14 @@ module.exports = {
 		const row_selectEventRole = new ActionRowBuilder().addComponents(selectRoleMenu);
 
 		// Send the ephemeral menu message and store the reply
-		const reply = await interaction.reply({
+		await interaction.reply({
 			content: 'Select your role for this event:',
 			components: [row_selectEventRole],
-			ephemeral: true,
-			fetchReply: true, // 🔥 Important: allows collector to attach to the message
+			flags: MessageFlags.Ephemeral,
+	        withReply: true, // ✅ replaces fetchReply
 		});
+
+        const reply = await interaction.fetchReply();
 
 		// Create a component collector for the select menu
 		const collector = reply.createMessageComponentCollector({
@@ -62,9 +64,9 @@ module.exports = {
 			});
 
 			// Optionally update the original event message if needed
-			// You could fetch that here using the interactionEventId, etc.
 		});
 
+        // On Collector Timeout:
 		collector.on('end', (collected, reason) => {
 			if (reason === 'time') {
 				reply.edit({
