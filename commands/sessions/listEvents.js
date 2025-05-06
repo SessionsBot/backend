@@ -14,15 +14,6 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('list-events')
         .setDescription('Lists all training sessions available/occurring soon.')
-        .addStringOption(option =>
-            option.setName('type')
-                .setDescription('The session type')
-                .setRequired(true)
-                .addChoices(
-                    { name: 'Trainings', value: 'Trainings' },
-                    { name: 'Interviews', value: 'Interviews' },
-                    { name: 'Internal', value: 'Internal' },
-                ))
         .setContexts(InteractionContextType.Guild),
     
     // On Execution:
@@ -30,11 +21,11 @@ module.exports = {
 
         // Generate Event Id:
         function generateId() {
-            return 'evt_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+            return 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
         }
 
         // Variables:
-        const category = interaction.options.getString('type');
+        // const category = interaction.options.getString('type');
         const chanel = interaction.channel
         const botAvatar = interaction.client.user.displayAvatarURL();
         const botUsername = interaction.client.user.username;
@@ -48,20 +39,40 @@ module.exports = {
         const event1timestamp = Math.floor(event1Date.getTime() / 1000);
 
         const exEvent1Embed = new EmbedBuilder()
-            .setColor('Yellow')
-            .setAuthor({ name: `${category} Session:`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
+            .setColor('#9BE75B')
+            .setAuthor({ name: `Training Session:`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
             .addFields(
-                { name: '📆 Date:', value: `<t:${event1timestamp}:F> 
-                (<t:${event1timestamp}:R>)`, inline: true },
-                { name: '📍 Location:', value: '[Game Link](https://roblox.com)', inline: true },
+                { 
+                    name: '📆 Date:', 
+                    value: 
+                    `<t:${event1timestamp}:F> 
+                    (<t:${event1timestamp}:R>)`, 
+                    inline: true 
+                },
+                { 
+                    name: '📍 Location:', 
+                    value: '    [Game Link](https://roblox.com)', 
+                    inline: true 
+                },
 
             )
             .addFields(
                 { name: '\u200B', value: '\u200B' }, // Spacer
             )
             .addFields(
-                { name: '🎙️ Host:', value: '   *Available (0/1)* ', inline: true },
-                { name: '🤝 Trainers:', value: '   *Available (0/3)*', inline: true },
+                {
+                    name: '🎙️ Host:', 
+                    value: 
+                    `*Available* 
+                    (0/1)`, 
+                    inline: true},
+                { 
+                    name: '🤝 Trainers:', 
+                    value: 
+                    `*Available* 
+                    (0/3)`, 
+                    inline: true 
+                },
             )
             .setFooter({ text: `ID: ${eventId.toUpperCase()}`, iconURL: botAvatar });
 
