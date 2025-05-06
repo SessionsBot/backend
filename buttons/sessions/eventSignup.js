@@ -33,7 +33,7 @@ module.exports = {
 
 		const row_selectEventRole = new ActionRowBuilder().addComponents(selectRoleMenu);
 
-		// Send the ephemeral menu message and store the reply
+		// Send the select role message and store reply
 		await interaction.reply({
 			content: 'Select your role for this event:',
 			components: [row_selectEventRole],
@@ -43,21 +43,21 @@ module.exports = {
 
         const reply = await interaction.fetchReply();
 
-		// Create a component collector for the select menu
+		// Create a collector for the select menu
 		const collector = reply.createMessageComponentCollector({
 			componentType: ComponentType.StringSelect,
 			time: 60_000, // 1 minute
 		});
 
 		collector.on('collect', async (selectInteraction) => {
-			// Check it's the same user who triggered the signup
+			// Confirm same user who triggered the signup
 			if (selectInteraction.user.id !== interaction.user.id) {
 				return await selectInteraction.reply({ content: "This menu isn't for you.", ephemeral: true });
 			}
 
 			const selectedRole = selectInteraction.values[0];
 
-			// You can now respond, update the event, or whatever
+			// Respond:
 			await selectInteraction.update({
 				content: `✅ You selected **${selectedRole}**!`,
 				components: [],
