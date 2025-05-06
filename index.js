@@ -10,7 +10,10 @@ const path = require('node:path');
 
 const botVersion = '0.0.2b';
 
+
 // ------- [ File Loader Utility: ] -------
+
+const debugFileLoader = false;
 
 function getAllFiles(dir, ext, fileList = []) {
 	const files = fs.readdirSync(dir);
@@ -46,7 +49,7 @@ for (const folder of commandFolders) {
 	}
 }
 
-console.log(`[✅] Loaded ${client.commands.size} command(s).`);
+if(debugFileLoader) {console.log(`[✅] Loaded ${client.commands.size} command(s).`);}
 
 // ------- [ Initialize Buttons: ] -------
 
@@ -62,7 +65,7 @@ for (const filePath of buttonFiles) {
 	}
 }
 
-console.log(`[✅] Loaded ${client.buttons.size} button(s).`);
+if(debugFileLoader) {console.log(`[✅] Loaded ${client.buttons.size} button(s).`);}
 
 // ------- [ Initialize Select Menus: ] -------
 
@@ -78,7 +81,7 @@ for (const filePath of selectMenuFiles) {
 	}
 }
 
-console.log(`[✅] Loaded ${client.selectMenus.size} select menu(s).`);
+if(debugFileLoader) {console.log(`[✅] Loaded ${client.selectMenus.size} select menu(s).`);}
 
 // ------- [ Initialize Events: ] -------
 
@@ -94,7 +97,7 @@ for (const file of eventFiles) {
 	}
 }
 
-console.log(`[✅] Loaded ${eventFiles.length} event file(s).`);
+if(debugFileLoader) {console.log(`[✅] Loaded ${eventFiles.length} event file(s).`);}
 
 // ------- [ Login (via Token): ] -------
 
