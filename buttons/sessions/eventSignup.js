@@ -1,4 +1,4 @@
-const { MessageFlags, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
+const { MessageFlags, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } = require('discord.js');
 
 module.exports = {
     data: {
@@ -28,11 +28,11 @@ module.exports = {
 			);
 
         // Respond:
+
+        const row_selectEventRole = new ActionRowBuilder().addComponents(selectRoleMenu);
+
         await interaction.reply({ 
-            // content: `<@${interaction.user.id}> | ✅ | You've signed up for an event! 
-            // Selected Position: ${interactionRoleSelected} 
-            // (ID: ${interactionEventId})`,
-            components: [selectRoleMenu],
+            components: [row_selectEventRole],
             flags: MessageFlags.Ephemeral
         });
     }
