@@ -83,7 +83,7 @@ async function generateTodaysTrainingSessions(client) {
         const embed = new EmbedBuilder()
           .setColor('#9BE75B')
           .setTitle('Training Session')
-          .setAuthor({iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
+          .setAuthor({name: '', iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
           .addFields(
             { name: '📆 Date:', value: `<t:${session.date}:F>\n(<t:${session.date}:R>)`, inline: true },
             { name: '📍 Location:', value: `[Join Here](${session.location})`, inline: true }
