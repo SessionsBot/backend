@@ -1,6 +1,8 @@
 const { Events } = require('discord.js');
 const addSessionsModule = require('../utils/sessions/todaysSessions.js');
 
+const global = require('../global.js') // Import Global Variables
+
 module.exports = {
 	name: Events.ClientReady,
 	once: true,
@@ -33,6 +35,10 @@ module.exports = {
 		console.log(`[✅] READY! Logged in as @${client.user.tag}`);
 		console.log(`[🪪] Client ID: ${client.user.id}`);
 		console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
+
+		global.client = client;
+
+		console.log('Client:', client)
 
 	},
 };
