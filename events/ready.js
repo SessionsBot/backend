@@ -4,7 +4,7 @@ const addSessionsModule = require('../utils/addSessions.js');
 module.exports = {
 	name: Events.ClientReady,
 	once: true,
-	execute(client) {
+	async execute(client) {
 
 		// Get Startup Timestamp:
 		const startupTimestamp = new Date(client.readyTimestamp);
@@ -23,13 +23,17 @@ module.exports = {
 		console.log(`[🪪] Client ID: ${client.user.id}`);
 		console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
 
-		// Clear existing sessions:
-		console.log(`[🗓️] ATTEMPTING TO CLEAR SESSIONS --> ...`);
-		await addSessionsModule.clearExistingSessions();
+		async function modifySessions() {
+			// Clear existing sessions:
+			console.log(`[🗓️] ATTEMPTING TO CLEAR SESSIONS --> ...`);
+			await addSessionsModule.clearExistingSessions();
 
-		// Generate todays sessions:
-		console.log(`[🗓️] ATTEMPTING TO GENERATE SESSIONS --> ...`);
-		await addSessionsModule.generateTodaysTrainingSessions();
+			// Generate todays sessions:
+			console.log(`[🗓️] ATTEMPTING TO GENERATE SESSIONS --> ...`);
+			await addSessionsModule.generateTodaysTrainingSessions();
+		}
+
+		await modifySessions()
 
 		// Set the bot's status:
 		client.user.setPresence({
