@@ -86,14 +86,14 @@ async function generateTodaysTrainingSessions(client) {
         //   .setAuthor({name: ' ', iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
           .addFields(
             { name: '📆 Date:', value: `<t:${session.date}:F>\n(<t:${session.date}:R>)`, inline: true },
-            { name: '📍 Location:', value: `[Join Here](${session.location})`, inline: true }
+            { name: '📍 Location:', value: `[Event Game](${session.location})`, inline: true }
           )
           .addFields( // Spacer
             { name: '\u200B', value: '\u200B' }
           )
           .addFields(
-            { name: '🎙️ Host:', value: session.host ? '> ' + session.host : '> *Available*', inline: true },
-            { name: '🤝 Trainers:', value: session.trainers ? '> ' + session.trainers : '> 0/3', inline: true }
+            { name: '🎙️ Host:', value: session.host ? '> ' + session.host : '> **Available** \n 0/1', inline: true },
+            { name: '🤝 Trainers:', value: session.trainers.length > 0 ? '> ' + session.trainers : '> **Available** \n 0/3', inline: true }
           )          
           .addFields( // Spacer
             { name: '\u200B', value: '\u200B' }
@@ -130,7 +130,7 @@ async function generateTodaysTrainingSessions(client) {
     const debugAllSessions = true;
     if (debugAllSessions) {
         console.log('[📋] All sessions:');
-        const updatedSessionsData = sessionManager.readSessions();
+        const updatedSessionsData = await sessionManager.readSessions();
         console.log(updatedSessionsData);
     }
 
