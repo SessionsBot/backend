@@ -51,6 +51,11 @@ async function updateSessionRole(sessionId, role, newUserId) {
 
 	// Apply changes to session data:
 	await writeSessions(sessions);
+
+	// (!) Debug - DELETE ME LATER (!)
+	console.log('✅ Updated Session:')
+	console.log(session)
+
 	return session
 }
 
