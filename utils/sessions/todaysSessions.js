@@ -26,15 +26,15 @@ function generateTimestamp(hourOfDay) {
 
 // Clear Existing Sessions:
 async function clearExistingSessions() {
-    console.log('[⚙️] Clearing existing sessions...');
+    if(global.outputDebug_General) {console.log('[⚙️] Clearing existing sessions...')}
     await sessionManager.writeSessions({});
-    // console.log('[✅] Complete!');
+    if(global.outputDebug_InDepth) {console.log('[✅] Complete!')}
 }
 
 // Generate Todays Training Sessions:
 async function generateTodaysTrainingSessions(client) {
 
-    console.log(`[⚙️] Adding today's sessions...`);
+    if(global.outputDebug_General) {console.log(`[⚙️] Adding today's sessions...`)}
 
     // 10:30 AM:
     await sessionManager.saveSession(generateId(), {
@@ -76,7 +76,9 @@ async function generateTodaysTrainingSessions(client) {
 
     // Clear Existing Messages:
     channel.bulkDelete(100)
-        .then(messages => console.log(`[⚙️] Deleted ${messages.size} messages from ${channel.name}`))
+        .then(messages => {
+            if(global.outputDebug_General) {console.log(`[⚙️] Deleted ${messages.size} messages from ${channel.name}`)}
+        })
         .catch(console.error);
 
     // Wait for 1 second (!! - for deletion to finish):
@@ -141,7 +143,7 @@ async function generateTodaysTrainingSessions(client) {
     }
 
     // Debug:
-    console.log('[✅] Complete!');
+    if(global.outputDebug_General) {console.log('[✅] Complete!')}
     const debugSessionsOnCreation = false;
     if (debugSessionsOnCreation) {
         console.log('[📋] All sessions:');

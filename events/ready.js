@@ -32,13 +32,13 @@ module.exports = {
 		await modifySessions()
 
 		// Startup Debug:
-		console.log(`[✅] READY! Logged in as @${client.user.tag}`);
-		console.log(`[🪪] Client ID: ${client.user.id}`);
-		console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
+		if(global.outputDebug_General) {
+			console.log(`[✅] READY! Logged in as @${client.user.tag}`);
+			console.log(`[🪪] Client ID: ${client.user.id}`);
+			console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
+		}
 
+		// Assign Fresh Client to Global Variables:
 		global.client = client;
-
-		console.log('Client:', client)
-
 	},
 };
