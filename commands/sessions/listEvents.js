@@ -8,6 +8,10 @@ const { // Import Discord.js
     ButtonStyle  
 } = require('discord.js');
 
+// Import Session Manager:
+const sessionManager = require('../utils/sessionManager');
+
+
 module.exports = {
 
     // Assign Command:
@@ -18,6 +22,11 @@ module.exports = {
     
     // On Execution:
     async execute(interaction){
+
+        // Load Sessions from Session Manager:
+        const sessions = await sessionManager.loadSessions();
+        console.log('Sessions Loaded from JSONL:')
+        console.log(sessions);
 
         // Generate Event Id:
         function generateId() {
