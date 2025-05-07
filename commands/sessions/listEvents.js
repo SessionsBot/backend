@@ -25,7 +25,6 @@ module.exports = {
         }
 
         // Variables:
-        // const category = interaction.options.getString('type');
         const chanel = interaction.channel
         const botAvatar = interaction.client.user.displayAvatarURL();
         const botUsername = interaction.client.user.username;
@@ -90,11 +89,11 @@ module.exports = {
                 .setStyle(ButtonStyle.Link),
         )
 
-        // Send Message:
+        // Send Event List Message:
         await interaction.reply({
             embeds: [exEvent1Embed],
-            components: [eventButtonsRow]
-            // flags: MessageFlags.Ephemeral
+            components: [eventButtonsRow],
+            flags: MessageFlags.Ephemeral
         })
     },
 }
