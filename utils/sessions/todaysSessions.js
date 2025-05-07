@@ -82,8 +82,8 @@ async function generateTodaysTrainingSessions(client) {
       
         const embed = new EmbedBuilder()
           .setColor('#9BE75B')
-          .setTitle('Training Session')
-          .setAuthor({name: ' ', iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
+          .setTitle('📋 - Training Session')
+        //   .setAuthor({name: ' ', iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
           .addFields(
             { name: '📆 Date:', value: `<t:${session.date}:F>\n(<t:${session.date}:R>)`, inline: true },
             { name: '📍 Location:', value: `[Join Here](${session.location})`, inline: true }
@@ -92,10 +92,13 @@ async function generateTodaysTrainingSessions(client) {
             { name: '\u200B', value: '\u200B' }
           )
           .addFields(
-            { name: '🎙️ Host:', value: session.host || '*Available*', inline: true },
-            { name: '🤝 Trainers:', value: Object.keys(session.trainers || {}).length + '/3', inline: true }
+            { name: '🎙️ Host:', value: session.host ? '> ' + session.host : '> *Available*', inline: true },
+            { name: '🤝 Trainers:', value: session.trainers ? '> ' + session.trainers : '> 0/3', inline: true }
+          )          
+          .addFields( // Spacer
+            { name: '\u200B', value: '\u200B' }
           )
-          .setFooter({ text: `${sessionId}`, iconURL: client.user.displayAvatarURL() });
+          .setFooter({ text: `ID: ${sessionId.toUpperCase()}`, iconURL: client.user.displayAvatarURL() });
       
         const buttons = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
