@@ -67,16 +67,17 @@ async function generateTodaysTrainingSessions(client) {
         channelId: null
     });
 
-    // Announce in channel after sessions are generated:
+    // Get Event Announcement Channel:
 	const channelId = '1369505812552224869';
 	const channel = await client.channels.fetch(channelId);
     const sessions = await sessionManager.readSessions();
 
-    // Clear Channel:
+    // Clear Existing Messages:
     channel.bulkDelete(100)
-        .then(messages => console.log(`Deleted ${messages.size} messages`))
+        .then(messages => console.log(`[⚙️] Deleted ${messages.size} messages from ${channel.name}`))
         .catch(console.error);
 
+    // Send Event Messages in Channel:
     for (const [sessionId, session] of Object.entries(sessions)) {
       
         const embed = new EmbedBuilder()
@@ -122,10 +123,11 @@ async function generateTodaysTrainingSessions(client) {
 
     // Debug:
     console.log('[✅] Complete!');
-    const debugAllSessions = true
+    const debugAllSessions = true;
     if (debugAllSessions) {
         console.log('[📋] All sessions:');
-        console.log(sessionManager.readSessions());
+        const updatedSessionsData = sessionManager.readSessions();
+        console.log(updatedSessionsData);
     }
 
 }

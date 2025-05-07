@@ -18,12 +18,7 @@ module.exports = {
 			day: '2-digit',
 		});
 
-		// Startup Debug:
-		console.log(`[✅] READY! Logged in as @${client.user.tag}`);
-		console.log(`[🪪] Client ID: ${client.user.id}`);
-		console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
-
-		// Modify Sessions:
+		// Modify Sessions - Clear All & Create New:
 		async function modifySessions() {
 			// Clear existing sessions:
 			await addSessionsModule.clearExistingSessions();
@@ -31,6 +26,11 @@ module.exports = {
 			await addSessionsModule.generateTodaysTrainingSessions(client);
 		}
 		await modifySessions()
+
+		// Startup Debug:
+		console.log(`[✅] READY! Logged in as @${client.user.tag}`);
+		console.log(`[🪪] Client ID: ${client.user.id}`);
+		console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
 
 	},
 };
