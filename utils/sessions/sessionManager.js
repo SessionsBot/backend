@@ -26,20 +26,32 @@ async function saveSession(sessionId, sessionData) {
 	await writeSessions(sessions);
 }
 
-// Update a session's role assignment:
+// Update a session's role assignment => returns session data:
 async function updateSessionRole(sessionId, role, newUserId) {
 	const sessions = await readSessions();
 	const session = sessions[sessionId];
 
+	// Confirm session found:
 	if (!session) throw new Error(`Session with ID ${sessionId} not found.`);
 	
 	// Ensure only allowed roles are updated
-	if (!['host', 'assistant'].includes(role)) {
+	if (!['host', 'trainer'].includes(role)) {
 		throw new Error(`Invalid role "${role}" specified.`);
 	}
 
-	session[role] = newUserId;
+	// Selected Event Host:
+	if (role === 'Event Host') {
+		session[host] = newUserId;
+	}
+
+	// Selected Training Crew:
+	if (role === 'Training Crew') {
+		session[trainers] = session[trainers].push(newUserId)
+	}
+
+	// Apply changes to session data:
 	await writeSessions(sessions);
+	return session
 }
 
 

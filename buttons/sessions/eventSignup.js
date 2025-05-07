@@ -7,6 +7,8 @@ const {
 	EmbedBuilder,
 } = require('discord.js');
 
+const sessionManager = require('../utils/sessions/sessionManager.js')
+
 module.exports = {
 	data: {
 		customId: 'eventSignup',
@@ -24,11 +26,11 @@ module.exports = {
 				new StringSelectMenuOptionBuilder()
 					.setLabel('Event Host')
 					.setDescription('The main instructor who shall guide and facilitate the meeting.')
-					.setValue('Host'),
+					.setValue('Event Host'),
 				new StringSelectMenuOptionBuilder()
-					.setLabel('Assistant')
+					.setLabel('Training Crew')
 					.setDescription('The crew responsible for training employees divided by groups.')
-					.setValue('Assistant'),
+					.setValue('Training Crew'),
 			);
 
 		const row_selectEventRole = new ActionRowBuilder().addComponents(selectRoleMenu);
@@ -58,6 +60,12 @@ module.exports = {
 			// Get choice:
 			const selectedRole = selectInteraction.values[0];
 
+			// Update data w/ updateSessionRole() for role selected:
+			sessionManager.updateSessionRole(interactionEventId, selectedRole, selectInteraction.user.id)
+
+			// Get event data:
+			const sessionData = await sessionManager.getSession(interactionEventId)
+
 			// Respond:
 			await selectInteraction.update({
 				content: `<@${selectInteraction.user.id}>`,
@@ -65,17 +73,17 @@ module.exports = {
 					new EmbedBuilder()
 						.setColor('#eb9234')
           				.setTitle('✅ Position Assigned!')
-						  .addFields( // Spacer
+						.addFields( // Spacer
 							{ name: ' ', value: ' ' }
-							)
+						)
 						.addFields(
-						{ name: '💼 Role:', value: '`' + selectedRole + '`', inline: true },
-						{ name: '📆 Date:', value: '`' + 'undefined' + '`', inline: true }
+							{ name: '💼 Role:', value: '`' + selectedRole + '`', inline: true },
+							{ name: '📆 Date:', value: `<t:${sessionData.date}:F>\n(<t:${sessionData.date}:R>)`, inline: true }
 						)          
 						.addFields( // Spacer
-						{ name: '\u200B', value: '\u200B' }
+							{ name: ' ', value: ' ' }
 						)
-						.setFooter({ text: `This message will be deleted in 10 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
+						.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
 				],
 				components: []
 			});
@@ -83,7 +91,7 @@ module.exports = {
 			// Schedule Confirmation Msg Deletion:
 			setTimeout(() => {
 				selectInteraction.deleteReply().catch(() => {});
-			}, 10_000); // 10 seconds
+			}, 15_000);
 
 		});
 
