@@ -92,7 +92,7 @@ async function getSession(sessionId) {
 // Fully refresh an event embed by ID:
 async function refreshEventMessage(sessionId, client) {
 	// Get session data:
-	const sessionData = getSession(sessionId)
+	const sessionData = await getSession(sessionId)
 	if(!sessionData) {return console.warn(`Couldn't get session data for message refresh!`)}
 
 	console.log('ATTEMPTING MESSAGE UPDATE W DATA:')
