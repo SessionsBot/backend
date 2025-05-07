@@ -35,7 +35,7 @@ async function updateSessionRole(sessionId, role, newUserId) {
 	if (!session) throw new Error(`Session with ID ${sessionId} not found.`);
 	
 	// Ensure only allowed roles are updated
-	if (!['host', 'trainer'].includes(role)) {
+	if (!['Event Host', 'Training Crew'].includes(role)) {
 		throw new Error(`Invalid role "${role}" specified.`);
 	}
 
