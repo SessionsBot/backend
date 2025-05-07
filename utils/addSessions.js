@@ -1,20 +1,32 @@
 const sessionManager = require('./sessionManager');
 
-// Generate Id Function:
+// Generate Id:
 function generateId() {
     return 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
+// Generate Timestamp:
 function generateTimestamp(hourOfDay) {
-    let eventDate = new Date();
-    eventDate.setHours(hourOfDay || 7, 30, 0, 0);
-    let eventDateTimestamp = Math.floor(eventDate.getTime() / 1000);
-    return eventDateTimestamp;
+	const now = new Date();
+	const eventDate = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+	eventDate.setHours(hourOfDay || 7, 30, 0, 0);
+	return Math.floor(eventDate.getTime() / 1000);
+}
+
+// Clear Existing Sessions:
+async function clearExistingSessions() {
+    console.log('[⚙️] Clearing existing sessions...');
+    await sessionManager.writeSessions({});
+    console.log('[✅] Complete!');
 }
 
 // Generate Todays Training Sessions:
 async function generateTodaysTrainingSessions() {
-    console.log('[⚙️] Adding new sessions...');
+
+    // Clear existing sessions:
+    await clearExistingSessions();
+
+    console.log(`[⚙️] Adding today's sessions...`);
 
     // 10:30 AM:
     await sessionManager.saveSession(generateId(), {
@@ -63,5 +75,9 @@ async function generateTodaysTrainingSessions() {
 
 }
 
-// Execute the function:
-generateTodaysTrainingSessions().catch(console.error);
+
+// Module Exports:
+module.exports = {
+	clearExistingSessions,
+	generateTodaysTrainingSessions
+};

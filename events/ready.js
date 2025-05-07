@@ -1,5 +1,5 @@
 const { Events } = require('discord.js');
-
+const addSessionsModule = require('../utils/addSessions.js');
 
 module.exports = {
 	name: Events.ClientReady,
@@ -18,8 +18,25 @@ module.exports = {
 			day: '2-digit',
 		});
 
+		// Startup Debug:
 		console.log(`[✅] READY! Logged in as @${client.user.tag}`);
 		console.log(`[🪪] Client ID: ${client.user.id}`);
 		console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
+
+		// Generate todays sessions:
+		console.log(`[🗓️] ATTEMPTING TO GENERATE SESSIONS --> ...`);
+		await addSessionsModule.generateTodaysTrainingSessions();
+
+		// Set the bot's status:
+		client.user.setPresence({
+			activities: [
+				{
+					name: 'with the code',
+					type: 'PLAYING',
+				},
+			],
+			status: 'online',
+		});
+		console.log(`[🟢] Status: Online`);
 	},
 };
