@@ -130,8 +130,8 @@ async function generateTodaysTrainingSessions(client) {
 
     // Debug:
     console.log('[✅] Complete!');
-    const debugAllSessions = true;
-    if (debugAllSessions) {
+    const debugSessionsOnCreation = false;
+    if (debugSessionsOnCreation) {
         console.log('[📋] All sessions:');
         const updatedSessionsData = await sessionManager.readSessions();
         console.log(updatedSessionsData);

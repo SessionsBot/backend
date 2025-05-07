@@ -37,8 +37,7 @@ module.exports = {
 		await interaction.reply({
 			content: 'Select your role for this event:',
 			components: [row_selectEventRole],
-	        // withReply: true, // waits for response (!)
-            flags: MessageFlags.Ephemeral,
+            flags: MessageFlags.Ephemeral
 		});
 
 		// Await reply:
@@ -65,9 +64,13 @@ module.exports = {
 				embeds: [
 					new EmbedBuilder()
 						.setColor('#eb9234')
-          				.setTitle('✅ - Position Assigned!')
+          				.setTitle('✅ Position Assigned!')
+						  .addFields( // Spacer
+							{ name: ' ', value: ' ' }
+							)
 						.addFields(
-						{ name: 'ℹ️ Role:', value: '`' + selectedRole + '`', inline: true }
+						{ name: '💼 Role:', value: '`' + selectedRole + '`', inline: true },
+						{ name: '📆 Date:', value: '`' + 'undefined' + '`', inline: true }
 						)          
 						.addFields( // Spacer
 						{ name: '\u200B', value: '\u200B' }
