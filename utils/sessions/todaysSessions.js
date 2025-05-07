@@ -92,8 +92,8 @@ async function generateTodaysTrainingSessions(client) {
             { name: '\u200B', value: '\u200B' }
           )
           .addFields(
-            { name: '🎙️ Host:', value: session.host ? '> ' + session.host : ' `*Available*` \n *(0/1)*', inline: true },
-            { name: '🤝 Trainers:', value: session.trainers.length > 0 ? '> ' + session.trainers : ' `*Available*` \n *(0/3)*', inline: true }
+            { name: '🎙️ Host:', value: session.host ? '> ' + session.host : '*`Available`* \n *(0/1)*', inline: true },
+            { name: '🤝 Trainers:', value: session.trainers.length > 0 ? '> ' + session.trainers : '*`Available`* \n *(0/3)*', inline: true }
           )          
           .addFields( // Spacer
             { name: '\u200B', value: '\u200B' }
