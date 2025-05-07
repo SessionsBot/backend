@@ -61,31 +61,52 @@ module.exports = {
 			const selectedRole = selectInteraction.values[0];
 
 			// Update & retreive session data:
-			const sessionData = await sessionManager.updateSessionRole(interactionEventId, selectedRole, selectInteraction.user.id)
+			const assignRoleSuccess, sessionData = await sessionManager.updateSessionRole(interactionEventId, selectedRole, selectInteraction.user.id)
 
-			// Respond:
-			await selectInteraction.update({
-				content: `<@${selectInteraction.user.id}>`,
-				embeds: [
-					new EmbedBuilder()
-						.setColor('#eb9234')
-          				.setTitle('✅ Position Assigned!')
-						.addFields( // Spacer
-							{ name: ' ', value: ' ' }
-						)
-						.addFields(
-							{ name: '💼 Role:', value: '`' + selectedRole + '`', inline: true },
-							{ name: '📆 Date:', value: `<t:${sessionData.date}:F>\n(<t:${sessionData.date}:R>)`, inline: true }
-						)          
-						.addFields( // Spacer
-							{ name: ' ', value: ' ' }
-						)
-						.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
-				],
-				components: []
-			});
-
-			// Schedule Confirmation Msg Deletion:
+			if (assignRoleSuccess) {
+				// SUCCESS - Respond:
+				await selectInteraction.update({
+					content: `<@${selectInteraction.user.id}>`,
+					embeds: [
+						new EmbedBuilder()
+							.setColor('#eb9234')
+							.setTitle('✅ Position Assigned!')
+							.addFields( // Spacer
+								{ name: ' ', value: ' ' }
+							)
+							.addFields(
+								{ name: '💼 Role:', value: '`' + selectedRole + '`', inline: true },
+								{ name: '📆 Date:', value: `<t:${sessionData.date}:F>\n(<t:${sessionData.date}:R>)`, inline: true }
+							)          
+							.addFields( // Spacer
+								{ name: ' ', value: ' ' }
+							)
+							.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
+					]
+				});
+			} else {
+				// ERROR - Respond:
+				await selectInteraction.update({
+					content: `<@${selectInteraction.user.id}>`,
+					embeds: [
+						new EmbedBuilder()
+							.setColor('#eb3434')
+							.setTitle('⚠️ Position Not Assigned!')
+							.addFields( // Spacer
+								{ name: ' ', value: ' ' }
+							)
+							.addFields(
+								{ name: '🧾 Details:', value: '`' + selectedRole + '`', inline: true }
+							)          
+							.addFields( // Spacer
+								{ name: ' ', value: ' ' }
+							)
+							.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
+					]
+				});
+			}
+			
+			// Schedule response message deletion:
 			setTimeout(() => {
 				selectInteraction.deleteReply().catch(() => {});
 			}, 15_000);

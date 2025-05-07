@@ -32,25 +32,36 @@ async function updateSessionRole(sessionId, role, newUserId) {
 	const session = sessions[sessionId];
 
 	// Confirm session found:
-	if (!session) throw new Error(`Session with ID ${sessionId} not found.`);
+	if (!session) { 
+		console.warn(`Session with ID ${sessionId} not found.`) 
+		return false, `Session with ID ${sessionId} not found.`
+	};
 	
 	// Ensure only allowed roles are updated
 	if (!['Event Host', 'Training Crew'].includes(role)) {
-		throw new Error(`Invalid role "${role}" specified.`);
+		console.warn(`Invalid role "${role}" specified.`);
+		return false, `Invalid role "${role}" specified.`
 	}
 
 	// Selected Event Host:
-if (role === 'Event Host') {
-	session["host"] = newUserId;
-}
-
-// Selected Training Crew:
-if (role === 'Training Crew') {
-	// if (!session["trainers"].includes(newUserId)) {
-	if (session["trainers"].length <= 2) {
-		session["trainers"].push(newUserId);
+	if (role === 'Event Host') {
+		// Confirm Available:
+		if(session["host"] === null) {
+			session["host"] = newUserId;
+		}else {
+			return false, `This position is already taken!`
+		}
+		
 	}
-}
+
+	// Selected Training Crew:
+	if (role === 'Training Crew') {
+		if (session["trainers"].length <= 2 && !session["trainers"].includes(newUserId)) {
+			session["trainers"].push(newUserId);
+		}else {
+			return false, `This position is already taken!`
+		}
+	}
 
 	// Apply changes to session data:
 	await writeSessions(sessions);
@@ -59,7 +70,7 @@ if (role === 'Training Crew') {
 	console.log('✅ Updated Session:')
 	console.log(session)
 
-	return session
+	return true, session
 }
 
 
