@@ -144,7 +144,7 @@ async function refreshEventMessage(sessionId, client) {
 	);
       
 
-	message.edit({
+	await message.edit({
 		embeds: [updatedEmbed],
 		components: [buttons]
 	});
