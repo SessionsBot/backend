@@ -17,7 +17,7 @@ function generateTimestamp(hourOfDay) {
 async function clearExistingSessions() {
     console.log('[⚙️] Clearing existing sessions...');
     await sessionManager.writeSessions({});
-    console.log('[✅] Complete!');
+    // console.log('[✅] Complete!');
 }
 
 // Generate Todays Training Sessions:
@@ -63,7 +63,7 @@ async function generateTodaysTrainingSessions() {
     console.log('[✅] Complete!');
     const sessions = await sessionManager.readSessions();
 
-    const debugAllSessions = true
+    const debugAllSessions = false
     if (debugAllSessions) {
         console.log('[ i ] All sessions:');
         console.log(sessions);

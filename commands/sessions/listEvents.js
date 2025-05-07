@@ -9,7 +9,7 @@ const { // Import Discord.js
 } = require('discord.js');
 
 // Import Session Manager:
-const sessionManager = require('../../utils/sessionManager');
+const sessionManager = require('../../utils/sessions/sessionManager');
 
 
 module.exports = {
