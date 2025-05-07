@@ -7,7 +7,7 @@ const {
 	EmbedBuilder,
 } = require('discord.js');
 
-const sessionManager = require('../utils/sessions/sessionManager.js')
+const sessionManager = require('../../utils/sessions/sessionManager.js')
 
 module.exports = {
 	data: {
