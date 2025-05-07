@@ -120,7 +120,7 @@ async function generateTodaysTrainingSessions(client) {
     const debugAllSessions = true
     if (debugAllSessions) {
         console.log('[ i ] All sessions:');
-        console.log(sessions);
+        console.log(sessionManager.readSessions());
     }
 
 }
