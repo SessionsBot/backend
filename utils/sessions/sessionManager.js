@@ -115,14 +115,21 @@ async function refreshEventMessage(sessionId, client) {
 			{ name: ' ', value: ' ' }
 		)
 		.addFields(
-			{ name: '🎙️ Host:', value: sessionData['host'] ? '> ' + `<@${sessionData['host']}> \n *(1/1)*` : '*`Available`* \n *(0/1)*', inline: true },
 			{ 
+				name: '🎙️ Host:', 
+				value: sessionData['host'] 
+				  ? `> <@${sessionData['host']}>\n*(1/1)*` 
+				  : '*`Available`* \n *(0/1)*', 
+				inline: true 
+			  },
+			  { 
 				name: '🤝 Trainers:', 
-				value: sessionData['trainers'].length > 0 
-				  ? sessionData['trainers'].map(id => '> ' + `<@${id}>`).join('\n') 
+				value: sessionData['trainers'] && sessionData['trainers'].length > 0 
+				  ? sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(${sessionData['trainers'].length}/3)*` 
 				  : '*`Available`* \n *(0/3)*', 
 				inline: true 
 			  }
+			  
 			  
 		)          
 		.addFields( // Spacer
