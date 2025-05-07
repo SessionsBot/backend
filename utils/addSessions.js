@@ -19,7 +19,7 @@ async function addSession() {
         type: 'Training',
         date: generateTimestamp(),
         host: null,
-        trainers: {},
+        trainers: [],
         location: 'https://roblox.com',
         messageId: null,
         channelId: null
