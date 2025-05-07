@@ -7,8 +7,7 @@ function generateId() {
 
 function generateTimestamp(hourOfDay) {
     let eventDate = new Date();
-    eventDate.setHours(hourOfDay || 7);
-    eventDate.setMinutes(30)
+    eventDate.setHours(hourOfDay || 7, 30, 0, 0);
     let eventDateTimestamp = Math.floor(eventDate.getTime() / 1000);
     return eventDateTimestamp;
 }
