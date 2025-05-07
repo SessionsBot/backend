@@ -6,6 +6,8 @@ const {
     ButtonStyle  
 } = require('discord.js'); // Import Discord.js
 
+const global = require('../../global.js') // Import Global Variables
+
 const sessionManager = require('./sessionManager'); // Import Session Manager
 
 // Generate Id:
@@ -68,8 +70,8 @@ async function generateTodaysTrainingSessions(client) {
     });
 
     // Get Event Announcement Channel:
-	const channelId = '1369505812552224869';
-	const channel = await client.channels.fetch(channelId);
+	// const channelId = '1369505812552224869';
+	const channel = await client.channels.fetch(global.event_channelId);
     const sessions = await sessionManager.readSessions();
 
     // Clear Existing Messages:
