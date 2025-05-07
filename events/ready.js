@@ -1,5 +1,5 @@
 const { Events } = require('discord.js');
-const addSessionsModule = require('../utils/sessions/addSessions.js');
+const addSessionsModule = require('../utils/sessions/todaysSessions.js');
 
 module.exports = {
 	name: Events.ClientReady,
