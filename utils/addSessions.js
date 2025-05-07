@@ -64,22 +64,5 @@ async function generateTodaysTrainingSessions() {
 
 }
 
-
-// Generate Event Function:
-async function addSession() {
-    console.log('[i] Adding session...');
-
-    await sessionManager.saveSession(generateId(), {
-        type: 'Training',
-        date: generateTimestamp(),
-        host: null,
-        trainers: [],
-        location: 'https://roblox.com',
-        messageId: null,
-        channelId: null
-    });
-
-    
-}
-
-addSession().catch(console.error);
+// Execute the function:
+generateTodaysTrainingSessions().catch(console.error);
