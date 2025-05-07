@@ -137,7 +137,7 @@ async function refreshEventMessage(sessionId, client) {
 			.setStyle(ButtonStyle.Success),
 		new ButtonBuilder()
 			.setLabel('🎮 Game Link')
-			.setURL(session.location || 'https://roblox.com') // fallback if null
+			.setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
 			.setStyle(ButtonStyle.Link)
 	);
       
