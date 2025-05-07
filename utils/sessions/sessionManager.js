@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 
-const sessionsFilePath = path.join(__dirname, '..', '..', '..', 'data', 'sessions.json');
+const sessionsFilePath = path.join(__dirname, '..', '..', 'data', 'sessions.json');
 
 // Helper to read all sessions
 async function readSessions() {
