@@ -23,6 +23,10 @@ module.exports = {
 		console.log(`[🪪] Client ID: ${client.user.id}`);
 		console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
 
+		// Clear existing sessions:
+		console.log(`[🗓️] ATTEMPTING TO CLEAR SESSIONS --> ...`);
+		await addSessionsModule.clearExistingSessions();
+
 		// Generate todays sessions:
 		console.log(`[🗓️] ATTEMPTING TO GENERATE SESSIONS --> ...`);
 		await addSessionsModule.generateTodaysTrainingSessions();

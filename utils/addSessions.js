@@ -23,9 +23,6 @@ async function clearExistingSessions() {
 // Generate Todays Training Sessions:
 async function generateTodaysTrainingSessions() {
 
-    // Clear existing sessions:
-    await clearExistingSessions();
-
     console.log(`[⚙️] Adding today's sessions...`);
 
     // 10:30 AM:
