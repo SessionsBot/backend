@@ -37,7 +37,7 @@ module.exports = {
 		await interaction.reply({
 			content: 'Select your role for this event:',
 			components: [row_selectEventRole],
-	        withReply: true, // ✅ replaces fetchReply
+	        // withReply: true, // waits for response (!)
             flags: MessageFlags.Ephemeral,
 		});
 
@@ -47,7 +47,7 @@ module.exports = {
 		// Create a collector for the select menu response:
 		const collector = reply.createMessageComponentCollector({
 			componentType: ComponentType.StringSelect,
-			time: 60_000, // 1 minute timrout
+			time: 60_000, // 1 minute timeout
 		});
 
 		collector.on('collect', async (selectInteraction) => {
@@ -61,11 +61,26 @@ module.exports = {
 
 			// Respond:
 			await selectInteraction.update({
-				content: `<@${selectInteraction.user.id}> ✅ You selected **${selectedRole}**! (${interactionEventId})`,
-				components: [],
+				content: `<@${selectInteraction.user.id}>`,
+				embeds: [
+					new EmbedBuilder()
+						.setColor('#eb9234')
+          				.setTitle('✅ - Position Assigned!')
+						.addFields(
+						{ name: 'ℹ️ Role:', value: '`' + selectedRole + '`', inline: true }
+						)          
+						.addFields( // Spacer
+						{ name: '\u200B', value: '\u200B' }
+						)
+						.setFooter({ text: `This message will be deleted in 10 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
+				],
+				components: []
 			});
 
-			// ...
+			// Schedule Confirmation Msg Deletion:
+			setTimeout(() => {
+				selectInteraction.deleteReply().catch(() => {});
+			}, 10_000); // 10 seconds
 
 		});
 

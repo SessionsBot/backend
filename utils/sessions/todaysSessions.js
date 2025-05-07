@@ -77,7 +77,7 @@ async function generateTodaysTrainingSessions(client) {
         .then(messages => console.log(`[⚙️] Deleted ${messages.size} messages from ${channel.name}`))
         .catch(console.error);
 
-    // Wait for 1 second (for deletion complete):
+    // Wait for 1 second (!! - for deletion to finish):
 	await new Promise(resolve => setTimeout(resolve, 1000));
 
     // Send Event Messages in Channel:

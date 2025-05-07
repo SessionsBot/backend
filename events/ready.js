@@ -20,8 +20,6 @@ module.exports = {
 
 		// Modify Sessions - Clear All & Create New:
 		async function modifySessions() {
-			// Wait for 1 second:
-			await new Promise(resolve => setTimeout(resolve, 1000));
 			// Clear existing sessions:
 			await addSessionsModule.clearExistingSessions();
 			// Wait for 1 second:
