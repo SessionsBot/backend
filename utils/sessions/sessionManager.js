@@ -148,5 +148,6 @@ module.exports = {
 	saveSession,
 	deleteSession,
 	getSession,
-	updateSessionRole
+	updateSessionRole,
+	refreshEventMessage
 };

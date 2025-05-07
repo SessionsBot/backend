@@ -119,7 +119,8 @@ async function generateTodaysTrainingSessions(client) {
         // Send follow-up for each event
         const message = await channel.send({
           embeds: [embed],
-          components: [buttons]
+          components: [buttons],
+          content: '<@1142632642064420925>'
         });
 
         // Update the session data with message/channel ids
