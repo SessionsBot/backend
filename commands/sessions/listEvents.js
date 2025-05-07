@@ -37,6 +37,7 @@ module.exports = {
         });
 
         // 2. Get the sessions from the session manager and send as message groups:
+        const sessions = await sessionManager.readSessions();
         for (const [sessionId, session] of Object.entries(sessions)) {
             const eventTimestamp = Math.floor(new Date(session.date).getTime() / 1000);
           
