@@ -17,6 +17,7 @@ function generateId() {
 function generateTimestamp(hourOfDay) {
 	const now = new Date();
 	const eventDate = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+    eventDate.setDate(eventDate.getDate() + 1)
 	eventDate.setHours(hourOfDay || 7, 30, 0, 0);
 	return Math.floor(eventDate.getTime() / 1000);
 }
@@ -101,15 +102,22 @@ async function generateTodaysTrainingSessions(client) {
         );
       
         // Send follow-up for each event
-        await channel.send({
+        const message = await channel.send({
           embeds: [embed],
           components: [buttons]
+        });
+
+        // Update the session data with message/channel ids
+        await sessionManager.saveSession(sessionId, {
+            ...session, // keeps exisiting data
+            messageId: message.id,
+            channelId: channel.id
         });
     }
 
     // Debug:
     console.log('[✅] Complete!');
-    const debugAllSessions = false
+    const debugAllSessions = true
     if (debugAllSessions) {
         console.log('[ i ] All sessions:');
         console.log(sessions);
