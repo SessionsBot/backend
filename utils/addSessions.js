@@ -1,4 +1,4 @@
-const sessionManager = require('../sessionManager');
+const sessionManager = require('./sessionManager');
 
 // Generate Id Function:
 function generateId() {
