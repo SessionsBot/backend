@@ -23,97 +23,51 @@ module.exports = {
     // On Execution:
     async execute(interaction){
 
-        // Load Sessions from Session Manager:
-        const sessions = await sessionManager.readSessions();
-        console.log('Sessions Loaded from JSONL:')
-        console.log(sessions);
+        // Defer early to give yourself time
+        await interaction.deferReply();  // No ephemeral here, just deferring
 
+        // 1. Initial title embed (edit the initial reply after deferring)
+        await interaction.editReply({
+        embeds: [
+            new EmbedBuilder()
+            .setTitle('📋 Current Training Sessions:')
+            .setDescription('Below are all upcoming sessions you can sign up for:')
+            .setColor('#57F287')
+        ]
+        });
+
+        // 2. Get the sessions from the session manager and send as message groups:
         for (const [sessionId, session] of Object.entries(sessions)) {
-            console.log('-------EVENT:-------');
-            console.log(`Session ID: ${sessionId}`);
-            console.log(`Session Date: ${session.date}`);
-            console.log(`Session Trainers: ${JSON.stringify(session.trainers)}`);
-            console.log(`Session Host: ${session.host}`);
-            console.log(`Session Assistant: ${session.assistant}`);
-            console.log(`Session Type: ${session.type}`);
-        }
-        console.log('--------------------');
-
-        // Generate Event Id:
-        function generateId() {
-            return 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-        }
-
-        // Variables:
-        const chanel = interaction.channel
-        const botAvatar = interaction.client.user.displayAvatarURL();
-        const botUsername = interaction.client.user.username;
-        const eventId = generateId();
-
-
-        // Event Embed:
-        let event1Date = new Date();
-        event1Date.setHours(event1Date.getHours() + 1);
-        event1Date.setMinutes(event1Date.getMinutes() + 45);
-        const event1timestamp = Math.floor(event1Date.getTime() / 1000);
-
-        const exEvent1Embed = new EmbedBuilder()
-            .setColor('#9BE75B')
-            .setAuthor({ name: `Training Session:`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
-            .addFields(
-                { 
-                    name: '📆 Date:', 
-                    value: 
-                    `<t:${event1timestamp}:F> 
-                    (<t:${event1timestamp}:R>)`, 
-                    inline: true 
-                },
-                { 
-                    name: '📍 Location:', 
-                    value: '    [Game Link](https://roblox.com)', 
-                    inline: true 
-                },
-
-            )
-            .addFields(
-                { name: '\u200B', value: '\u200B' }, // Spacer
-            )
-            .addFields(
-                {
-                    name: '🎙️ Host:', 
-                    value: 
-                    `*Available* 
-                    (0/1)`, 
-                    inline: true},
-                { 
-                    name: '🤝 Trainers:', 
-                    value: 
-                    `*Available* 
-                    (0/3)`, 
-                    inline: true 
-                },
-            )
-            .setFooter({ text: `ID: ${eventId.toUpperCase()}`, iconURL: botAvatar });
-
-        // Event Buttons:
-        const eventButtonsRow = new ActionRowBuilder().addComponents(
-            // Sign Up:
-            new ButtonBuilder()
-                .setCustomId(`eventSignup:${eventId}:'ROLE`)
+            const eventTimestamp = Math.floor(new Date(session.date).getTime() / 1000);
+          
+            const embed = new EmbedBuilder()
+              .setColor('#9BE75B')
+              .setAuthor({ name: `Training Session`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
+              .addFields(
+                { name: '📆 Date:', value: `<t:${eventTimestamp}:F>\n(<t:${eventTimestamp}:R>)`, inline: true },
+                { name: '📍 Location:', value: `[Join Here](${session.location})`, inline: true },
+                { name: '🎙️ Host:', value: session.host || '*Available*', inline: true },
+                { name: '🤝 Trainers:', value: Object.keys(session.trainers || {}).length + '/3', inline: true }
+              )
+              .setFooter({ text: `ID: ${sessionId}`, iconURL: interaction.client.user.displayAvatarURL() });
+          
+            const buttons = new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId(`eventSignup:${sessionId}`)
                 .setLabel('📝 Sign Up')
                 .setStyle(ButtonStyle.Success),
-            // Game Link:
-            new ButtonBuilder()
+              new ButtonBuilder()
                 .setLabel('🎮 Game Link')
-                .setURL('https://www.roblox.com/games/407106466/Munch-V1')
-                .setStyle(ButtonStyle.Link),
-        )
-
-        // Send Event List Message:
-        await interaction.reply({
-            embeds: [exEvent1Embed],
-            components: [eventButtonsRow],
-            flags: MessageFlags.Ephemeral
-        })
+                .setURL(session.location || 'https://roblox.com') // fallback if null
+                .setStyle(ButtonStyle.Link)
+            );
+          
+            // Send follow-up for each event
+            await interaction.followUp({
+              embeds: [embed],
+              components: [buttons],
+              ephemeral: true // Set ephemeral for each follow-up message
+            });
+        }
     },
 }

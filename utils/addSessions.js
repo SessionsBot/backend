@@ -26,6 +26,9 @@ async function addSession() {
     });
 
     console.log('[✔︎] Complete!');
+    console.log('ALL SESSIONS:');
+    const sessions = await sessionManager.readSessions();
+    console.log(sessions);
 }
 
 addSession().catch(console.error);
