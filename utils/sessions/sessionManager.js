@@ -40,14 +40,17 @@ async function updateSessionRole(sessionId, role, newUserId) {
 	}
 
 	// Selected Event Host:
-	if (role === 'Event Host') {
-		session[host] = newUserId;
-	}
+if (role === 'Event Host') {
+	session["host"] = newUserId;
+}
 
-	// Selected Training Crew:
-	if (role === 'Training Crew') {
-		session[trainers] = session[trainers].push(newUserId)
+// Selected Training Crew:
+if (role === 'Training Crew') {
+	// if (!session["trainers"].includes(newUserId)) {
+	if (session["trainers"].length <= 2) {
+		session["trainers"].push(newUserId);
 	}
+}
 
 	// Apply changes to session data:
 	await writeSessions(sessions);
