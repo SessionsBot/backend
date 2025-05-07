@@ -66,17 +66,6 @@ async function generateTodaysTrainingSessions(client) {
         channelId: null
     });
 
-
-    // Debug:
-    console.log('[✅] Complete!');
-    const sessions = await sessionManager.readSessions();
-
-    const debugAllSessions = false
-    if (debugAllSessions) {
-        console.log('[ i ] All sessions:');
-        console.log(sessions);
-    }
-
     // Announce in channel after sessions are generated:
 	const channelId = '1369505812552224869';
 	const channel = await client.channels.fetch(channelId);
@@ -98,7 +87,7 @@ async function generateTodaysTrainingSessions(client) {
             { name: '🎙️ Host:', value: session.host || '*Available*', inline: true },
             { name: '🤝 Trainers:', value: Object.keys(session.trainers || {}).length + '/3', inline: true }
           )
-          .setFooter({ text: `${sessionId}`, iconURL: interaction.client.user.displayAvatarURL() });
+          .setFooter({ text: `${sessionId}`, iconURL: client.user.displayAvatarURL() });
       
         const buttons = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
@@ -118,6 +107,13 @@ async function generateTodaysTrainingSessions(client) {
         });
     }
 
+    // Debug:
+    console.log('[✅] Complete!');
+    const debugAllSessions = false
+    if (debugAllSessions) {
+        console.log('[ i ] All sessions:');
+        console.log(sessions);
+    }
 
 }
 
