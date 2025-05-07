@@ -60,11 +60,8 @@ module.exports = {
 			// Get choice:
 			const selectedRole = selectInteraction.values[0];
 
-			// Update data w/ updateSessionRole() for role selected:
-			sessionManager.updateSessionRole(interactionEventId, selectedRole, selectInteraction.user.id)
-
-			// Get event data:
-			const sessionData = await sessionManager.getSession(interactionEventId)
+			// Update & retreive session data:
+			const sessionData = await sessionManager.updateSessionRole(interactionEventId, selectedRole, selectInteraction.user.id)
 
 			// Respond:
 			await selectInteraction.update({
