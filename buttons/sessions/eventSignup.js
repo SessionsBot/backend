@@ -100,7 +100,7 @@ module.exports = {
 								{ name: ' ', value: ' ' }
 							)
 							.addFields(
-								{ name: '🧾 Details:', value: '`' + selectedRole + '`', inline: true }
+								{ name: '🧾 Details:', value: '`' + sessionData + '`', inline: true }
 							)          
 							.addFields( // Spacer
 								{ name: ' ', value: ' ' }
