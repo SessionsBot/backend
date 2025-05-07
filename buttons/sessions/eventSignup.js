@@ -65,7 +65,7 @@ module.exports = {
 
 			if (assignRoleSuccess) {
 				// SUCCESS - Respond:
-				await selectInteraction.update({
+				await selectInteraction.reply({
 					content: `<@${selectInteraction.user.id}>`,
 					embeds: [
 						new EmbedBuilder()
@@ -82,11 +82,12 @@ module.exports = {
 								{ name: ' ', value: ' ' }
 							)
 							.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
-					]
+					],
+					flags: MessageFlags.Ephemeral
 				});
 			} else {
 				// ERROR - Respond:
-				await selectInteraction.update({
+				await selectInteraction.reply({
 					content: `<@${selectInteraction.user.id}>`,
 					embeds: [
 						new EmbedBuilder()
@@ -102,7 +103,8 @@ module.exports = {
 								{ name: ' ', value: ' ' }
 							)
 							.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
-					]
+					],
+					flags: MessageFlags.Ephemeral
 				});
 			}
 			
