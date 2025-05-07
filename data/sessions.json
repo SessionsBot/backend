@@ -1,8 +1,17 @@
 {
-    "event_123456789": {
-      "host": "UserID1",
-      "assistant": "UserID2",
-      "messageId": "messageId123",
-      "channelId": "channelId123"
-    }
+  "event_123456789": {
+    "host": "UserID1",
+    "assistant": "UserID2",
+    "messageId": "messageId123",
+    "channelId": "channelId123"
+  },
+  "e_mad9n2s4uyk2": {
+    "type": "Training",
+    "date": 1746581686,
+    "host": null,
+    "trainers": {},
+    "location": "https://roblox.com",
+    "messageId": null,
+    "channelId": null
   }
+}
