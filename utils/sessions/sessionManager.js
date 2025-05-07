@@ -1,6 +1,14 @@
 const fs = require('fs').promises;
 const path = require('path');
 
+const {
+    EmbedBuilder,  
+    MessageFlags,
+    ActionRowBuilder, 
+    ButtonBuilder, 
+    ButtonStyle  
+} = require('discord.js'); // Import Discord.js
+
 const sessionsFilePath = path.join(__dirname, '..', '..', 'data', 'sessions.json');
 
 // Reads all session data and returns
