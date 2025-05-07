@@ -39,13 +39,12 @@ module.exports = {
         // 2. Get the sessions from the session manager and send as message groups:
         const sessions = await sessionManager.readSessions();
         for (const [sessionId, session] of Object.entries(sessions)) {
-            const eventTimestamp = Math.floor(new Date(session.date).getTime() / 1000);
           
             const embed = new EmbedBuilder()
               .setColor('#9BE75B')
               .setAuthor({ name: `Training Session`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
               .addFields(
-                { name: '📆 Date:', value: `<t:${eventTimestamp}:F>\n(<t:${eventTimestamp}:R>)`, inline: true },
+                { name: '📆 Date:', value: `<t:${session.date}:F>\n(<t:${session.date}:R>)`, inline: true },
                 { name: '📍 Location:', value: `[Join Here](${session.location})`, inline: true }
               )
               .addFields( // Spacer
@@ -55,7 +54,7 @@ module.exports = {
                 { name: '🎙️ Host:', value: session.host || '*Available*', inline: true },
                 { name: '🤝 Trainers:', value: Object.keys(session.trainers || {}).length + '/3', inline: true }
               )
-              .setFooter({ text: `ID: ${sessionId}`, iconURL: interaction.client.user.displayAvatarURL() });
+              .setFooter({ text: `${sessionId}`, iconURL: interaction.client.user.displayAvatarURL() });
           
             const buttons = new ActionRowBuilder().addComponents(
               new ButtonBuilder()
