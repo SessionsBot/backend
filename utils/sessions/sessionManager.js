@@ -95,9 +95,12 @@ async function refreshEventMessage(sessionId, client) {
 	const sessionData = getSession(sessionId)
 	if(!sessionData) {return console.warn(`Couldn't get session data for message refresh!`)}
 
+	console.log('ATTEMPTING MESSAGE UPDATE W DATA:')
+	console.log(sessionData)
+
 	// Fetch original message:
-	const channel = await client.channels.fetch(sessionData.channelId);
-	const message = await channel.messages.fetch(sessionData.messageId);
+	const channel = await client.channels.fetch(sessionData['channelId']);
+	const message = await channel.messages.fetch(sessionData['messageId']);
 
 	// Create updated embed
 	const updatedEmbed = new EmbedBuilder()
@@ -107,15 +110,22 @@ async function refreshEventMessage(sessionId, client) {
 			{ name: ' ', value: ' ' }
 		)
 		.addFields(
-			{ name: '📆 Date:', value: `<t:${sessionData.date}:F>\n(<t:${sessionData.date}:R>)`, inline: true },
-			{ name: '📍 Location:', value: `[Event Game](${sessionData.location})`, inline: true }
+			{ name: '📆 Date:', value: `<t:${sessionData['date']}:F>\n(<t:${sessionData['date']}:R>)`, inline: true },
+			{ name: '📍 Location:', value: `[Event Game](${sessionData['location']})`, inline: true }
 		)
 		.addFields( // Spacer
 			{ name: ' ', value: ' ' }
 		)
 		.addFields(
-			{ name: '🎙️ Host:', value: sessionData.host ? '> ' + `<@${sessionData.host}>` : '*`Available`* \n *(0/1)*', inline: true },
-			{ name: '🤝 Trainers:', value: sessionData.trainers.length > 0 ? '> ' + sessionData.trainers : '*`Available`* \n *(0/3)*', inline: true }
+			{ name: '🎙️ Host:', value: sessionData['host'] ? '> ' + `<@${sessionData['host']}>` : '*`Available`* \n *(0/1)*', inline: true },
+			{ 
+				name: '🤝 Trainers:', 
+				value: sessionData['trainers'].length > 0 
+				  ? sessionData['trainers'].map(id => `<@${id}>`).join('\n') 
+				  : '*`Available`* \n *(0/3)*', 
+				inline: true 
+			  }
+			  
 		)          
 		.addFields( // Spacer
 			{ name: ' ', value: ' ' }
