@@ -24,7 +24,7 @@ module.exports = {
     async execute(interaction){
 
         // Load Sessions from Session Manager:
-        const sessions = await sessionManager.loadSessions();
+        const sessions = await sessionManager.readSessions();
         console.log('Sessions Loaded from JSONL:')
         console.log(sessions);
 
