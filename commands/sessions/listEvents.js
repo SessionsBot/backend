@@ -24,7 +24,7 @@ module.exports = {
     async execute(interaction){
 
         // Defer early to give yourself time
-        await interaction.deferReply({ ephemeral: true });  // No ephemeral here, just deferring
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });  // No ephemeral here, just deferring
 
         // 1. Initial title embed (edit the initial reply after deferring)
         await interaction.editReply({
