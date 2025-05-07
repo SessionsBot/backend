@@ -31,48 +31,9 @@ module.exports = {
         embeds: [
             new EmbedBuilder()
             .setTitle('📋 Current Training Sessions:')
-            .setDescription('Below are all upcoming sessions you can sign up for:')
-            .setColor('#57F287')
+            .setDescription(`Below are all upcoming sessions you've signed up for:`)
+            .setColor('#9BE75B')
         ]
         });
-
-        // 2. Get the sessions from the session manager and send as message groups:
-        const sessions = await sessionManager.readSessions();
-        for (const [sessionId, session] of Object.entries(sessions)) {
-          
-            const embed = new EmbedBuilder()
-              .setColor('#9BE75B')
-              .setAuthor({ name: `Training Session`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
-              .addFields(
-                { name: '📆 Date:', value: `<t:${session.date}:F>\n(<t:${session.date}:R>)`, inline: true },
-                { name: '📍 Location:', value: `[Join Here](${session.location})`, inline: true }
-              )
-              .addFields( // Spacer
-                { name: '\u200B', value: '\u200B' }
-              )
-              .addFields(
-                { name: '🎙️ Host:', value: session.host || '*Available*', inline: true },
-                { name: '🤝 Trainers:', value: Object.keys(session.trainers || {}).length + '/3', inline: true }
-              )
-              .setFooter({ text: `${sessionId}`, iconURL: interaction.client.user.displayAvatarURL() });
-          
-            const buttons = new ActionRowBuilder().addComponents(
-              new ButtonBuilder()
-                .setCustomId(`eventSignup:${sessionId}`)
-                .setLabel('📝 Sign Up')
-                .setStyle(ButtonStyle.Success),
-              new ButtonBuilder()
-                .setLabel('🎮 Game Link')
-                .setURL(session.location || 'https://roblox.com') // fallback if null
-                .setStyle(ButtonStyle.Link)
-            );
-          
-            // Send follow-up for each event
-            await interaction.followUp({
-              embeds: [embed],
-              components: [buttons],
-              ephemeral: true // Set ephemeral for each follow-up message
-            });
-        }
     },
 }

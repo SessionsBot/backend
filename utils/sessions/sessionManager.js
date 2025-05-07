@@ -3,7 +3,7 @@ const path = require('path');
 
 const sessionsFilePath = path.join(__dirname, '..', '..', 'data', 'sessions.json');
 
-// Helper to read all sessions
+// Reads all session data and returns
 async function readSessions() {
 	try {
 		const data = await fs.readFile(sessionsFilePath, 'utf8');
@@ -14,12 +14,12 @@ async function readSessions() {
 	}
 }
 
-// Helper to save all sessions
+// Saves over ALL session data (writeSessions({}) clears all sessions)
 async function writeSessions(sessions) {
 	await fs.writeFile(sessionsFilePath, JSON.stringify(sessions, null, 2));
 }
 
-// Add or update a session
+// Add or update a session's data:
 async function saveSession(sessionId, sessionData) {
 	const sessions = await readSessions();
 	sessions[sessionId] = sessionData;
@@ -43,23 +43,27 @@ async function updateSessionRole(sessionId, role, newUserId) {
 }
 
 
-// Remove a session
+// Remove a session by Id:
 async function deleteSession(sessionId) {
 	const sessions = await readSessions();
 	delete sessions[sessionId];
 	await writeSessions(sessions);
 }
 
-// Get a single session by ID
+// Get a single session by Id and returns:
 async function getSession(sessionId) {
 	const sessions = await readSessions();
 	return sessions[sessionId];
 }
 
+
+
+// Module Exports:
 module.exports = {
 	readSessions,
 	writeSessions,
 	saveSession,
 	deleteSession,
-	getSession
+	getSession,
+	updateSessionRole
 };

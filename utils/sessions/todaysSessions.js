@@ -72,6 +72,11 @@ async function generateTodaysTrainingSessions(client) {
 	const channel = await client.channels.fetch(channelId);
     const sessions = await sessionManager.readSessions();
 
+    // Clear Channel:
+    channel.bulkDelete(100)
+        .then(messages => console.log(`Deleted ${messages.size} messages`))
+        .catch(console.error);
+
     for (const [sessionId, session] of Object.entries(sessions)) {
       
         const embed = new EmbedBuilder()
