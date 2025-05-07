@@ -60,6 +60,11 @@ module.exports = {
 			// Get choice:
 			const selectedRole = selectInteraction.values[0];
 
+			// Hide Selection Menu:
+			await reply.edit({
+				components: []
+			}).catch(() => {});
+
 			// Update & retreive session data:
 			const [assignRoleSuccess, sessionData] = await sessionManager.updateSessionRole(interactionEventId, selectedRole, selectInteraction.user.id)
 
