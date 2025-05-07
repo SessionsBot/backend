@@ -28,12 +28,13 @@ module.exports = {
         console.log('Sessions Loaded from JSONL:')
         console.log(sessions);
 
-        for (const session of sessions) {
+        for (const [sessionId, session] of Object.entries(sessions)) {
             console.log('-------EVENT:-------');
-            console.log(`Session ID: ${session.id}`);
+            console.log(`Session ID: ${sessionId}`);
             console.log(`Session Date: ${session.date}`);
-            console.log(`Session Trainers: ${session.trainers}`);
+            console.log(`Session Trainers: ${JSON.stringify(session.trainers)}`);
             console.log(`Session Host: ${session.host}`);
+            console.log(`Session Assistant: ${session.assistant}`);
             console.log(`Session Type: ${session.type}`);
         }
         console.log('--------------------');
