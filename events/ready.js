@@ -22,6 +22,8 @@ module.exports = {
 		async function modifySessions() {
 			// Clear existing sessions:
 			await addSessionsModule.clearExistingSessions();
+			// Wait for 1 second:
+			await new Promise(resolve => setTimeout(resolve, 1000));
 			// Generate todays sessions:
 			await addSessionsModule.generateTodaysTrainingSessions(client);
 		}
