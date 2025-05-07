@@ -7,5 +7,23 @@
     "location": "https://roblox.com/games/123",
     "messageId": null,
     "channelId": null
+  },
+  "e_madb7c0xftv7": {
+    "type": "Training",
+    "date": 1746584311,
+    "host": null,
+    "trainers": [],
+    "location": "https://roblox.com",
+    "messageId": null,
+    "channelId": null
+  },
+  "e_madb7hbjy89n": {
+    "type": "Training",
+    "date": 1746584318,
+    "host": null,
+    "trainers": [],
+    "location": "https://roblox.com",
+    "messageId": null,
+    "channelId": null
   }
 }
