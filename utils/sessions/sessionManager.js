@@ -72,16 +72,10 @@ async function updateSessionRole(sessionId, role, newUserId) {
 		}
 	}
 
-	// Apply changes to session data:
+	// Success - Apply changes to session data:
 	await writeSessions(sessions);
-
-	// (!) Debug - DELETE ME LATER (!)
-	console.log('✅ Updated Session:')
-	console.log(session)
-
 	return [true, session]
 }
-
 
 // Remove a session by Id:
 async function deleteSession(sessionId) {
@@ -96,15 +90,11 @@ async function getSession(sessionId) {
 	return sessions[sessionId];
 }
 
-
-// Fully refresh an event embed by ID:
+// Fully refresh an event embed by msgId:
 async function refreshEventMessage(sessionId, client) {
 	// Get session data:
 	const sessionData = await getSession(sessionId)
 	if(!sessionData) {return console.warn(`Couldn't get session data for message refresh!`)}
-
-	console.log('ATTEMPTING MESSAGE UPDATE W DATA:')
-	console.log(sessionData)
 
 	// Fetch original message:
 	const channel = await client.channels.fetch(sessionData['channelId']);
