@@ -34,13 +34,13 @@ async function updateSessionRole(sessionId, role, newUserId) {
 	// Confirm session found:
 	if (!session) { 
 		console.warn(`Session with ID ${sessionId} not found.`) 
-		return false, `Session with ID ${sessionId} not found.`
+		return [false, `Session with ID ${sessionId} not found.`]
 	};
 	
 	// Ensure only allowed roles are updated
 	if (!['Event Host', 'Training Crew'].includes(role)) {
 		console.warn(`Invalid role "${role}" specified.`);
-		return false, `Invalid role "${role}" specified.`
+		return [false, `Invalid role "${role}" specified.`]
 	}
 
 	// Selected Event Host:
@@ -49,7 +49,7 @@ async function updateSessionRole(sessionId, role, newUserId) {
 		if(session["host"] === null) {
 			session["host"] = newUserId;
 		}else {
-			return false, `This position is already taken!`
+			return [false, `This position is already taken!`]
 		}
 		
 	}
@@ -59,7 +59,7 @@ async function updateSessionRole(sessionId, role, newUserId) {
 		if (session["trainers"].length <= 2 && !session["trainers"].includes(newUserId)) {
 			session["trainers"].push(newUserId);
 		}else {
-			return false, `This position is already taken!`
+			return [false, `This position is already taken!`]
 		}
 	}
 
@@ -70,7 +70,7 @@ async function updateSessionRole(sessionId, role, newUserId) {
 	console.log('✅ Updated Session:')
 	console.log(session)
 
-	return true, session
+	return [true, session]
 }
 
 
