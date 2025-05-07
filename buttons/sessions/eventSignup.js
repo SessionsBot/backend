@@ -60,18 +60,15 @@ module.exports = {
 			// Get choice:
 			const selectedRole = selectInteraction.values[0];
 
-			// Hide Selection Menu:
-			await reply.edit({
-				components: []
-			}).catch(() => {});
 
 			// Update & retreive session data:
 			const [assignRoleSuccess, sessionData] = await sessionManager.updateSessionRole(interactionEventId, selectedRole, selectInteraction.user.id)
 
 			if (assignRoleSuccess) {
 				// SUCCESS - Respond:
-				await selectInteraction.reply({
+				await selectInteraction.update({
 					content: `<@${selectInteraction.user.id}>`,
+					components: [],
 					embeds: [
 						new EmbedBuilder()
 							.setColor('#eb9234')
@@ -92,8 +89,9 @@ module.exports = {
 				});
 			} else {
 				// ERROR - Respond:
-				await selectInteraction.reply({
+				await selectInteraction.update({
 					content: `<@${selectInteraction.user.id}>`,
+					components: [],
 					embeds: [
 						new EmbedBuilder()
 							.setColor('#eb3434')
