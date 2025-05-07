@@ -28,8 +28,9 @@ module.exports = {
 			// Clear existing sessions:
 			await addSessionsModule.clearExistingSessions();
 			// Generate todays sessions:
-			await addSessionsModule.generateTodaysTrainingSessions();
+			await addSessionsModule.generateTodaysTrainingSessions(client);
 		}
 		await modifySessions()
+
 	},
 };

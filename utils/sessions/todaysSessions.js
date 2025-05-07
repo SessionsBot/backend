@@ -1,4 +1,12 @@
-const sessionManager = require('./sessionManager');
+const {
+    EmbedBuilder,  
+    MessageFlags,
+    ActionRowBuilder, 
+    ButtonBuilder, 
+    ButtonStyle  
+} = require('discord.js'); // Import Discord.js
+
+const sessionManager = require('./sessionManager'); // Import Session Manager
 
 // Generate Id:
 function generateId() {
@@ -21,7 +29,7 @@ async function clearExistingSessions() {
 }
 
 // Generate Todays Training Sessions:
-async function generateTodaysTrainingSessions() {
+async function generateTodaysTrainingSessions(client) {
 
     console.log(`[⚙️] Adding today's sessions...`);
 
@@ -67,6 +75,47 @@ async function generateTodaysTrainingSessions() {
     if (debugAllSessions) {
         console.log('[ i ] All sessions:');
         console.log(sessions);
+    }
+
+    // Announce in channel after sessions are generated:
+	const channelId = '1369505812552224869';
+	const channel = await client.channels.fetch(channelId);
+    const sessions = await sessionManager.readSessions();
+
+    for (const [sessionId, session] of Object.entries(sessions)) {
+      
+        const embed = new EmbedBuilder()
+          .setColor('#9BE75B')
+          .setAuthor({ name: `Training Session`, iconURL: 'https://cdn-icons-png.flaticon.com/512/1869/1869397.png' })
+          .addFields(
+            { name: '📆 Date:', value: `<t:${session.date}:F>\n(<t:${session.date}:R>)`, inline: true },
+            { name: '📍 Location:', value: `[Join Here](${session.location})`, inline: true }
+          )
+          .addFields( // Spacer
+            { name: '\u200B', value: '\u200B' }
+          )
+          .addFields(
+            { name: '🎙️ Host:', value: session.host || '*Available*', inline: true },
+            { name: '🤝 Trainers:', value: Object.keys(session.trainers || {}).length + '/3', inline: true }
+          )
+          .setFooter({ text: `${sessionId}`, iconURL: interaction.client.user.displayAvatarURL() });
+      
+        const buttons = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`eventSignup:${sessionId}`)
+            .setLabel('📝 Sign Up')
+            .setStyle(ButtonStyle.Success),
+          new ButtonBuilder()
+            .setLabel('🎮 Game Link')
+            .setURL(session.location || 'https://roblox.com') // fallback if null
+            .setStyle(ButtonStyle.Link)
+        );
+      
+        // Send follow-up for each event
+        await channel.send({
+          embeds: [embed],
+          components: [buttons]
+        });
     }
 
 
