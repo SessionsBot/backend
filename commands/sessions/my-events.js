@@ -117,7 +117,69 @@ module.exports = {
             // Create msg buttons
             const buttons = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
-                    .setCustomId(`eventUnSignup:${sessionId}`)
+                    .setCustomId(`eventLeaveRole:${sessionId}`)
+                    .setLabel('🚪 Leave Role')
+                    .setStyle(ButtonStyle.Success),
+                new ButtonBuilder()
+                    .setLabel('🎮 Game Link')
+                    .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
+                    .setStyle(ButtonStyle.Link)
+            );
+
+
+            // Send full message:
+            interaction.followUp({
+                embeds: [updatedEmbed],
+                components: [buttons],
+                flags: MessageFlags.Ephemeral
+            })
+
+        }
+
+        // 3. Send the sessions the user is training crew:
+        for (const [sessionId, sessionData] of Object.entries(sessions_training)) {
+
+            // Create msg embed
+            const updatedEmbed = new EmbedBuilder()
+                .setColor('#9BE75B')
+                .setTitle('📋 - Training Session')
+                .addFields( // Spacer
+                    { name: ' ', value: ' ' }
+                )
+                .addFields(
+                    { name: '📆 Date:', value: `<t:${sessionData['date']}:F>\n(<t:${sessionData['date']}:R>)`, inline: true },
+                    { name: '📍 Location:', value: `[Event Game](${sessionData['location']})`, inline: true }
+                )
+                .addFields( // Spacer
+                    { name: ' ', value: ' ' }
+                )
+                .addFields(
+                    { 
+                        name: '🎙️ Host:', 
+                        value: sessionData['host'] 
+                        ? `> <@${sessionData['host']}>\n*(1/1)*` 
+                        : '*`Available`* \n *(0/1)*', 
+                        inline: true 
+                    },
+                    { 
+                        name: '🤝 Trainers:', 
+                        value: sessionData['trainers'] && sessionData['trainers'].length > 0 
+                        ? sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(${sessionData['trainers'].length}/3)*` 
+                        : '*`Available`* \n *(0/3)*', 
+                        inline: true 
+                    }
+                    
+                    
+                )          
+                .addFields( // Spacer
+                    { name: ' ', value: ' ' }
+                )
+                .setFooter({ text: `ID: ${sessionId.toUpperCase()}`, iconURL: interaction.client.user.displayAvatarURL() });
+
+            // Create msg buttons
+            const buttons = new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                    .setCustomId(`eventLeaveRole:${sessionId}`)
                     .setLabel('🚪 Leave Role')
                     .setStyle(ButtonStyle.Success),
                 new ButtonBuilder()
