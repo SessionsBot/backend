@@ -112,7 +112,7 @@ module.exports = {
                 .addFields( // Spacer
                     { name: ' ', value: ' ' }
                 )
-                .setFooter({ text: `ID: ${sessionId.toUpperCase()}`, iconURL: client.user.displayAvatarURL() });
+                .setFooter({ text: `ID: ${sessionId.toUpperCase()}`, iconURL: interaction.client.user.displayAvatarURL() });
 
             // Create msg buttons
             const buttons = new ActionRowBuilder().addComponents(
