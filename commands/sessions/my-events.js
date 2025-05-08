@@ -130,7 +130,8 @@ module.exports = {
             // Send full message:
             interaction.followUp({
                 embeds: [updatedEmbed],
-                components: [buttons]
+                components: [buttons],
+                flags: MessageFlags.Ephemeral
             })
 
         }
