@@ -52,8 +52,9 @@ module.exports = {
         }
 
         // Debug results:
-        console.log('Sessions Hosting:', sessions_hosting);
-        console.log('Sessions Training:', sessions_training);
+        console.log('Sessions Hosting:', sessions_hosting.keys.length);
+        console.log('Sessions Training:', sessions_training.keys.length);
+
 
         // 1. Initial title embed (edit the initial reply after deferring)
         await interaction.editReply({
