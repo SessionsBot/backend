@@ -16,8 +16,8 @@ module.exports = {
 
     // Assign Command:
     data: new SlashCommandBuilder()
-        .setName('list-events')
-        .setDescription('Lists all training sessions available/occurring soon.')
+        .setName('my-events')
+        .setDescription(`Lists the sessions you've signed up for.`)
         .setContexts(InteractionContextType.Guild),
     
     // On Execution:
