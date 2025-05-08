@@ -33,7 +33,7 @@ module.exports = {
             console.log('[i]{ListEventsCmd} SESSIONS OBJECT FOUND!')
         }
 
-        for (const sessionID, sessionData in Object.entries(allSessionsData)){
+        for (const [sessionID, sessionData] of Object.entries(allSessionsData)){
             console.log(`-- Checking info for e: ${sessionID}`)
             console.log(sessionData)
             console.log(`-------------------------`)
