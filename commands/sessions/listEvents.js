@@ -47,7 +47,6 @@ module.exports = {
         }
 
         // Debug results:
-        let sessions_hostingNUM = 
         console.log('Sessions Hosting:', Object.keys(sessions_hosting).length);
         console.log('Sessions Training:', Object.keys(sessions_training).length);
 
