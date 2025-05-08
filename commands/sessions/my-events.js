@@ -128,10 +128,9 @@ module.exports = {
 
 
             // Send full message:
-            interaction.reply({
+            interaction.followUp({
                 embeds: [updatedEmbed],
-                components: [buttons],
-                flags: MessageFlags.Ephemeral
+                components: [buttons]
             })
 
         }
