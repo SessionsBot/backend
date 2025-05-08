@@ -34,26 +34,21 @@ module.exports = {
         // Load all sessions:
         const allSessionsData = await sessionManager.readSessions()
 
-        console.log('User ID:', userId)
-
         // Check each session for user signed up:
         for (const [sessionId, sessionData] of Object.entries(allSessionsData)){
-            console.log(`-- Checking info for e: ${sessionId}`);
             // Check if Event Host:
             if(sessionData['host'] === userId) {
-                console.log('User is host!');
                 sessions_hosting[`${sessionId}`] = sessionData;
             }
             // Check if Training Crew:
             if(sessionData['trainers'].includes(userId)) {
-                console.log('User is trainer!');
                 sessions_training[`${sessionId}`] = sessionData;
             }
         }
 
         // Debug results:
-        console.log('Sessions Hosting:', sessions_hosting.keys.length);
-        console.log('Sessions Training:', sessions_training.keys.length);
+        console.log('Sessions Hosting:', Object.keys(sessions_hosting).length);
+        console.log('Sessions Training:', Object.keys(sessions_training).length);
 
 
         // 1. Initial title embed (edit the initial reply after deferring)
