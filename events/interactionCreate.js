@@ -34,7 +34,7 @@ module.exports = {
 
 			// Confirm button:
 			if (!button) {
-				console.error(`No button matching ${interactionCustomId} was found.`);
+				console.error(`[!] No button matching ${interactionCustomId} was found.`);
 				return;
 			}
 

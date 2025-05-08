@@ -46,12 +46,7 @@ module.exports = {
             }
         }
 
-        // Debug results:
-        console.log('Sessions Hosting:', Object.keys(sessions_hosting).length);
-        console.log('Sessions Training:', Object.keys(sessions_training).length);
-
         // Send results:
-
         const interactionChannel = interaction.channel
 
         // 1. Initial title embed (edit the initial reply after deferring)
@@ -119,7 +114,7 @@ module.exports = {
                 new ButtonBuilder()
                     .setCustomId(`eventLeaveRole:${sessionId}`)
                     .setLabel('🚪 Leave Role')
-                    .setStyle(ButtonStyle.Success),
+                    .setStyle(ButtonStyle.Danger),
                 new ButtonBuilder()
                     .setLabel('🎮 Game Link')
                     .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
@@ -181,7 +176,7 @@ module.exports = {
                 new ButtonBuilder()
                     .setCustomId(`eventLeaveRole:${sessionId}`)
                     .setLabel('🚪 Leave Role')
-                    .setStyle(ButtonStyle.Success),
+                    .setStyle(ButtonStyle.Danger),
                 new ButtonBuilder()
                     .setLabel('🎮 Game Link')
                     .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
