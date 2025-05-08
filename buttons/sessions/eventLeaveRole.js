@@ -20,5 +20,23 @@ module.exports = {
 
 		console.log('USER HAS ATTEMPTED A ROLE UNASSIGN!')
 		console.log('EventId:', interactionEventId)
+
+		interaction.reply({
+			embeds: [
+				new EmbedBuilder()
+				.setTitle('Role Unassign:')
+				.setColor('#fc035e')
+				.addFields( // Spacer
+                    { name: ' ', value: ' ' }
+                )
+                .addFields(
+                    { name: '**⚠️ Error:**', value: '`When attempting to remove yourself from your role assignment, an error occurred! Please contact administrator help for more assistance`' },
+                )
+                .addFields( // Spacer
+                    { name: ' ', value: ' ' }
+                )
+			],
+            flags: MessageFlags.Ephemeral
+		})
 	},
 };
