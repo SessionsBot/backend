@@ -75,7 +75,7 @@ module.exports = {
         });
 
         // 2. Send the sessions the user is hosting:
-        for ([sessionId, sessionData] of Object.entries(sessions_hosting)) {
+        for (const [sessionId, sessionData] of Object.entries(sessions_hosting)) {
 
             // Create msg embed
             const updatedEmbed = new EmbedBuilder()
@@ -128,7 +128,7 @@ module.exports = {
 
 
             // Send full message:
-            interactionChannel.send({
+            interaction.reply({
                 embeds: [updatedEmbed],
                 components: [buttons],
                 flags: MessageFlags.Ephemeral
