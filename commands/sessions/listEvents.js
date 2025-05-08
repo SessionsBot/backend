@@ -23,21 +23,37 @@ module.exports = {
     // On Execution:
     async execute(interaction){
 
-        // Defer early to give yourself time
+        // Variables:
+        let sessions_hosting = {};
+        let sessions_training = {};
+        const userId = interaction.user.id
+
+        // Defer early to give yourself time:
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         // Load all sessions:
         const allSessionsData = await sessionManager.readSessions()
 
-        if(allSessionsData && typeof allSessionsData === 'object'){
-            console.log('[i]{ListEventsCmd} SESSIONS OBJECT FOUND!')
+        console.log('User ID:', userId)
+
+        // Check each session for user signed up:
+        for (const [sessionId, sessionData] of Object.entries(allSessionsData)){
+            console.log(`-- Checking info for e: ${sessionId}`);
+            // Check if Event Host:
+            if(sessionData['host'] === userId) {
+                console.log('User is host!');
+                sessions_hosting[`${sessionId}`] = sessionData;
+            }
+            // Check if Training Crew:
+            if(sessionData['trainers'].includes(userId)) {
+                console.log('User is trainer!');
+                sessions_training[`${sessionId}`] = sessionData;
+            }
         }
 
-        for (const [sessionID, sessionData] of Object.entries(allSessionsData)){
-            console.log(`-- Checking info for e: ${sessionID}`)
-            console.log(sessionData)
-            console.log(`-------------------------`)
-        }
+        // Debug results:
+        console.log('Sessions Hosting:', sessions_hosting);
+        console.log('Sessions Training:', sessions_training);
 
         // 1. Initial title embed (edit the initial reply after deferring)
         await interaction.editReply({
