@@ -24,7 +24,20 @@ module.exports = {
     async execute(interaction){
 
         // Defer early to give yourself time
-        await interaction.deferReply({ flags: MessageFlags.Ephemeral });  // No ephemeral here, just deferring
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+        // Load all sessions:
+        const allSessionsData = await sessionManager.readSessions()
+
+        if(allSessionsData && typeof allSessionsData === 'object'){
+            console.log('[i]{ListEventsCmd} SESSIONS OBJECT FOUND!')
+        }
+
+        for (const sessionID, sessionData in Object.entries(allSessionsData)){
+            console.log(`-- Checking info for e: ${sessionID}`)
+            console.log(sessionData)
+            console.log(`-------------------------`)
+        }
 
         // 1. Initial title embed (edit the initial reply after deferring)
         await interaction.editReply({
