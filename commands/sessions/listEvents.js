@@ -62,8 +62,8 @@ module.exports = {
                 { name: ' ', value: ' ' }
             )
             .addFields(
-                { name: '🎙️ Hosting:', value: Object.keys(sessions_hosting).length, inline: true },
-                { name: '🤝 Training:', value: Object.keys(sessions_training).length, inline: true }
+                { name: '🎙️ Hosting:', value: `${Object.keys(sessions_hosting).length}`, inline: true },
+                { name: '🤝 Training:', value: `${Object.keys(sessions_training).length}`, inline: true }
             )
             .addFields( // Spacer
                 { name: ' ', value: ' ' }
