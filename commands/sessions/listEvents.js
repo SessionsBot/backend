@@ -47,6 +47,7 @@ module.exports = {
         }
 
         // Debug results:
+        let sessions_hostingNUM = 
         console.log('Sessions Hosting:', Object.keys(sessions_hosting).length);
         console.log('Sessions Training:', Object.keys(sessions_training).length);
 
@@ -58,6 +59,16 @@ module.exports = {
             .setTitle('📋 Current Training Sessions:')
             .setDescription(`Below are all upcoming sessions you've signed up for:`)
             .setColor('#9BE75B')
+            .addFields( // Spacer
+                { name: ' ', value: ' ' }
+            )
+            .addFields(
+                { name: '🎙️ Hosting:', value: Object.keys(sessions_hosting).length, inline: true },
+                { name: '🤝 Training:', value: Object.keys(sessions_training).length, inline: true }
+            )
+            .addFields( // Spacer
+                { name: ' ', value: ' ' }
+            )
         ]
         });
     },
