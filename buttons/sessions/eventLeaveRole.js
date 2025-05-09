@@ -156,7 +156,11 @@ module.exports = {
 
 			// Edit the 'listed event' under response from /my-events:
 			console.log('{!} Trying to edit:')
-			await interaction_startUnassign.message.edit({
+			const referencedMessage = await interaction_startUnassign.channel.messages.fetch(interaction_startUnassign.message.reference.messageId);
+			console.log('Fetched:')
+			console.log(referencedMessage)
+			console.log('------------------')
+			await referencedMessage.edit({
 				embeds: [
 					new EmbedBuilder()
 						.setColor(global.colors.warning)
