@@ -56,11 +56,11 @@ module.exports = {
 
 		const confirmationButtons = new ActionRowBuilder().addComponents(
 			new ButtonBuilder()
-				.setCustomId(`eventLeaveRole:${interactionEventId}:CONFIRM`)
+				.setCustomId(`eventLeaveRoleConfirmation:${interactionEventId}:CONFIRM`)
 				.setLabel('✅ Confirm')
 				.setStyle(ButtonStyle.Danger),
 			new ButtonBuilder()
-				.setCustomId(`eventKeepRole:${interactionEventId}:CANCEL`)
+				.setCustomId(`eventKeepRoleConfirmation:${interactionEventId}:CANCEL`)
 				.setLabel('❌ Cancel')
 				.setStyle(ButtonStyle.Secondary)
 		);
