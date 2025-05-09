@@ -35,7 +35,7 @@ module.exports = {
 						{ name: ' ', value: ' ' }
 					)
 					.addFields(
-						{ name: '**✅ Success:**', value: '`When attempting to remove yourself from your role assignment, an error occurred! Please contact administrator help for more assistance`' },
+						{ name: '**✅ Success:**', value: '`You have successfully removed yourself as an attendee from this event!`' + `(${interactionEventId})` },
 					)
 					.addFields( // Spacer
 						{ name: ' ', value: ' ' }
