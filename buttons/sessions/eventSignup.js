@@ -89,7 +89,7 @@ module.exports = {
 				});
 
 				// Update Original Event Message:
-				sessionManager.refreshEventMessage(interactionEventId, interaction.client)
+				sessionManager.refreshEventMessage(interactionEventId)
 
 			} else {
 				// ERROR - Respond:
