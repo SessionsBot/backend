@@ -113,6 +113,7 @@ module.exports = {
 							.addFields( // Spacer
 								{ name: ' ', value: ' ' }
 							)
+							.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: global.client.user.displayAvatarURL() })
 						],
 						flags: MessageFlags.Ephemeral
 					})
@@ -133,6 +134,7 @@ module.exports = {
 							.addFields( // Spacer
 								{ name: ' ', value: ' ' }
 							)
+							.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: global.client.user.displayAvatarURL() })
 						],
 						flags: MessageFlags.Ephemeral
 					})
@@ -146,6 +148,7 @@ module.exports = {
 						.setColor(global.colors.success)
 						.setTitle('❌ Canceled')
 						.setDescription(` You're still signed up for this event and no changes have been made.`)
+						.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: global.client.user.displayAvatarURL() })
 					],
 					flags: MessageFlags.Ephemeral
 				})
@@ -155,22 +158,26 @@ module.exports = {
 			await interaction_startUnassign.deleteReply().catch((e) => {console.log('ERROR',e)});
 
 			// Edit the 'listed event' under response from /my-events:
-			console.log('{!} Trying to edit:')
-			const referencedMessage = await interaction_startUnassign.channel.messages.fetch(interaction_startUnassign.message.reference.messageId);
-			console.log('Fetched:')
-			console.log(referencedMessage)
-			console.log('------------------')
-			await referencedMessage.edit({
-				embeds: [
-					new EmbedBuilder()
-						.setColor(global.colors.warning)
-						.setTitle('🗑️ Event Removed')
-						.setDescription('You have unassigned yourself from this event!')
-				],
-				components: [],
-				flags: MessageFlags.Ephemeral
-			}).catch((e) => {console.log('ERROR',e)});
+			// console.log('{!} Trying to edit:')
+			// const referencedMessage = await interaction_startUnassign.channel.messages.fetch(interaction_startUnassign.message.reference.messageId);
+			// console.log('Fetched:')
+			// console.log(referencedMessage)
+			// console.log('------------------')
+			// await referencedMessage.edit({
+			// 	embeds: [
+			// 		new EmbedBuilder()
+			// 			.setColor(global.colors.warning)
+			// 			.setTitle('🗑️ Event Removed')
+			// 			.setDescription('You have unassigned yourself from this event!')
+			// 	],
+			// 	components: [],
+			// 	flags: MessageFlags.Ephemeral
+			// }).catch((e) => {console.log('ERROR',e)});
 			
+			// Schedule response message deletion:
+			setTimeout(() => {
+				interaction_ConfirmUnassign.deleteReply().catch(() => {});
+			}, 15_000);
 			
 
 		})
