@@ -154,12 +154,19 @@ module.exports = {
 			// Delete the original confirmation message:
 			await interaction_startUnassign.deleteReply().catch((e) => {console.log('ERROR',e)});
 
-			// Delete the 'listed event' under response from /my-events:
-			if(!interaction_startUnassign.message.deleteable) {
-				console.log('{!} This message is not deletable!?')
-			} else {
-				await interaction_startUnassign.message.delete().catch((e) => {console.log('ERROR',e)});
-			}
+			// Edit the 'listed event' under response from /my-events:
+			console.log('{!} Trying to edit:')
+			await interaction_startUnassign.message.edit({
+				embeds: [
+					new EmbedBuilder()
+						.setColor(global.colors.warning)
+						.setTitle('🗑️ Event Removed')
+						.setDescription('You have unassigned yourself from this event!')
+				],
+				components: [],
+				flags: MessageFlags.Ephemeral
+			}).catch((e) => {console.log('ERROR',e)});
+			
 			
 
 		})
