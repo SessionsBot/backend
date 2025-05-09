@@ -21,6 +21,9 @@ module.exports = {
 		console.log('USER HAS ATTEMPTED A ROLE UNASSIGN!')
 		console.log('EventId:', interactionEventId)
 
+		// Attempt to leave role:
+		const [updateSuccess, sessionData] = sessionManager.removePlayerFromEventById(interactionEventId, interaction.user.id)
+
 		interaction.reply({
 			embeds: [
 				new EmbedBuilder()

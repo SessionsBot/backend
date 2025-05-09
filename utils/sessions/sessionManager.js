@@ -77,6 +77,38 @@ async function updateSessionRole(sessionId, role, newUserId) {
 	return [true, session]
 }
 
+// Remove a player from a session by userId:
+async function removePlayerFromEventById(sessionId, playerId) {
+	const sessions = await readSessions();
+	const session = sessions[sessionId];
+
+	// Confirm session found:
+	if (!session) { 
+		console.warn(`Session with ID ${sessionId} not found.`) 
+		return [false, `Session with ID ${sessionId} not found.`]
+	};
+
+	// Check if player is host:
+	if(session["host"] === playerId) {
+		session['host'] = null;
+	}
+
+	// Check if player is training crew:
+	if(session["trainers"].includes(newUserId)) {
+		const trainerIndex = session["trainers"].findIndex(id => id === newUserId)
+		session["trainers"].splice(trainerIndex, 1)
+	}
+
+	// Debug Updated Session Data:
+	console.log('SESSION MANAGER UPDATE - USER ROLE:')
+	console.log(session)
+
+
+	// Success - Apply changes to session data:
+	await writeSessions(sessions);
+	return [true, session]
+}
+
 // Remove a session by Id:
 async function deleteSession(sessionId) {
 	const sessions = await readSessions();
@@ -164,5 +196,6 @@ module.exports = {
 	deleteSession,
 	getSession,
 	updateSessionRole,
-	refreshEventMessage
+	refreshEventMessage,
+	removePlayerFromEventById
 };
