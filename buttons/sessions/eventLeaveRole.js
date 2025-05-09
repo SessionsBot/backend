@@ -102,7 +102,7 @@ module.exports = {
 					interaction_ConfirmUnassign.reply({
 						embeds: [
 							new EmbedBuilder()
-							.setTitle('Role Unassign:')
+							.setTitle('👋 Role Removal:')
 							.setColor('#9BE75B')
 							.addFields( // Spacer
 								{ name: ' ', value: ' ' }
@@ -122,7 +122,7 @@ module.exports = {
 					interaction_ConfirmUnassign.reply({
 						embeds: [
 							new EmbedBuilder()
-							.setTitle('Role Unassign:')
+							.setTitle('👋 Role Removal:')
 							.setColor('#fc035e')
 							.addFields( // Spacer
 								{ name: ' ', value: ' ' }
@@ -152,10 +152,10 @@ module.exports = {
 			}
 
 			// Delete the original confirmation message:
-			// await interaction_ConfirmUnassign.deleteReply().catch((e) => {console.log('ERROR',e)});
+			await interaction_startUnassign.deleteReply().catch((e) => {console.log('ERROR',e)});
 
 			// Delete the 'listed event' under response from /my-events:
-			await interaction_startUnassign.deleteReply().catch((e) => {console.log('ERROR',e)});
+			
 
 		})
 

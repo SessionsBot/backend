@@ -115,6 +115,7 @@ async function removePlayerFromEventById(sessionId, playerId) {
 	}
 
 	// Success - Return:
+	await refreshEventMessage(sessionId) // Update Event Message
 	return [true, session]
 }
 
