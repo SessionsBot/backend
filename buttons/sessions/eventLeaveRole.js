@@ -5,9 +5,10 @@ const {
 	StringSelectMenuOptionBuilder,
 	ComponentType,
 	EmbedBuilder,
-} = require('discord.js');
+} = require('discord.js'); // Import Discord.js
 
-const sessionManager = require('../../utils/sessions/sessionManager.js')
+const global = require('../../global.js') // Import Global Variables
+const sessionManager = require('../../utils/sessions/sessionManager.js') // Import Session Manager
 
 module.exports = {
 	data: {
@@ -18,9 +19,12 @@ module.exports = {
 		const interactionCustomId = interactionData[0];
 		const interactionEventId = interactionData[1];
 
-		console.log('USER HAS ATTEMPTED A ROLE UNASSIGN!')
-		console.log('EventId:', interactionEventId)
-
+		// Debug:
+		if(global.outputDebug_InDepth) {
+			console.log('USER HAS ATTEMPTED A ROLE UNASSIGN!')
+			console.log('EventId:', interactionEventId)
+		}
+		
 		// Attempt to leave role:
 		const [updateSuccess, sessionData] = await sessionManager.removePlayerFromEventById(interactionEventId, interaction.user.id)
 

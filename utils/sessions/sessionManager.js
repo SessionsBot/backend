@@ -10,6 +10,8 @@ const {
 } = require('discord.js'); // Import Discord.js
 const { isArray } = require('util');
 
+const global = require('../../global.js') // Import Global Variables
+
 const sessionsFilePath = path.join(__dirname, '..', '..', 'data', 'sessions.json');
 
 // Reads all session data and returns
@@ -130,8 +132,9 @@ async function getSession(sessionId) {
 }
 
 // Fully refresh an event embed by msgId:
-async function refreshEventMessage(sessionId, client) {
+async function refreshEventMessage(sessionId) {
 	// Get session data:
+	const client = global.client
 	const sessionData = await getSession(sessionId)
 	if(!sessionData) {return console.warn(`Couldn't get session data for message refresh!`)}
 

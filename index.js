@@ -8,8 +8,6 @@ const botToken = process.env['BOT_TOKEN'];
 const fs = require('fs');
 const path = require('node:path');
 
-const botVersion = '0.0.2b';
-
 
 // ------- [ File Loader Utility: ] -------
 
