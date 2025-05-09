@@ -95,7 +95,7 @@ async function removePlayerFromEventById(sessionId, playerId) {
 	}
 
 	// Check if player is training crew:
-	if(Array(session["trainers"]).isArray() && session["trainers"].length > 1 && session["trainers"].includes(playerId)) {
+	if (Array.isArray(session["trainers"]) && session["trainers"].includes(playerId)) {
 		const trainerIndex = session["trainers"].findIndex(id => id === playerId)
 		session["trainers"].splice(trainerIndex, 1)
 	}
