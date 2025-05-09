@@ -8,6 +8,7 @@ const {
     ButtonBuilder, 
     ButtonStyle  
 } = require('discord.js'); // Import Discord.js
+const { isArray } = require('util');
 
 const sessionsFilePath = path.join(__dirname, '..', '..', 'data', 'sessions.json');
 
@@ -94,8 +95,8 @@ async function removePlayerFromEventById(sessionId, playerId) {
 	}
 
 	// Check if player is training crew:
-	if(session["trainers"].includes(newUserId)) {
-		const trainerIndex = session["trainers"].findIndex(id => id === newUserId)
+	if(Array(session["trainers"]).isArray() && session["trainers"].length > 1 && session["trainers"].includes(playerId)) {
+		const trainerIndex = session["trainers"].findIndex(id => id === playerId)
 		session["trainers"].splice(trainerIndex, 1)
 	}
 
