@@ -22,7 +22,7 @@ module.exports = {
 		console.log('EventId:', interactionEventId)
 
 		// Attempt to leave role:
-		const [updateSuccess, sessionData] = sessionManager.removePlayerFromEventById(interactionEventId, interaction.user.id)
+		const [updateSuccess, sessionData] = await sessionManager.removePlayerFromEventById(interactionEventId, interaction.user.id)
 
 		interaction.reply({
 			embeds: [
