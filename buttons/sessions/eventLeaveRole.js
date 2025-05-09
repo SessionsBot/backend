@@ -30,12 +30,12 @@ module.exports = {
 				embeds: [
 					new EmbedBuilder()
 					.setTitle('Role Unassign:')
-					.setColor('#fc035e')
+					.setColor('#9BE75B')
 					.addFields( // Spacer
 						{ name: ' ', value: ' ' }
 					)
 					.addFields(
-						{ name: '**✅ Success:**', value: '`You have successfully removed yourself as an attendee from this event!`' + `(${interactionEventId})` },
+						{ name: '**✅ Success:**', value: '`You have successfully removed yourself as an attendee from this event!`' + `\n (${interactionEventId})` },
 					)
 					.addFields( // Spacer
 						{ name: ' ', value: ' ' }

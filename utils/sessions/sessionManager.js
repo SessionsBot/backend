@@ -85,24 +85,34 @@ async function removePlayerFromEventById(sessionId, playerId) {
 
 	// Confirm session found:
 	if (!session) { 
+		// Session not found:
 		console.warn(`Session with ID ${sessionId} not found.`) 
 		return [false, `Session with ID ${sessionId} not found.`]
 	};
 
+	// Confirm player assigned session:
+	if(session["host"] != playerId &&  !session["trainers"].includes(playerId)){
+		// Player not in session:
+			console.log('USER NOT ASSIGNED SESSION!')
+		return [false, `You are not assigned to this session!`]
+	}
+
 	// Check if player is host:
 	if(session["host"] === playerId) {
 		session['host'] = null;
+		// Send Changes:
+		await writeSessions(sessions);
 	}
 
 	// Check if player is training crew:
-	if (Array.isArray(session["trainers"]) && session["trainers"].includes(playerId)) {
+	if (session["trainers"].includes(playerId)) {
 		const trainerIndex = session["trainers"].findIndex(id => id === playerId)
 		session["trainers"].splice(trainerIndex, 1)
+		// Send Changes:
+		await writeSessions(sessions);
 	}
 
-
-	// Success - Apply changes to session data:
-	await writeSessions(sessions);
+	// Success - Return:
 	return [true, session]
 }
 
