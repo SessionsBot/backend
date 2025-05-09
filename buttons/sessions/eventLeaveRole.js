@@ -24,22 +24,47 @@ module.exports = {
 		// Attempt to leave role:
 		const [updateSuccess, sessionData] = await sessionManager.removePlayerFromEventById(interactionEventId, interaction.user.id)
 
-		interaction.reply({
-			embeds: [
-				new EmbedBuilder()
-				.setTitle('Role Unassign:')
-				.setColor('#fc035e')
-				.addFields( // Spacer
-                    { name: ' ', value: ' ' }
-                )
-                .addFields(
-                    { name: '**⚠️ Error:**', value: '`When attempting to remove yourself from your role assignment, an error occurred! Please contact administrator help for more assistance`' },
-                )
-                .addFields( // Spacer
-                    { name: ' ', value: ' ' }
-                )
-			],
-            flags: MessageFlags.Ephemeral
-		})
+		if (updateSuccess) {
+			// Update Success:
+			interaction.reply({
+				embeds: [
+					new EmbedBuilder()
+					.setTitle('Role Unassign:')
+					.setColor('#fc035e')
+					.addFields( // Spacer
+						{ name: ' ', value: ' ' }
+					)
+					.addFields(
+						{ name: '**✅ Success:**', value: '`When attempting to remove yourself from your role assignment, an error occurred! Please contact administrator help for more assistance`' },
+					)
+					.addFields( // Spacer
+						{ name: ' ', value: ' ' }
+					)
+				],
+				flags: MessageFlags.Ephemeral
+			})
+
+		} else {
+			// Update Error:
+			interaction.reply({
+				embeds: [
+					new EmbedBuilder()
+					.setTitle('Role Unassign:')
+					.setColor('#fc035e')
+					.addFields( // Spacer
+						{ name: ' ', value: ' ' }
+					)
+					.addFields(
+						{ name: '**⚠️ Error:**', value: '`When attempting to remove yourself from your role assignment, an error occurred! Please contact administrator help for more assistance`' },
+					)
+					.addFields( // Spacer
+						{ name: ' ', value: ' ' }
+					)
+				],
+				flags: MessageFlags.Ephemeral
+			})
+		}
+
+		
 	},
 };

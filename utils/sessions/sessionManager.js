@@ -100,10 +100,6 @@ async function removePlayerFromEventById(sessionId, playerId) {
 		session["trainers"].splice(trainerIndex, 1)
 	}
 
-	// Debug Updated Session Data:
-	console.log('SESSION MANAGER UPDATE - USER ROLE:')
-	console.log(session)
-
 
 	// Success - Apply changes to session data:
 	await writeSessions(sessions);
