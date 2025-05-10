@@ -38,6 +38,21 @@ module.exports = {
 			// Unknown:
 			return 'Unknown'
 		}
+		// If user is already unassigned from this event:
+		if (usersRoleName() === 'Unknown') {
+			// Send Error Message:
+			await interaction_startUnassign.reply({
+				embeds: [
+					new EmbedBuilder()
+						.setColor(global.colors.warning)
+						.setTitle('❗️ - Uh oh!')
+						.setDescription(`It looks like you're not assigned to this event! Please use`, '`/my-events`', `to view events you're currently signed up for.`)
+
+				],
+            	flags: MessageFlags.Ephemeral
+			})
+			return // End Excecution
+		}
 		const confirmationEmbed = new EmbedBuilder()
 			.setColor(global.colors.warning)
 			.setTitle('❗️ - Please Confirm:')
@@ -65,7 +80,7 @@ module.exports = {
 		);
 
 		// Send Message:
-		interaction_startUnassign.reply({
+		await interaction_startUnassign.reply({
 			embeds: [confirmationEmbed],
 			components: [confirmationButtons],
             flags: MessageFlags.Ephemeral
@@ -88,9 +103,10 @@ module.exports = {
 			const confirmInteractionActionId = confirmInteractionData[2];
 
 			// Debug:
-			console.log('Confirmation Response Collected:');
-			console.log('interaction.customId:', interaction_ConfirmUnassign.customId);
-			console.log('confirmInteractionActionId', confirmInteractionActionId)
+			if(global.outputDebug_InDepth) {
+				console.log('Confirmation Response Collected:');
+				console.log('actionId:', confirmInteractionActionId)
+			}
 
 			// Perform Action:
 			if (confirmInteractionActionId === 'CONFIRM') {
@@ -156,23 +172,6 @@ module.exports = {
 
 			// Delete the original confirmation message:
 			await interaction_startUnassign.deleteReply().catch((e) => {console.log('ERROR',e)});
-
-			// Edit the 'listed event' under response from /my-events:
-			// console.log('{!} Trying to edit:')
-			// const referencedMessage = await interaction_startUnassign.channel.messages.fetch(interaction_startUnassign.message.reference.messageId);
-			// console.log('Fetched:')
-			// console.log(referencedMessage)
-			// console.log('------------------')
-			// await referencedMessage.edit({
-			// 	embeds: [
-			// 		new EmbedBuilder()
-			// 			.setColor(global.colors.warning)
-			// 			.setTitle('🗑️ Event Removed')
-			// 			.setDescription('You have unassigned yourself from this event!')
-			// 	],
-			// 	components: [],
-			// 	flags: MessageFlags.Ephemeral
-			// }).catch((e) => {console.log('ERROR',e)});
 			
 			// Schedule response message deletion:
 			setTimeout(() => {
