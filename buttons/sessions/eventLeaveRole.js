@@ -38,7 +38,7 @@ module.exports = {
 			// Unknown:
 			return 'Unknown'
 		}
-		// If user is already unassigned from this event:
+		// If user not assigned this event:
 		if (usersRoleName() === 'Unknown') {
 			// Send Error Message:
 			await interaction_startUnassign.reply({
