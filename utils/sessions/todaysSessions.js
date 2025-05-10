@@ -38,7 +38,10 @@ function generateTimestamp(hourOfDay = 10) {
     let calcTimeDifference = function(eventTimestamp) {
         const eventUTCDate = eventTimestamp * 1000;
         const nowUTCDate = new Date().getTime();
-        return (eventUTCDate - nowUTCDate) / 1000 / 60
+        const secondsDifference = (eventUTCDate - nowUTCDate) / 1000;
+        const minuetsDifference = (secondsDifference / 60);
+        const hoursDifference = (minuetsDifference / 60);
+        return `Hrs: ${hoursDifference} Mins: ${minuetsDifference}`
     }
     console.log(`Event Date: ${dateUTC.toLocaleString("en-US", { timeZone: "America/Chicago" })}`)
     console.log(`Time Difference: ${Math.floor(calcTimeDifference(dateUTC))}`)
