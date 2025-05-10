@@ -132,6 +132,21 @@ async function getSession(sessionId) {
 	return sessions[sessionId];
 }
 
+// Calculate time difference from session date:
+async function calculateSessionTimeDifference(sessionTimestamp) {
+	const sessionUTCDate = sessionTimestamp * 1000;
+	const nowUTCDate = new Date().getTime();
+	const secondsDifference = (sessionUTCDate - nowUTCDate) / 1000;
+	const minuetsDifference = (secondsDifference / 60);
+	const hoursDifference = (minuetsDifference / 60);
+	const daysDifference = (minuetsDifference / 24);
+	return {
+		seconds: secondsDifference,
+		hours: hoursDifference,
+		days: daysDifference,
+	}
+}
+
 // Fully refresh an event embed by msgId:
 async function refreshEventMessage(sessionId) {
 	// Get session data:
