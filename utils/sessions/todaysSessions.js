@@ -44,7 +44,7 @@ function generateTimestamp(hourOfDay = 10) {
         return `Hrs: ${hoursDifference} Mins: ${minuetsDifference}`
     }
     console.log(`Event Date: ${dateUTC.toLocaleString("en-US", { timeZone: "America/Chicago" })}`)
-    console.log(`Time Difference:`, calcTimeDifference(dateUTC))
+    console.log(`Time Difference:`, calcTimeDifference(dateUTC.getTime() / 1000))
     console.log('----------')
 
 
