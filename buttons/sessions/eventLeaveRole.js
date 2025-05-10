@@ -46,7 +46,8 @@ module.exports = {
 					new EmbedBuilder()
 						.setColor(global.colors.warning)
 						.setTitle('❗️ - Uh oh!')
-						.setDescription(`It looks like you're not assigned to this event! Please use`, '`/my-events`', `to view events you're currently signed up for.`)
+						.setDescription(`It looks like you're not assigned to this event.\n\nYou can use the **\`/my-events\`** command to view the events you're currently signed up for.`)
+
 
 				],
             	flags: MessageFlags.Ephemeral
