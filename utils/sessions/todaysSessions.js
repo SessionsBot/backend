@@ -16,13 +16,21 @@ function generateId() {
 }
 
 // Generate Timestamp:
-function generateTimestamp(hourOfDay) {
+function generateTimestamp(hourOfDay = 10) {
+	// Get current date in America/Chicago
 	const now = new Date();
-	const eventDate = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
-    eventDate.setDate(eventDate.getDate() + 1)
-	eventDate.setHours(hourOfDay || 7, 30, 0, 0);
-	return Math.floor(eventDate.getTime() / 1000);
+	const chicagoTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+
+	// Create tomorrow's date in Chicago time
+	chicagoTime.setDate(chicagoTime.getDate() + 1);
+	chicagoTime.setHours(hourOfDay, 30, 0, 0); // 10:30 AM CST/CDT
+
+	// Now convert that date to UTC timestamp (in seconds)
+	const utcTimestamp = Math.floor(chicagoTime.getTime() / 1000);
+
+	return utcTimestamp;
 }
+
 
 // Clear Existing Sessions:
 async function clearExistingSessions() {
