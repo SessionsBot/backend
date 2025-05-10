@@ -35,7 +35,7 @@ function generateTimestamp(hourOfDay = 10) {
 	dateUTC.setUTCHours(hourOfDay + timezoneOffsetHours, 30, 0, 0); // X:30 CST/CDT in UTC
 
     // Debug:
-    let calcTimeDifference = await function(eventTimestamp) {
+    let calcTimeDifference = function(eventTimestamp) {
         const eventUTCDate = eventTimestamp * 1000;
         const nowUTCDate = new Date().getTime();
         const secondsDifference = (eventUTCDate - nowUTCDate) / 1000;
@@ -44,7 +44,7 @@ function generateTimestamp(hourOfDay = 10) {
         return `Hrs: ${hoursDifference} Mins: ${minuetsDifference}`
     }
     console.log(`Event Date: ${dateUTC.toLocaleString("en-US", { timeZone: "America/Chicago" })}`)
-    console.log(`Time Difference: ${Math.floor(calcTimeDifference(dateUTC))}`)
+    console.log(`Time Difference:`, calcTimeDifference(dateUTC))
     console.log('----------')
 
 
