@@ -21,22 +21,21 @@ function generateTimestamp(hourOfDay = 10) {
 	const now = new Date();
 
 	// Create tomorrow's date in CST/CDT using UTC offsets
-	const tomorrowUTC = new Date(now);
-	tomorrowUTC.setUTCDate(now.getUTCDate() + 1);
-	tomorrowUTC.setUTCHours(0, 0, 0, 0); // Midnight UTC
+	const dateUTC = new Date(now);
+	// dateUTC.setUTCDate(now.getUTCDate() + 1); // Add 1 Day
+	dateUTC.setUTCHours(0, 0, 0, 0); // Midnight UTC
 
 	// Calculate current CST/CDT offset in hours
-	const chicagoOffsetMinutes = new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false, hour: "2-digit", minute: "2-digit" });
-	const [localHour, localMinute] = chicagoOffsetMinutes.split(':').map(Number);
 	const localTime = new Date();
 	const chicagoTime = new Date(localTime.toLocaleString("en-US", { timeZone: "America/Chicago" }));
 	const timezoneOffsetMs = localTime.getTime() - chicagoTime.getTime();
 	const timezoneOffsetHours = timezoneOffsetMs / (1000 * 60 * 60);
 
 	// Set desired time in UTC (CST/CDT + offset)
-	tomorrowUTC.setUTCHours(hourOfDay + timezoneOffsetHours, 30, 0, 0); // X:30 CST/CDT in UTC
+	dateUTC.setUTCHours(hourOfDay + timezoneOffsetHours, 30, 0, 0); // X:30 CST/CDT in UTC
 
-	return Math.floor(tomorrowUTC.getTime() / 1000);
+    // Return timestamp:
+	return Math.floor(dateUTC.getTime() / 1000);
 }
 
 
