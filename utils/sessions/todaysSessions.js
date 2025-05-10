@@ -17,19 +17,28 @@ function generateId() {
 
 // Generate Timestamp:
 function generateTimestamp(hourOfDay = 10) {
-	// Get current date in America/Chicago
+	// Get current time in UTC
 	const now = new Date();
-	const chicagoTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
 
-	// Create tomorrow's date in Chicago time
-	chicagoTime.setDate(chicagoTime.getDate() + 1);
-	chicagoTime.setHours(hourOfDay, 30, 0, 0); // 10:30 AM CST/CDT
+	// Create tomorrow's date in CST/CDT using UTC offsets
+	const tomorrowUTC = new Date(now);
+	tomorrowUTC.setUTCDate(now.getUTCDate() + 1);
+	tomorrowUTC.setUTCHours(0, 0, 0, 0); // Midnight UTC
 
-	// Now convert that date to UTC timestamp (in seconds)
-	const utcTimestamp = Math.floor(chicagoTime.getTime() / 1000);
+	// Calculate current CST/CDT offset in hours
+	const chicagoOffsetMinutes = new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false, hour: "2-digit", minute: "2-digit" });
+	const [localHour, localMinute] = chicagoOffsetMinutes.split(':').map(Number);
+	const localTime = new Date();
+	const chicagoTime = new Date(localTime.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+	const timezoneOffsetMs = localTime.getTime() - chicagoTime.getTime();
+	const timezoneOffsetHours = timezoneOffsetMs / (1000 * 60 * 60);
 
-	return utcTimestamp;
+	// Set desired time in UTC (CST/CDT + offset)
+	tomorrowUTC.setUTCHours(hourOfDay + timezoneOffsetHours, 30, 0, 0); // X:30 CST/CDT in UTC
+
+	return Math.floor(tomorrowUTC.getTime() / 1000);
 }
+
 
 
 // Clear Existing Sessions:
