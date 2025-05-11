@@ -8,7 +8,6 @@ const {
 } = require('discord.js'); // Import Discord.js
 const global = require('../../global.js') // Import Global Variables
 const sessionManager = require('./sessionManager'); // Import Session Manager
-const sessionManager = require('./sessionManager');
 
 const sessionAnnounceChannel = await client.channels.fetch(global.event_channelId);
 
