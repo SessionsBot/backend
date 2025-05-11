@@ -8,13 +8,13 @@ async function startSchedule() {
     };
 
     // Schedule the function to run every day at 10:00 AM CST
-    cron.schedule('30 1 * * *', myScheduledFunction, {
+    cron.schedule('02 2 * * *', myScheduledFunction, {
         scheduled: true,
         timezone: "America/Chicago" // Make sure it's using the correct time zone (CST)
     });
 
     // Call the function immediately when the bot starts up
-    await myScheduledFunction();
+    myScheduledFunction();
 
     console.log('Scheduler started!');
 
