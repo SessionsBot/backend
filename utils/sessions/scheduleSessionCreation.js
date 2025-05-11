@@ -9,7 +9,6 @@ const {
 const global = require('../../global.js') // Import Global Variables
 const sessionManager = require('./sessionManager'); // Import Session Manager
 
-const sessionAnnounceChannel = await client.channels.fetch(global.event_channelId);
 
 // Clear Existing Sessions:
 async function clearExistingSessions() {
@@ -19,6 +18,7 @@ async function clearExistingSessions() {
     if(global.outputDebug_InDepth) {console.log('[✅] Complete!')}
 
     // Delete Previous Event Messages:
+    const sessionAnnounceChannel = await client.channels.fetch(global.event_channelId);
     sessionAnnounceChannel.bulkDelete(100)
         .then(messages => {
             if(global.outputDebug_General) {console.log(`[⚙️] Deleted ${messages.size} messages from ${sessionAnnounceChannel.name}`)}
@@ -28,6 +28,8 @@ async function clearExistingSessions() {
 
 // Create New Sessions:
 async function createEvents(times = [10, 14, 19]) {
+    // Get announce channel:
+    const sessionAnnounceChannel = await client.channels.fetch(global.event_channelId);
     // Debug:
     if(global.outputDebug_General) {console.log(`[⚙️] Adding today's sessions...`)}
 
