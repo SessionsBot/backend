@@ -154,11 +154,38 @@ async function refreshEventMessage(sessionId) {
 	const sessionData = await getSession(sessionId)
 	if(!sessionData) {return console.warn(`Couldn't get session data for message refresh!`)}
 
+	// Roles Data:
+	const eventHostTaken = (sessionData['host'] != null);
+	const eventTrainersCount = sessionData['trainers'].length;
+	const trainersFull = (eventTrainersCount >= 3);
+	const eventFull = (trainersFull && eventHostTaken)
+
 	// Fetch original message:
 	const channel = await client.channels.fetch(sessionData['channelId']);
 	const message = await channel.messages.fetch(sessionData['messageId']);
 
-	// Create updated embed
+	// Create updated role feilds:
+	let hostFieldValue = function(){
+		if(eventHostTaken){
+			// Host:
+			return `> <@${sessionData['host']}> \n*(1/1)*`
+		} else {
+			// No Host:
+			return '*`Available`* \n*(0/1)*'
+		}
+	}
+	
+	let trainersFieldValue = function(){
+		if(trainersFull){
+			// Trainers Full:
+			return sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(3/3)*`
+		} else {
+			// Trainers Available:
+			return sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + '\n*`Available`*' + `\n*(${sessionData['trainers'].length}/3)*`
+		}
+	}
+
+	// Create updated embed:
 	const updatedEmbed = new EmbedBuilder()
 		.setColor('#9BE75B')
 		.setTitle('📋 - Training Session')
@@ -175,16 +202,12 @@ async function refreshEventMessage(sessionId) {
 		.addFields(
 			{ 
 				name: '🎙️ Host:', 
-				value: sessionData['host'] 
-				  ? `> <@${sessionData['host']}>\n*(1/1)*` 
-				  : '*`Available`* \n *(0/1)*', 
+				value: hostFieldValue(),
 				inline: true 
 			  },
 			  { 
 				name: '🤝 Trainers:', 
-				value: sessionData['trainers'] && sessionData['trainers'].length > 0 
-				  ? sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(${sessionData['trainers'].length}/3)*` 
-				  : '*`Available`* \n *(0/3)*', 
+				value: trainersFieldValue(), 
 				inline: true 
 			  }
 			  
@@ -195,18 +218,31 @@ async function refreshEventMessage(sessionId) {
 		)
 		.setFooter({ text: `ID: ${sessionId.toUpperCase()}`, iconURL: client.user.displayAvatarURL() });
 	
-	const buttons = new ActionRowBuilder().addComponents(
-		new ButtonBuilder()
-			.setCustomId(`eventSignup:${sessionId}`)
-			.setLabel('📝 Sign Up')
-			.setStyle(ButtonStyle.Success),
-		new ButtonBuilder()
-			.setLabel('🎮 Game Link')
-			.setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
-			.setStyle(ButtonStyle.Link)
-	);
+	// Create Message Buttons:
+	let buttons;
+	if(eventFull) { // Event Full - Hide Signup:
+		buttons = new ActionRowBuilder().addComponents(	
+			new ButtonBuilder()
+				.setLabel('🎮 Game Link')
+				.setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
+				.setStyle(ButtonStyle.Link)
+		);
+	} else { // Event NOT Full - Show Signup:
+		buttons = new ActionRowBuilder().addComponents(
+			new ButtonBuilder()
+				.setCustomId(`eventSignup:${sessionId}`)
+				.setLabel('📝 Sign Up')
+				.setStyle(ButtonStyle.Success),
+			
+			new ButtonBuilder()
+				.setLabel('🎮 Game Link')
+				.setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
+				.setStyle(ButtonStyle.Link)
+		);
+	}
       
 
+	// Send Message:
 	await message.edit({
 		embeds: [updatedEmbed],
 		components: [buttons]

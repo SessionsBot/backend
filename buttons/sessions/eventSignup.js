@@ -34,12 +34,12 @@ module.exports = {
 				embeds: [
 					new EmbedBuilder()
 						.setColor('#eb9234')
-						.setTitle('❗️ Event at Capacity!')
+						.setTitle('❗️ - Event at Capacity!')
 						.addFields( // Spacer
 							{ name: ' ', value: ' ' }
 						)
 						.addFields(
-							{ name: '🧾 Details:', value: ' There are no positions within this event currently available, please check back later! ', inline: true },
+							{ name: '🧾 Details:', value: '` There are no positions within this event currently available, please check back later! `', inline: true },
 						)          
 						.addFields( // Spacer
 							{ name: ' ', value: ' ' }
@@ -48,6 +48,9 @@ module.exports = {
 				],
 				flags: MessageFlags.Ephemeral
 			});
+
+			// Update Original Event Message: (hides sign up button if not already)
+			sessionManager.refreshEventMessage(interactionEventId)
 
 			// Schedule response message deletion:
 			setTimeout(() => {
