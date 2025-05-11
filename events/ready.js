@@ -2,6 +2,7 @@ const { Events } = require('discord.js');
 const addSessionsModule = require('../utils/sessions/todaysSessions.js');
 
 const global = require('../global.js') // Import Global Variables
+const scheduleTester = require('../utils/sessions/scheduleTest.js'); // Import Schedule Tester
 
 module.exports = {
 	name: Events.ClientReady,
@@ -40,5 +41,8 @@ module.exports = {
 
 		// Assign Fresh Client to Global Variables:
 		global.client = client;
+
+		// Test Schedule:
+		scheduleTester.startSchedule()
 	},
 };
