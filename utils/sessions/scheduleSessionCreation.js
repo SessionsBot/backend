@@ -18,7 +18,7 @@ async function clearExistingSessions() {
     if(global.outputDebug_InDepth) {console.log('[✅] Complete!')}
 
     // Delete Previous Event Messages:
-    const sessionAnnounceChannel = await client.channels.fetch(global.event_channelId);
+    const sessionAnnounceChannel = await global.client.channels.fetch(global.event_channelId);
     sessionAnnounceChannel.bulkDelete(100)
         .then(messages => {
             if(global.outputDebug_General) {console.log(`[⚙️] Deleted ${messages.size} messages from ${sessionAnnounceChannel.name}`)}
@@ -29,7 +29,7 @@ async function clearExistingSessions() {
 // Create New Sessions:
 async function createEvents(times = [10, 14, 19]) {
     // Get announce channel:
-    const sessionAnnounceChannel = await client.channels.fetch(global.event_channelId);
+    const sessionAnnounceChannel = await global.client.channels.fetch(global.event_channelId);
     // Debug:
     if(global.outputDebug_General) {console.log(`[⚙️] Adding today's sessions...`)}
 
@@ -84,7 +84,7 @@ async function createEvents(times = [10, 14, 19]) {
     // Send sessions in announcement channel:
     for (const [sessionId, session] of Object.entries(sessions)) {
         // Send each event as embed msg:
-        const sentMessage = await channel.send(sessionManager.getEventEmbed(sessionId));
+        const sentMessage = await sessionAnnounceChannel.send(sessionManager.getEventEmbed(sessionId));
 
         // Update the session data with message/channel ids
         await sessionManager.saveSession(sessionId, {
@@ -104,11 +104,16 @@ async function startSchedule() {
         const cron = require('node-cron');
         const global = require('../../global.js')
 
-        // Schedule the function to run every day at 10:00 AM CST
-        cron.schedule('15 3 * * *', createEvents(10, 14, 19), {
-            scheduled: true,
-            timezone: "America/Chicago" // Make sure it's using the correct time zone (CST)
-        });
+        // Schedule the function to run every day at 10:15 AM CST
+        cron.schedule('15 10 * * *', // MM HH (time to excecute)
+            () => { // function to excecute
+                createEvents(10, 14, 19);
+            },
+            { // schedule options
+                scheduled: true,
+                timezone: 'America/Chicago' // Ensures it's 10:15 AM CST/CDT
+            }
+        );
 
         // Call the function immediately when the bot starts up
         createEvents(10, 14, 19);

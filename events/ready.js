@@ -7,6 +7,8 @@ module.exports = {
 	name: Events.ClientReady,
 	once: true,
 	async execute(client) {
+		// Assign Fresh Client to Global Variables:
+		global.client = client;
 
 		// Get Startup Timestamp:
 		const startupTimestamp = new Date(client.readyTimestamp);
@@ -26,9 +28,6 @@ module.exports = {
 			console.log(`[🪪] Client ID: ${client.user.id}`);
 			console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
 		}
-
-		// Assign Fresh Client to Global Variables:
-		global.client = client;
 
 		// Start Session Schedule:
 		sessionScheduleManager.startSchedule()
