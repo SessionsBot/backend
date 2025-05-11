@@ -29,6 +29,9 @@ module.exports = {
 			console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
 		}
 
+		// Set Bot User's Activity:
+		client.user.setActivity('Training Sessions!', { type: ActivityType.Watching });
+
 		// Start Session Schedule:
 		sessionScheduleManager.startSchedule()
 	},
