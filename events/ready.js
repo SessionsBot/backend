@@ -1,5 +1,4 @@
 const { Events } = require('discord.js');
-const addSessionsModule = require('../utils/sessions/todaysSessions.js');
 
 const global = require('../global.js') // Import Global Variables
 const sessionScheduleManager = require('../utils/sessions/scheduleSessionCreation.js'); // Import Session Schedule:
