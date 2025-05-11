@@ -105,7 +105,7 @@ async function startSchedule() {
         const global = require('../../global.js')
 
         // Schedule the function to run every day at 10:15 AM CST
-        cron.schedule('25 10 * * *', // MM HH (time to excecute)
+        cron.schedule('35 10 * * *', // MM HH (time to excecute)
             () => { // function to excecute
                 createEvents();
             },
@@ -116,7 +116,7 @@ async function startSchedule() {
         );
 
         // Call the function immediately when the bot starts up
-        createEvents(10, 14, 19);
+        createEvents();
 
         // Debug
         if(global.outputDebug_General) {
