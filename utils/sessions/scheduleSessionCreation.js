@@ -116,8 +116,8 @@ async function startSchedule() {
             }
         );
 
-        // Call the function immediately when the bot starts up
-        // createEvents();
+        // Call the function on bot start up:
+        createEvents();
 
         // Debug
         if(global.outputDebug_General) {
