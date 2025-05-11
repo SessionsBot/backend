@@ -8,7 +8,7 @@ async function startSchedule() {
     };
 
     // Schedule the function to run every day at 10:00 AM CST
-    cron.schedule('02 2 * * *', myScheduledFunction, {
+    cron.schedule('10 2 * * *', myScheduledFunction, {
         scheduled: true,
         timezone: "America/Chicago" // Make sure it's using the correct time zone (CST)
     });
