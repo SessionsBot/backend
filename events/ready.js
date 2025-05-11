@@ -1,4 +1,4 @@
-const { Events } = require('discord.js');
+const { Events, ActivityType } = require('discord.js');
 
 const global = require('../global.js') // Import Global Variables
 const sessionScheduleManager = require('../utils/sessions/scheduleSessionCreation.js'); // Import Session Schedule:
