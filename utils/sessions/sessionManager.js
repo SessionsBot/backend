@@ -192,7 +192,7 @@ async function refreshEventMessage(sessionId) {
 		.addFields( 
 			{ name: ' ', value: ' ' }, // Spacer
 			{ name: '📆 Date:', value: `<t:${sessionData['date']}:F>\n(<t:${sessionData['date']}:R>)`, inline: true },
-			{ name: '📍 Location:', value: `\u3164 [Event Game](${sessionData['location']})`, inline: true },
+			{ name: '📍 Location:', value: `\u3164[Event Game](${sessionData['location']})`, inline: true },
 			{ name: ' ', value: ' ' }, // Spacer
 			{ 
 				name: '🎙️ Host:', 
