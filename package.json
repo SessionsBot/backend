@@ -4,9 +4,7 @@
     "chalk": "^5.4.1",
     "discord.js": "^14.18.0",
     "dotenv": "^16.5.0",
-    "fs": "^0.0.1-security",
-    "node-cron": "^3.0.3"
-
+    "fs": "^0.0.1-security"
   },
   "scripts": {
     "start": "node index.js"
