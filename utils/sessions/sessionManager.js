@@ -147,22 +147,34 @@ async function calculateSessionTimeDifference(sessionTimestamp) {
 	}
 }
 
-// Fully refresh an event embed by msgId:
+// Refresh an event announcement msg by sessionId:
 async function refreshEventMessage(sessionId) {
 	// Get session data:
 	const client = global.client
 	const sessionData = await getSession(sessionId)
 	if(!sessionData) {return console.warn(`Couldn't get session data for message refresh!`)}
 
+	// Fetch original message:
+	const channel = await client.channels.fetch(sessionData['channelId']);
+	const message = await channel.messages.fetch(sessionData['messageId']);
+
+	// Send Message:
+	await message.edit(await getEventEmbed(sessionId));
+
+}
+
+// Returns an event embed using data from sessionId:
+async function getEventEmbed(sessionId) {
+	// Get session data:
+	const client = global.client
+	const sessionData = await getSession(sessionId)
+	if(!sessionData) {return console.warn(`Couldn't get session data for embed!`)}
+
 	// Roles Data:
 	const eventHostTaken = (sessionData['host'] != null);
 	const eventTrainersCount = sessionData['trainers'].length;
 	const trainersFull = (eventTrainersCount >= 3);
 	const eventFull = (trainersFull && eventHostTaken)
-
-	// Fetch original message:
-	const channel = await client.channels.fetch(sessionData['channelId']);
-	const message = await channel.messages.fetch(sessionData['messageId']);
 
 	// Create updated role feilds:
 	let hostFieldValue = function(){
@@ -187,7 +199,7 @@ async function refreshEventMessage(sessionId) {
 
 	// Create updated embed:
 	const updatedEmbed = new EmbedBuilder()
-		.setColor('#9BE75B')
+		.setColor(global.colors.success)
 		.setTitle('📋 - Training Session')
 		.addFields( 
 			{ name: ' ', value: ' ' }, // Spacer
@@ -230,13 +242,12 @@ async function refreshEventMessage(sessionId) {
 		);
 	}
       
-
-	// Send Message:
-	await message.edit({
+	// Return message content:
+	return eventMessagaContent = {
 		embeds: [updatedEmbed],
-		components: [buttons]
-	});
-
+		components: [buttons],
+		content: `<@&${global.event_mentionRoleId}>`
+	};
 }
 
 // Module Exports:
