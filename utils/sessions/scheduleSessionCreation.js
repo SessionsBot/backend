@@ -84,7 +84,8 @@ async function createEvents(times = [10, 14, 19]) {
     // Send sessions in announcement channel:
     for (const [sessionId, session] of Object.entries(sessions)) {
         // Send each event as embed msg:
-        const sentMessage = await sessionAnnounceChannel.send(sessionManager.getEventEmbed(sessionId));
+        const messageContents = await sessionManager.getEventEmbed(sessionId);
+        const sentMessage = await sessionAnnounceChannel.send(messageContents);
 
         // Update the session data with message/channel ids
         await sessionManager.saveSession(sessionId, {
