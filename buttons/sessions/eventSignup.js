@@ -54,7 +54,7 @@ module.exports = {
 
 			// Schedule response message deletion:
 			setTimeout(() => {
-				selectInteraction.deleteReply().catch(() => {});
+				interaction.deleteReply().catch(() => {});
 			}, 15_000);
 
 			return // Cancel excecution
