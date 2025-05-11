@@ -193,7 +193,7 @@ async function getEventEmbed(sessionId) {
 			return sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(3/3)*`
 		} else {
 			// Trainers Available:
-			return '*`Available`* \n' + sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(${sessionData['trainers'].length}/3)*`
+			return sessionData['trainers'].length >= 1 ? '*`Available`* \n' + sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(${sessionData['trainers'].length}/3)*` : '*`Available`* \n' + `*(${sessionData['trainers'].length}/3)*`
 		}
 	}
 
