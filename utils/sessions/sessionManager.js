@@ -174,14 +174,14 @@ async function refreshEventMessage(sessionId) {
 			return '*`Available`* \n*(0/1)*'
 		}
 	}
-	
+
 	let trainersFieldValue = function(){
 		if(trainersFull){
 			// Trainers Full:
 			return sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(3/3)*`
 		} else {
 			// Trainers Available:
-			return sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + '\n*`Available`*' + `\n*(${sessionData['trainers'].length}/3)*`
+			return '*`Available`* \n' + sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(${sessionData['trainers'].length}/3)*`
 		}
 	}
 
@@ -189,32 +189,21 @@ async function refreshEventMessage(sessionId) {
 	const updatedEmbed = new EmbedBuilder()
 		.setColor('#9BE75B')
 		.setTitle('📋 - Training Session')
-		.addFields( // Spacer
-			{ name: ' ', value: ' ' }
-		)
-		.addFields(
+		.addFields( 
+			{ name: ' ', value: ' ' }, // Spacer
 			{ name: '📆 Date:', value: `<t:${sessionData['date']}:F>\n(<t:${sessionData['date']}:R>)`, inline: true },
-			{ name: '📍 Location:', value: `[Event Game](${sessionData['location']})`, inline: true }
-		)
-		.addFields( // Spacer
-			{ name: ' ', value: ' ' }
-		)
-		.addFields(
+			{ name: '📍 Location:', value: `> [Event Game](${sessionData['location']})`, inline: true },
+			{ name: ' ', value: ' ' }, // Spacer
 			{ 
 				name: '🎙️ Host:', 
 				value: hostFieldValue(),
 				inline: true 
-			  },
-			  { 
+			  }, { 
 				name: '🤝 Trainers:', 
 				value: trainersFieldValue(), 
 				inline: true 
-			  }
-			  
-			  
-		)          
-		.addFields( // Spacer
-			{ name: ' ', value: ' ' }
+			  },
+			{ name: ' ', value: ' ' } // Spacer
 		)
 		.setFooter({ text: `ID: ${sessionId.toUpperCase()}`, iconURL: client.user.displayAvatarURL() });
 	
