@@ -259,5 +259,6 @@ module.exports = {
 	getSession,
 	updateSessionRole,
 	refreshEventMessage,
-	removePlayerFromEventById
+	removePlayerFromEventById,
+	getEventEmbed
 };
