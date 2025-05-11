@@ -184,8 +184,8 @@ async function getEventEmbed(sessionId) {
 	};
 	const trainersFieldValue = () => {
 		return trainersFull
-		? '*`UNAVAILABLE ⛔️`* -' +  `*(${eventTrainersCount}/3)* \n` + sessionData['trainers'].map(id => `> <@${id}>`).join('\n')
-		: '*`AVAILABLE 🟢`* -' +  `*(${eventTrainersCount}/3)* \n` + sessionData['trainers'].map(id => `> <@${id}>`).join('\n')
+		? '*`UNAVAILABLE ⛔️`* -' +  ` *(${eventTrainersCount}/3)* \n` + sessionData['trainers'].map(id => `> <@${id}>`).join('\n')
+		: '*`AVAILABLE 🟢`* -' +  ` *(${eventTrainersCount}/3)* \n` + sessionData['trainers'].map(id => `> <@${id}>`).join('\n')
 	}
 	const spacerField = { name: ' ', value: '----------------------------\n\n' };
 
@@ -197,7 +197,7 @@ async function getEventEmbed(sessionId) {
 			spacerField, // Spacer
 			{ name: '**📆  |  Date:**', value: `<t:${sessionData['date']}:F>\n(<t:${sessionData['date']}:R>)` },
 			spacerField, // Spacer
-			{ name: '**📍|  Location:**', value: `[Event Game](${sessionData['location']})` },
+			{ name: '**📍|  Location:**', value: `[Event Game](${sessionData['location']})`, inline: true },
 			spacerField, // Spacer
 			{ name: '**🎙️ |  Event Host:**', value: hostFieldValue() }, 
 			spacerField, // Spacer
