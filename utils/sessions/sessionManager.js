@@ -192,7 +192,7 @@ async function refreshEventMessage(sessionId) {
 		.addFields( 
 			{ name: ' ', value: ' ' }, // Spacer
 			{ name: '📆 Date:', value: `<t:${sessionData['date']}:F>\n(<t:${sessionData['date']}:R>)`, inline: true },
-			{ name: 'ᅠ', value: 'ᅠ', inline: true }, // blank-looking spacer
+			{ name: '\u3164', value: '\u3164', inline: true}, // INLINE Spacer
 			{ name: ' ', value: ' ' }, // Spacer
 			{ 
 				name: '🎙️ Host:', 
