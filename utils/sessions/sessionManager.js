@@ -243,11 +243,13 @@ async function getEventEmbed(sessionId) {
 	}
       
 	// Return message content:
-	return eventMessagaContent = {
+	eventMessagaContent = {
 		embeds: [updatedEmbed],
 		components: [buttons],
 		content: `<@&${global.event_mentionRoleId}>`
 	};
+
+	return eventMessagaContent
 }
 
 // Module Exports:
