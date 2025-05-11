@@ -163,12 +163,12 @@ async function refreshEventMessage(sessionId) {
 
 }
 
-// Returns an event embed using data from sessionId:
+// [V.2] Returns an event embed using data from sessionId:
 async function getEventEmbed(sessionId) {
 	// Get session data:
 	const client = global.client
 	const sessionData = await getSession(sessionId)
-	if(!sessionData) {return console.warn(`Couldn't get session data for embed!`)}
+	if(!sessionData || Object.keys(sessionData).length === 0) {return console.warn(`Couldn't get session data for embed!`)}
 
 	// Roles Data:
 	const eventHostTaken = (sessionData['host'] != null);
@@ -176,53 +176,46 @@ async function getEventEmbed(sessionId) {
 	const trainersFull = (eventTrainersCount >= 3);
 	const eventFull = (trainersFull && eventHostTaken)
 
-	// Create updated role feilds:
-	let hostFieldValue = function(){
-		if(eventHostTaken){
-			// Host:
-			return `> <@${sessionData['host']}> \n*(1/1)*`
-		} else {
-			// No Host:
-			return '*`Available`* \n*(0/1)*'
-		}
+	// Create updated feilds:
+	const hostFieldValue = () => {
+  		return eventHostTaken
+    	? '*`UNAVAILABLE ⛔️`* - *(1/1)* \n' + `> <@${sessionData['host']}>`
+    	: '*`AVAILABLE 🟢`* - *(0/1)*';
+	};
+	const trainersFieldValue = () => {
+		return trainersFull
+		? '*`UNAVAILABLE ⛔️`* -' +  `*(${eventTrainersCount}/3)* \n` + sessionData['trainers'].map(id => `> <@${id}>`).join('\n')
+		: '*`AVAILABLE 🟢`* -' +  `*(${eventTrainersCount}/3)* \n` + sessionData['trainers'].map(id => `> <@${id}>`).join('\n')
 	}
-
-	let trainersFieldValue = function(){
-		if(trainersFull){
-			// Trainers Full:
-			return sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(3/3)*`
-		} else {
-			// Trainers Available:
-			return sessionData['trainers'].length >= 1 ? '*`Available`* \n' + sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(${sessionData['trainers'].length}/3)*` : '*`Available`* \n' + `*(${sessionData['trainers'].length}/3)*`
-		}
-	}
+	const spacerField = { name: ' ', value: '----------------------------\n\n' };
 
 	// Create updated embed:
 	const updatedEmbed = new EmbedBuilder()
 		.setColor(global.colors.success)
-		.setTitle('📋 - Training Session')
+		.setTitle('**📋 Training Session 📋**')
 		.addFields( 
-			{ name: ' ', value: ' ' }, // Spacer
-			{ name: '📆 Date:', value: `<t:${sessionData['date']}:F>\n(<t:${sessionData['date']}:R>)`, inline: true },
-			{ name: '📍 Location:', value: `[Event Game](${sessionData['location']})`, inline: true },
-			{ name: ' ', value: ' ' }, // Spacer
-			{ 
-				name: '🎙️ Host:', 
-				value: hostFieldValue(),
-				inline: true 
-			  }, { 
-				name: '🤝 Trainers:', 
-				value: trainersFieldValue(), 
-				inline: true 
-			  },
-			{ name: ' ', value: ' ' } // Spacer
+			spacerField, // Spacer
+			{ name: '**📆  |  Date:**', value: `<t:${sessionData['date']}:F>\n(<t:${sessionData['date']}:R>)` },
+			spacerField, // Spacer
+			{ name: '**📍|  Location:**', value: `[Event Game](${sessionData['location']})` },
+			spacerField, // Spacer
+			{ name: '**🎙️ |  Event Host:**', value: hostFieldValue() }, 
+			spacerField, // Spacer
+			{ name: '**🤝  |  Trainers:**', value: trainersFieldValue() }, 
+			spacerField, // Spacer
 		)
-		.setFooter({ text: `ID: ${sessionId.toUpperCase()}`, iconURL: client.user.displayAvatarURL() });
+		.setFooter({ text: `id: ${sessionId.toUpperCase()}`, iconURL: client.user.displayAvatarURL() });
 	
 	// Create Message Buttons:
 	let buttons;
 	if(eventFull) { // Event Full - Hide Signup:
 		buttons = new ActionRowBuilder().addComponents(	
+			new ButtonBuilder()
+				.setCustomId(`eventSignup:${sessionId}`)
+				.setLabel('❌ Event Full')
+				.setStyle(ButtonStyle.Success)
+				.setDisabled(true),
+			
 			new ButtonBuilder()
 				.setLabel('🎮 Game Link')
 				.setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
@@ -243,13 +236,11 @@ async function getEventEmbed(sessionId) {
 	}
       
 	// Return message content:
-	eventMessagaContent = {
+	return {
 		embeds: [updatedEmbed],
 		components: [buttons],
 		content: `<@&${global.event_mentionRoleId}>`
 	};
-
-	return eventMessagaContent
 }
 
 // Module Exports:
