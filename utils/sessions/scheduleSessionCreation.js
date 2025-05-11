@@ -107,7 +107,7 @@ async function startSchedule() {
         // Schedule the function to run every day at 10:15 AM CST
         cron.schedule('15 10 * * *', // MM HH (time to excecute)
             () => { // function to excecute
-                createEvents(10, 14, 19);
+                createEvents();
             },
             { // schedule options
                 scheduled: true,
