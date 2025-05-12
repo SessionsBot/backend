@@ -179,12 +179,12 @@ async function getEventEmbed(sessionId) {
 	// Create updated feilds:
 	const hostFieldValue = () => {
   		return eventHostTaken
-    	? '*`UNAVAILABLE ⛔️`* - *(1/1)* \n' + `> <@${sessionData['host']}>`
+    	? '*`FULL ⛔️`* - *(1/1)* \n' + `> <@${sessionData['host']}>`
     	: '*`AVAILABLE 🟢`* - *(0/1)*';
 	};
 	const trainersFieldValue = () => {
 		return trainersFull
-		? '*`UNAVAILABLE ⛔️`* -' +  ` *(${eventTrainersCount}/3)* \n` + sessionData['trainers'].map(id => `> <@${id}>`).join('\n')
+		? '*`FULL ⛔️`* -' +  ` *(${eventTrainersCount}/3)* \n` + sessionData['trainers'].map(id => `> <@${id}>`).join('\n')
 		: '*`AVAILABLE 🟢`* -' +  ` *(${eventTrainersCount}/3)* \n` + sessionData['trainers'].map(id => `> <@${id}>`).join('\n')
 	}
 	const spacerField = { name: ' ', value: '----------------------------\n\n' };
