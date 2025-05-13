@@ -25,6 +25,7 @@ module.exports = {
 		// Startup Debug:
 		if(global.outputDebug_General) {
 			console.log(`[✅] READY! Logged in as @${client.user.tag}`);
+			console.log(`[📈] Status Page: https://stats.uptimerobot.com/3eCOrtiF8H`)
 			console.log(`[🪪] Client ID: ${client.user.id}`);
 			console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
 		}

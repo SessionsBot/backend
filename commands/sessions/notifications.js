@@ -20,7 +20,7 @@ const data = new SlashCommandBuilder()
     .addBooleanOption(option =>
 			option
 				.setName('only-upcoming')
-				.setDescription(`[TRUE] = Only notifies events you're assigned  |  [FALSE] = Sends all event notifications`)
+				.setDescription(`[TRUE] = Only notifies events you're assigned  |  [FALSE] = Sends ALL event notifications`)
 				.setRequired(true))
 
 async function execute(interaction) {
