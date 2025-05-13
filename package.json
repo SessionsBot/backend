@@ -4,6 +4,7 @@
     "chalk": "^5.4.1",
     "discord.js": "^14.18.0",
     "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "fs": "^0.0.1-security",
     "node-cron": "^4.0.0"
   },
