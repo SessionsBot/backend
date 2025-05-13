@@ -100,3 +100,18 @@ if(debugFileLoader) {console.log(`[✅] Loaded ${eventFiles.length} event file(s
 // ------- [ Login (via Token): ] -------
 
 client.login(botToken);
+
+// ------- [ KEEP ALIVE! (via Web Service): ] -------
+
+// HTTP server:
+const express = require('express');
+const app = express();
+
+// Respond:
+app.get('/', (req, res) => res.send('Bot is alive!'));
+
+// Initialize:
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🌐 Keep-alive server running on port ${PORT}`);
+});
