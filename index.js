@@ -121,7 +121,7 @@ app.get('/sessions/data', async (req, res) => {
 	if(!allSessionsData){ res.status(500).json({response: '"allSessionsData" NOT FOUND!', code: 500}); return }
 
 	// Data Found - Send JSON:
-	res.status(200).json({data: allSessionsData, code: 200});
+	res.status(200).send(JSON.stringify({ data: allSessionsData, code: 200 }, null, 2));
 })
 
 // Initialize:
