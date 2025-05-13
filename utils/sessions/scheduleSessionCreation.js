@@ -121,7 +121,16 @@ async function startSchedule() {
 
         // Debug
         if(global.outputDebug_General) {
-            console.log('[⚙️] Session Scheduler Initiated!');
+            const timestamp = new Date().toLocaleString('en-US', {
+                year: '2-digit',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: 'America/Chicago'
+            });
+            console.log(`[⚙️] Session Scheduler Initiated! - ${timestamp}`);
         }
 
     } catch (error) {

@@ -40,6 +40,24 @@ module.exports = {
 		const eventHostTaken = (requestedSessionData['host'] != null);
 		const eventTrainersCount = requestedSessionData['trainers'].length;
 		const trainersFull = (eventTrainersCount >= 3);
+		const userAlreadyInEvent = requestedSessionData['host'] === interaction.user.id || requestedSessionData['trainers'].includes(interaction.user.id);
+
+		// User already in event:
+		if(userAlreadyInEvent){
+			// alert:
+			interaction.reply({
+				embeds: [
+					new EmbedBuilder()
+					.setColor('#d43f37')
+					.setTitle('❗️ - Already Assigned to Event!')
+					.setDescription('Could not sign up again for this event! To edit your position please use `/my-events`!')
+					.addFields({name: '💼 Current Role', value: 'UNKNOWN'})
+  					.setFooter({ text: `EVENT ID: ${interactionEventId}`, iconURL: interaction.client.user.displayAvatarURL() })
+				],
+				flags: MessageFlags.Ephemeral
+			})
+			return // cancel excecution
+		}
 
 		// No positions availble:
 		if(eventHostTaken && trainersFull){
