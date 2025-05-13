@@ -15,16 +15,22 @@ const data = new SlashCommandBuilder()
     .addBooleanOption(option =>
 			option
 				.setName('enabled')
-				.setDescription('TRUE = Enables Event Notifications, FALSE = Disables Event Notifications ')
+				.setDescription('[TRUE] = Enables event notifications | [FALSE] = Disables event notifications')
+				.setRequired(true))
+    .addBooleanOption(option =>
+			option
+				.setName('onlyUpcoming')
+				.setDescription(`[TRUE] = Only notifies events you're assigned | [FALSE] = Sends all event notifications`)
 				.setRequired(true))
 
 async function execute(interaction) {
 
     // Get selections:
-    let userChoice = interaction.options.getBoolean('enabled');
+    let userChoice_notificationsEnabled = interaction.options.getBoolean('enabled');
+    let userChoice_onlyUpcoming = interaction.options.getBoolean('onlyUpcoming');
 
     await interaction.reply({
-        content: 'Notification Command Used! | Selection: ' + '`' + userChoice + '`' ,
+        content: 'Notification Command Used! | Selection: ' + '`' + userChoice_notificationsEnabled + '` ' + '`' + userChoice_onlyUpcoming + '`',
         flags: MessageFlags.Ephemeral
     });
 }
