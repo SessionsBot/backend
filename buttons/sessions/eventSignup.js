@@ -44,19 +44,33 @@ module.exports = {
 
 		// User already in event:
 		if(userAlreadyInEvent){
-			// alert:
+			// Get current role:
+			const usersRoleName = function() {
+				// Event Host:
+				if (requestedSessionData['host'] === interaction.user.id) {
+					return 'Event Host'
+				}
+				// Training Crew:
+				if (requestedSessionData['trainers'].includes(interaction.user.id)) {
+					return 'Training Crew'
+				}
+				// Unknown:
+				return 'Unknown'
+			}
+			// Send alert:
 			interaction.reply({
 				embeds: [
 					new EmbedBuilder()
 					.setColor('#d43f37')
-					.setTitle('❗️ - Already Assigned to Event!')
-					.setDescription('Could not sign up again for this event! To edit your position please use `/my-events`!')
-					.addFields({name: '💼 Current Role', value: 'UNKNOWN'})
+					.setTitle('❗️ - Already Assigned Event!')
+					.setDescription('Could not sign up again for this event! To edit your position within this event please use the `/my-events` command!')
+					.addFields({name: '💼 Current Role', value: '`' + usersRoleName() + '`'})
   					.setFooter({ text: `EVENT ID: ${interactionEventId}`, iconURL: interaction.client.user.displayAvatarURL() })
 				],
 				flags: MessageFlags.Ephemeral
 			})
-			return // cancel excecution
+			// Cancel Excecution:
+			return 
 		}
 
 		// No positions availble:
