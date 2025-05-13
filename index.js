@@ -108,7 +108,8 @@ const express = require('express');
 const app = express();
 
 // Respond:
-app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is alive!', code: 200}));
+app.get('/', (req, res) => res.status(200).json({ response: 'Root Directory: ALIVE', code: 200, timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }) }));
+app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is operational!', code: 200, timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }) }));
 
 
 // Initialize:
