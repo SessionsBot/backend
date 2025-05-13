@@ -19,7 +19,12 @@ module.exports = {
 
 		// Get Session Data:
 		const requestedSessionData = await sessionManager.getSession(interactionEventId)
-		if(requestedSessionData === null){return console.warn(`{!} Couldn't find session data!`)}
+		// Confirm Data:
+		if(!requestedSessionData || Object.entries(requestedSessionData).length === 0) {
+			interaction.repl
+			return console.warn(`{!} Couldn't find session data!`)
+		}
+
 
 		// Confirm positions available:
 		const eventHostTaken = (requestedSessionData['host'] != null);

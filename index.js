@@ -108,10 +108,12 @@ const express = require('express');
 const app = express();
 
 // Respond:
-app.get('/', (req, res) => res.send('Bot is alive!'));
+app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is alive!', code: 200}));
+
 
 // Initialize:
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🌐 Keep-alive server running on port ${PORT}`);
 });
+
