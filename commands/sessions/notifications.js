@@ -19,7 +19,7 @@ const data = new SlashCommandBuilder()
 				.setRequired(true))
     .addBooleanOption(option =>
 			option
-				.setName('onlyUpcoming')
+				.setName('only-upcoming')
 				.setDescription(`[TRUE] = Only notifies events you're assigned | [FALSE] = Sends all event notifications`)
 				.setRequired(true))
 
@@ -27,7 +27,7 @@ async function execute(interaction) {
 
     // Get selections:
     let userChoice_notificationsEnabled = interaction.options.getBoolean('enabled');
-    let userChoice_onlyUpcoming = interaction.options.getBoolean('onlyUpcoming');
+    let userChoice_onlyUpcoming = interaction.options.getBoolean('only-upcoming');
 
     await interaction.reply({
         content: 'Notification Command Used! | Selection: ' + '`' + userChoice_notificationsEnabled + '` ' + '`' + userChoice_onlyUpcoming + '`',
