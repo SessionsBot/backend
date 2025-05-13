@@ -101,16 +101,28 @@ if(debugFileLoader) {console.log(`[✅] Loaded ${eventFiles.length} event file(s
 
 client.login(botToken);
 
-// ------- [ KEEP ALIVE! (via Web Service): ] -------
+// ------- [ Web Service (prevents inactivity): ] -------
 
 // HTTP server:
 const express = require('express');
 const app = express();
 
-// Respond:
+// Root/Status Respond:
 app.get('/', (req, res) => res.status(200).json({ response: 'Root Directory: ALIVE', code: 200, timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }) }));
 app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is operational!', code: 200, timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }) }));
 
+// Session Data Fetch:
+app.get('/sessions/data', async (req, res) => {
+
+	// Get Session Data:
+	const allSessionsData = await require('./utils/sessions/sessionManager').readSessions()
+
+	// Data Undefined:
+	if(!allSessionsData){ res.status(500).json({response: '"allSessionsData" NOT FOUND!', code: 500}); return }
+
+	// Data Found - Send JSON:
+	res.status(200).json({data: allSessionsData, code: 200});
+})
 
 // Initialize:
 const PORT = process.env.PORT || 3000;
