@@ -21,7 +21,17 @@ module.exports = {
 		const requestedSessionData = await sessionManager.getSession(interactionEventId)
 		// Confirm Data:
 		if(!requestedSessionData || Object.entries(requestedSessionData).length === 0) {
-			interaction.repl
+			interaction.reply({
+				embeds: [
+					new EmbedBuilder()
+					.setColor('#d43f37')
+					.setTitle('❗️ - Error Occured:')
+					.setDescription('Could not find session data, please contact an administator!')
+					.setTimestamp(new Date())
+  					.setFooter({ text: `EVENT ID: ${interactionEventId}`, iconURL: interaction.client.user.displayAvatarURL() })
+				],
+				flags: MessageFlags.Ephemeral
+			})
 			return console.warn(`{!} Couldn't find session data!`)
 		}
 
