@@ -14,14 +14,14 @@ const data = new SlashCommandBuilder()
     .setContexts(InteractionContextType.Guild)
     .addBooleanOption(option =>
 			option
-				.setName('Enabled')
+				.setName('enabled')
 				.setDescription('TRUE = Enables Event Notifications, FALSE = Disables Event Notifications ')
 				.setRequired(true))
 
 async function execute(interaction) {
 
     // Get selections:
-    let userChoice = interaction.options.getBoolean('Enabled');
+    let userChoice = interaction.options.getBoolean('enabled');
 
     await interaction.reply({
         content: 'Notification Command Used! | Selection: ' + '`' + userChoice + '`' ,
