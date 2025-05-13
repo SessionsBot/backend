@@ -21,17 +21,17 @@ module.exports = {
 		const requestedSessionData = await sessionManager.getSession(interactionEventId)
 		// Confirm Data:
 		if(!requestedSessionData || Object.entries(requestedSessionData).length === 0) {
-			interaction.reply({
-				embeds: [
-					new EmbedBuilder()
-					.setColor('#d43f37')
-					.setTitle('❗️ - Error Occured:')
-					.setDescription('Could not find session data, please contact an administator!')
-					.setTimestamp(new Date())
-  					.setFooter({ text: `EVENT ID: ${interactionEventId}`, iconURL: interaction.client.user.displayAvatarURL() })
-				],
-				flags: MessageFlags.Ephemeral
-			})
+			// await interaction.reply({
+			// 	embeds: [
+			// 		new EmbedBuilder()
+			// 		.setColor('#d43f37')
+			// 		.setTitle('❗️ - Error Occured:')
+			// 		.setDescription('Could not find session data, please contact an administator!')
+			// 		.setTimestamp(new Date())
+  			// 		.setFooter({ text: `EVENT ID: ${interactionEventId}`, iconURL: interaction.client.user.displayAvatarURL() })
+			// 	],
+			// 	flags: MessageFlags.Ephemeral
+			// })
 			return console.warn(`{!} Couldn't find session data!`)
 		}
 
@@ -58,17 +58,27 @@ module.exports = {
 				return 'Unknown'
 			}
 			// Send alert:
-			interaction.reply({
+			await interaction.reply({
 				embeds: [
 					new EmbedBuilder()
 					.setColor('#d43f37')
 					.setTitle('❗️ - Already Assigned Event!')
 					.setDescription('Could not sign up again for this event! To edit your position within this event please use the `/my-events` command!')
 					.addFields({name: '💼 Current Role', value: '`' + usersRoleName() + '`'})
-  					.setFooter({ text: `EVENT ID: ${interactionEventId}`, iconURL: interaction.client.user.displayAvatarURL() })
+  					.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
 				],
 				flags: MessageFlags.Ephemeral
 			})
+
+			// Schedule deletion:
+			setTimeout(async () => {
+				try {
+					await interaction.deleteReply();
+				} catch (err) {
+					console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
+				}
+			}, 15_000);
+
 			// Cancel Excecution:
 			return 
 		}
@@ -100,8 +110,12 @@ module.exports = {
 			sessionManager.refreshEventMessage(interactionEventId)
 
 			// Schedule response message deletion:
-			setTimeout(() => {
-				interaction.deleteReply().catch(() => {});
+			setTimeout(async () => {
+				try {
+					await interaction.deleteReply();
+				} catch (err) {
+					console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
+				}
 			}, 15_000);
 
 			return // Cancel excecution
@@ -212,8 +226,12 @@ module.exports = {
 				}
 				
 				// Schedule response message deletion:
-				setTimeout(() => {
-					selectInteraction.deleteReply().catch(() => {});
+				setTimeout(async () => {
+					try {
+						await selectInteraction.deleteReply();
+					} catch (err) {
+						console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
+					}
 				}, 15_000);
 
 			});
