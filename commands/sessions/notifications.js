@@ -4,10 +4,12 @@ const { // Import Discord.js
     SlashCommandBuilder, 
     MessageFlags,
     SlashCommandBooleanOption,
+    CommandInteraction,
 } = require('discord.js');
 
 const sessionManager = require('../../utils/sessions/sessionManager');
 
+// Register Command:
 const data = new SlashCommandBuilder()
     .setName('notifications')
     .setDescription('Enable or disable upcoming event notifications.')
@@ -23,15 +25,22 @@ const data = new SlashCommandBuilder()
 				.setDescription(`[TRUE] = Only notifies events you're assigned  |  [FALSE] = Sends ALL event notifications`)
 				.setRequired(true))
 
+
+// On Command Excecution:
 async function execute(interaction) {
 
     // Get selections:
     let userChoice_notificationsEnabled = interaction.options.getBoolean('enabled');
     let userChoice_onlyUpcoming = interaction.options.getBoolean('only-upcoming');
 
-    await interaction.reply({
-        content: 'Notification Command Used! | Selection: ' + '`' + userChoice_notificationsEnabled + '` ' + '`' + userChoice_onlyUpcoming + '`',
-        flags: MessageFlags.Ephemeral
+    // DM User:
+    const dmChannel = await interaction.user.createDM(true)
+    const userAcceptsDMs = dmChannel.isSendable()
+
+    console.log('userAcceptsDMs', userAcceptsDMs)
+
+    await dmChannel.send({
+        content: 'Notification Command Used! | Selection: ' + '`' + userChoice_notificationsEnabled + '` ' + '`' + userChoice_onlyUpcoming + '`'
     });
 }
 
