@@ -51,7 +51,7 @@ async function execute(interaction) {
         const separator = new SeparatorBuilder()
 
         const titleText = new TextDisplayBuilder()
-            .setContent('## 📅  My Events:')
+            .setContent('## 📅  Your Events:')
 
         const descText = new TextDisplayBuilder()
             .setContent(`-# Below are the events you're currently signed up for:`)
@@ -59,7 +59,7 @@ async function execute(interaction) {
         // const topTitleSection = new SectionBuilder()
         //     .addTextDisplayComponents(titleText)
 
-        container.setAccentColor(0x9b42f5)
+        container.setAccentColor(0xeb8334)
         container.addTextDisplayComponents(titleText)
         // container.addSeparatorComponents(separator)
         container.addTextDisplayComponents(descText)
