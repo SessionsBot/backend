@@ -57,7 +57,8 @@ async function execute(interaction) {
         if(!userAcceptsDMs) return await sendNonDMableAlert()
 
         // Defer Reply
-        await interaction.deferReply();
+        // await interaction.deferReply();
+        console.log('{i} Not defering. . .')
 
         // Send DM Msg:
         await dmChannel.send({
