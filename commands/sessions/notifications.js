@@ -5,6 +5,7 @@ const { // Import Discord.js
     MessageFlags,
     SlashCommandBooleanOption,
     CommandInteraction,
+    messageLink,
 } = require('discord.js');
 
 const sessionManager = require('../../utils/sessions/sessionManager');
@@ -50,15 +51,24 @@ async function execute(interaction) {
     
     try { // DM User:
         const dmChannel = await interaction.user.createDM(true)
-        const userAcceptsDMs = dmChannel.isSendable()
+        const userAcceptsDMs = await dmChannel.isSendable()
 
         // If Non-DM-able - Return:
         if(!userAcceptsDMs) return await sendNonDMableAlert()
+
+        // Defer Reply
+        await interaction.deferReply();
 
         // Send DM Msg:
         await dmChannel.send({
             content: 'Notification Command Used! | Selection: ' + '`' + userChoice_notificationsEnabled + '` ' + '`' + userChoice_onlyUpcoming + '`'
         });
+
+        // Respond to Command:
+        await interaction.reply({
+            content: `📩 | <@${interaction.user.id}> | Please check your Direct Messages!`,
+            flags: MessageFlags.Ephemeral
+        })
 
     } catch (error) { // Error DMing User:
         // Send Alert:
