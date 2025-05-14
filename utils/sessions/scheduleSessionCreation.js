@@ -12,18 +12,18 @@ const sessionManager = require('./sessionManager'); // Import Session Manager
 
 // Clear Existing Sessions:
 async function clearExistingSessions() {
-    // Erase Session Database:
-    if(global.outputDebug_General) {console.log('[⚙️] Clearing existing sessions...')}
-        await sessionManager.writeSessions({});
-    if(global.outputDebug_InDepth) {console.log('[✅] Complete!')}
-
     // Delete Previous Event Messages:
     const sessionAnnounceChannel = await global.client.channels.fetch(global.event_channelId);
-    sessionAnnounceChannel.bulkDelete(100)
+    await sessionAnnounceChannel.bulkDelete(100)
         .then(messages => {
             if(global.outputDebug_General) {console.log(`[⚙️] Deleted ${messages.size} messages from ${sessionAnnounceChannel.name}`)}
         })
         .catch(console.warn);
+
+    // Erase Session Database:
+    if(global.outputDebug_General) {console.log('[⚙️] Clearing existing sessions...')}
+        await sessionManager.writeSessions({});
+    if(global.outputDebug_InDepth) {console.log('[✅] Complete!')}
 }
 
 // Create New Sessions:
