@@ -58,8 +58,9 @@ async function execute(interaction) {
 
         const confirmButton = new ButtonBuilder()
             .setCustomId('refresh-events-button')
-            .setLabel('✅ Confirm')
+            // .setLabel('Confirm')
             .setStyle(ButtonStyle.Success)
+            .setEmoji('✅')
         
 
         const section1 = new SectionBuilder()
