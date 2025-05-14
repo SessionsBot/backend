@@ -69,7 +69,7 @@ async function execute(interaction) {
         // Send:
         await interaction.reply({
             flags: MessageFlags.IsComponentsV2,
-            components: [section1, seperator, section1]
+            components: [section1]
         })
 
         // Delete:
