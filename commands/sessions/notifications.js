@@ -14,7 +14,7 @@ const global = require('../../global')
 // Register Command:
 const data = new SlashCommandBuilder()
     .setName('event-notifications')
-    .setDescription('Enable or disable upcoming event notifications. You must have DMs enabled to receive the notifications!')
+    .setDescription('Enable or disable upcoming event notifications, You must have DMs enabled to receive the notifications!')
     .setContexts(InteractionContextType.Guild)
     .addBooleanOption(option =>
 			option
