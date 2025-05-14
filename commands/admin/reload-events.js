@@ -46,32 +46,29 @@ async function execute(interaction) {
     // Send Response - V2:
     async function sendResponseV2(){
 
+        // Message Elements:
         const text1 = new TextDisplayBuilder()
-            .setContent('#This is a text component!#')
+            .setContent('#This is a text component!# [1]')
 
         const separator = new SeparatorBuilder()
 
         const text2 = new TextDisplayBuilder()
-            .setContent('`This is a text component!`')
+            .setContent('`This is a text component! [2]`')
 
 
         const confirmButton = new ButtonBuilder()
             .setCustomId('refresh-events-button')
-            // .setLabel('Confirm')
             .setStyle(ButtonStyle.Success)
             .setEmoji('✅')
         
 
         const section1 = new SectionBuilder()
-            .addComponents(text1, text2)
-            .setAccessory(confirmButton);
+            .addTextDisplayComponents(text1, text2)
+            .setButtonAccessory(confirmButton)
 
-        const section2 = new SectionBuilder()
-            .addTextDisplayComponents
-            .addComponents(text2);
 
         const container1 = new ContainerBuilder()
-            .addTextDisplayComponents(text1)
+            .addSectionComponents(section1)
             .addSeparatorComponents(separator)
             .addTextDisplayComponents(text2)
 
