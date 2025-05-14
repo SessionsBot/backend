@@ -13,7 +13,7 @@ const global = require('../../global')
 
 // Register Command:
 const data = new SlashCommandBuilder()
-    .setName('notifications')
+    .setName('event-notifications')
     .setDescription('Enable or disable upcoming event notifications.')
     .setContexts(InteractionContextType.Guild)
     .addBooleanOption(option =>
