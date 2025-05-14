@@ -46,19 +46,39 @@ async function execute(interaction) {
     async function sendResponseV2(){
 
         const text1 = new TextDisplayBuilder()
-        .setContent('#This is a text component!#')
+            .setContent('#This is a text component!#')
 
-        const seperator = new SeparatorBuilder()
+        const seperator = () => {return new SeparatorBuilder()
             .setSpacing(SeparatorSpacingSize.Small)
+        }
 
         const text2 = new TextDisplayBuilder()
-        .setContent('`This is a text component!`')
+            .setContent('`This is a text component!`')
+
+
+        const confirmButton = new ButtonBuilder()
+            .setCustomId('refresh-events-button')
+            .setLabel('✅ Confirm')
+            .setStyle(ButtonStyle.Success)
+        
+
+        const section1 = new SectionBuilder()
+            .addTextDisplayComponents(text1, text2)
+            .setButtonAccessory(confirmButton)
 
         // Send:
         await interaction.reply({
             flags: MessageFlags.IsComponentsV2,
-            components: [text1, seperator, text2]
+            components: [section1, seperator, section1]
         })
+
+        // Delete:
+        setTimeout(async () => {
+            await interaction.deleteReply().then().catch(error => {
+                console.log('Failed to delete reload events interaction reply:');
+                console.log(error)
+            })
+        }, 15_000);
     }
 
    
@@ -71,13 +91,6 @@ async function execute(interaction) {
         console.log('[!] An Error Occured - /reload-events');
         console.log(error);
     }
-
-    setTimeout(async () => {
-        await interaction.deleteReply().then().catch(error => {
-            console.log('Failed to delete reload events interaction reply:');
-            console.log(error)
-        })
-    }, 7000);
     
 }
 
