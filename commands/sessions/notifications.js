@@ -84,7 +84,7 @@ async function execute(interaction) {
             } catch (err) {
                 console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
             }
-        }, 1500)
+        }, 7_000)
 
     } catch (error) { // Error DMing User:
         // Send Alert:
