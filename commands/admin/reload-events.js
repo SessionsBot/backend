@@ -47,26 +47,50 @@ async function execute(interaction) {
     async function sendResponseV2(){
 
         // Message Elements:
+        const container = new ContainerBuilder()
         const separator = new SeparatorBuilder()
 
         const titleText = new TextDisplayBuilder()
-            .setContent('# My Events: / [1]')
+            .setContent('## 📅  My Events:')
 
         const descText = new TextDisplayBuilder()
-            .setContent("#### Below are the events you're currently signed up for [2]")
+            .setContent(`-# Below are the events you're currently signed up for:`)
 
-        const topTitleSection = new SectionBuilder()
-            .addTextDisplayComponents(titleText, descText)
+        // const topTitleSection = new SectionBuilder()
+        //     .addTextDisplayComponents(titleText)
 
-        const container1 = new ContainerBuilder()
-            .addSectionComponents(topTitleSection)
-            .addSeparatorComponents(separator)
-            .addTextDisplayComponents(new TextDisplayBuilder().setContent(' #### _End of list._ '))
+        container.setAccentColor(0x9b42f5)
+        container.addTextDisplayComponents(titleText)
+        // container.addSeparatorComponents(separator)
+        container.addTextDisplayComponents(descText)
+        container.addSeparatorComponents(separator)
+
+        //Example Event:
+        container.addSectionComponents(
+            new SectionBuilder()
+                .addTextDisplayComponents(new TextDisplayBuilder().setContent('⏰:  <t:1747218600:F>    💼:  `Training Crew`'))
+                .setButtonAccessory(new ButtonBuilder().setCustomId('view-event:exid172839112').setEmoji('👁️').setStyle(ButtonStyle.Success))
+        )
+
+        container.addSeparatorComponents(separator)
+
+        //Example Event:
+        container.addSectionComponents(
+            new SectionBuilder()
+                .addTextDisplayComponents(new TextDisplayBuilder().setContent('⏰:  <t:1747251000:F>    💼:  `Training Crew`'))
+                .setButtonAccessory(new ButtonBuilder().setCustomId('view-event:exid249782234').setEmoji('👁️').setStyle(ButtonStyle.Success))
+        )
+
+        //Footer:
+        container.addSeparatorComponents(separator)
+        container.addTextDisplayComponents(new TextDisplayBuilder().setContent('-# End of list'))
+        
+            
 
         // Send:
         await interaction.reply({
-            flags: MessageFlags.IsComponentsV2,
-            components: [container1]
+            flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+            components: [container]
         })
 
         // Delete:

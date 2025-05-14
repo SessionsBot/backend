@@ -6,8 +6,10 @@ module.exports = {
     event_channelId: '1369505812552224869',
     event_mentionRoleId: '1142632642064420925',
     colors: {
-        success: '#6dc441',
-        error: '#d43f37',
-        warning: '#fc9d03'
+        success: '#6dc441', // green
+        error: '#d43f37', // red
+        warning: '#fc9d03', // yellow/orange
+        blue: '#4287f5',
+        purple: '#9b42f5',
     },
 }
