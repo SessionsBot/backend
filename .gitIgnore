@@ -1,2 +1,6 @@
-# Replit config file:
+# Local Storage / Development:
 STORAGE/
+.env 
+
+# Node modules
+node_modules/
