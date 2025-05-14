@@ -65,21 +65,19 @@ for (const filePath of buttonFiles) {
 
 if(debugFileLoader) {console.log(`[✅] Loaded ${client.buttons.size} button(s).`);}
 
-// ------- [ Initialize Select Menus: ] -------
+// ------- [ Initialize Select Menus: (DISABLED) ] -------
 
-client.selectMenus = new Collection();
-const selectMenuFiles = getAllFiles(path.join(__dirname, 'selectMenus'), '.js');
-
-for (const filePath of selectMenuFiles) {
-	const selectMenu = require(filePath);
-	if ('data' in selectMenu && 'execute' in selectMenu) {
-		client.selectMenus.set(selectMenu.data.customId, selectMenu);
-	} else {
-		console.log(`[WARNING] The select menu at ${filePath} is missing a required "data" or "execute" property.`);
-	}
-}
-
-if(debugFileLoader) {console.log(`[✅] Loaded ${client.selectMenus.size} select menu(s).`);}
+// client.selectMenus = new Collection();
+// const selectMenuFiles = getAllFiles(path.join(__dirname, 'selectMenus'), '.js');
+// for (const filePath of selectMenuFiles) {
+// 	const selectMenu = require(filePath);
+// 	if ('data' in selectMenu && 'execute' in selectMenu) {
+// 		client.selectMenus.set(selectMenu.data.customId, selectMenu);
+// 	} else {
+// 		console.log(`[WARNING] The select menu at ${filePath} is missing a required "data" or "execute" property.`);
+// 	}
+// }
+// if(debugFileLoader) {console.log(`[✅] Loaded ${client.selectMenus.size} select menu(s).`);}
 
 // ------- [ Initialize Events: ] -------
 
