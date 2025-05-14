@@ -33,15 +33,37 @@ async function execute(interaction) {
     let userChoice_notificationsEnabled = interaction.options.getBoolean('enabled');
     let userChoice_onlyUpcoming = interaction.options.getBoolean('only-upcoming');
 
-    // DM User:
-    const dmChannel = await interaction.user.createDM(true)
-    const userAcceptsDMs = dmChannel.isSendable()
+    // If User Non-DM-able | Send Alert:
+    const sendNonDMableAlert = async () => {
+        // Send Alert:
+        interaction.reply({
+            embeds: [
+                new EmbedBuilder()
+                .setTitle('❗️ - Uh Oh!')
+                .setDescription(`*This bot user cannot send you DM messages!* You **won't receive event notifications** until you edit your privacy settings...`)
+                .setColor(global.colors.error)
+            ],
+            flags: MessageFlags.Ephemeral
+        })
+    }
+    
+    try { // DM User:
+        const dmChannel = await interaction.user.createDM(true)
+        const userAcceptsDMs = dmChannel.isSendable()
 
-    console.log('userAcceptsDMs', userAcceptsDMs)
+        // If Non-DM-able - Return:
+        if(!userAcceptsDMs) return await sendNonDMableAlert()
 
-    await dmChannel.send({
-        content: 'Notification Command Used! | Selection: ' + '`' + userChoice_notificationsEnabled + '` ' + '`' + userChoice_onlyUpcoming + '`'
-    });
+        // Send DM Msg:
+        await dmChannel.send({
+            content: 'Notification Command Used! | Selection: ' + '`' + userChoice_notificationsEnabled + '` ' + '`' + userChoice_onlyUpcoming + '`'
+        });
+
+    } catch (error) { // Error DMing User:
+        // Send Alert:
+       await sendNonDMableAlert()
+    }
+    
 }
 
 module.exports = {
