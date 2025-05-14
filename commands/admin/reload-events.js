@@ -11,6 +11,7 @@ const { // Import Discord.js
     ButtonBuilder,
     ButtonStyle,
     SeparatorSpacingSize,
+    ContainerBuilder,
     
 
 } = require('discord.js');
@@ -48,9 +49,8 @@ async function execute(interaction) {
         const text1 = new TextDisplayBuilder()
             .setContent('#This is a text component!#')
 
-        const seperator = () => {return new SeparatorBuilder()
-            .setSpacing(SeparatorSpacingSize.Small)
-        }
+        const separator = new SeparatorBuilder()
+            .setSpacing(SeparatorSpacingSize.Small);
 
         const text2 = new TextDisplayBuilder()
             .setContent('`This is a text component!`')
@@ -63,14 +63,22 @@ async function execute(interaction) {
             .setEmoji('✅')
         
 
-        const section1 = new SectionBuilder()
+        const [section1, section2] = new SectionBuilder()
             .addTextDisplayComponents(text1, text2)
             .setButtonAccessory(confirmButton)
+
+        const container1 = new ContainerBuilder()
+            .addComponents(
+                section1,
+                separator,
+                section2,
+                separator
+            );
 
         // Send:
         await interaction.reply({
             flags: MessageFlags.IsComponentsV2,
-            components: [section1]
+            components: [container1]
         })
 
         // Delete:
