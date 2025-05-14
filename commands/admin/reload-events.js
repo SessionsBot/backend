@@ -9,7 +9,6 @@ const { // Import Discord.js
 
 const sessionManager = require('../../utils/sessions/sessionManager');
 const global = require('../../global')
-const requirePermissions = str((1 << 13)) // Manage Messages Permission
 
 // Register Command:
 const data = new SlashCommandBuilder()
