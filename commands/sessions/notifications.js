@@ -35,7 +35,7 @@ async function execute(interaction) {
     let userChoice_notificationsEnabled = interaction.options.getBoolean('enabled');
     let userChoice_onlyAssigned = interaction.options.getBoolean('only-assigned');
 
-    // If User Non-DM-able | Send Alert:
+    // If User NonDM-able | Send Alert:
     const sendNonDMableAlert = async () => {
         // Send Alert:
         interaction.reply({
@@ -53,10 +53,8 @@ async function execute(interaction) {
         const dmChannel = await interaction.user.createDM(true)
         const userAcceptsDMs = await dmChannel.isSendable()
 
-        // If Non-DM-able - Return:
+        // If NonDM-able - Alert & Return:
         if(!userAcceptsDMs) return await sendNonDMableAlert()
-
-        // Defer Reply
 
         // Send DM Msg:
         await dmChannel.send({
