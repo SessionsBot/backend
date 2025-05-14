@@ -10,6 +10,7 @@ const { // Import Discord.js
     TextDisplayBuilder,
     ButtonBuilder,
     ButtonStyle,
+    SeparatorSpacingSize,
     
 
 } = require('discord.js');
@@ -47,13 +48,16 @@ async function execute(interaction) {
         const text1 = new TextDisplayBuilder()
         .setContent('#This is a text component!#')
 
+        const seperator = new SeparatorBuilder()
+            .setSpacing(SeparatorSpacingSize.Small)
+
         const text2 = new TextDisplayBuilder()
         .setContent('`This is a text component!`')
 
         // Send:
         await interaction.reply({
             flags: MessageFlags.IsComponentsV2,
-            components: [text1, text2]
+            components: [text1, seperator, text2]
         })
     }
 
