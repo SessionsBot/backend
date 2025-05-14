@@ -63,10 +63,12 @@ async function execute(interaction) {
             .setEmoji('✅')
         
 
-        const [section1, section2] = new SectionBuilder()
-            .addTextDisplayComponents(text1, text2)
-            .setButtonAccessory(confirmButton)
+        const section1 = new SectionBuilder()
+            .addComponents(text1, text2)
+            .setAccessory(confirmButton);
 
+        const section2 = new SectionBuilder()
+            .addComponents(text2);
         const container1 = new ContainerBuilder()
             .addComponents(
                 section1,
