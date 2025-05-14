@@ -50,7 +50,6 @@ async function execute(interaction) {
             .setContent('#This is a text component!#')
 
         const separator = new SeparatorBuilder()
-            .setSpacing(SeparatorSpacingSize.Small);
 
         const text2 = new TextDisplayBuilder()
             .setContent('`This is a text component!`')
@@ -68,14 +67,13 @@ async function execute(interaction) {
             .setAccessory(confirmButton);
 
         const section2 = new SectionBuilder()
+            .addTextDisplayComponents
             .addComponents(text2);
+
         const container1 = new ContainerBuilder()
-            .addComponents(
-                section1,
-                separator,
-                section2,
-                separator
-            );
+            .addTextDisplayComponents(text1)
+            .addSeparatorComponents(separator)
+            .addTextDisplayComponents(text2)
 
         // Send:
         await interaction.reply({
