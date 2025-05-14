@@ -23,7 +23,7 @@ const data = new SlashCommandBuilder()
 				.setRequired(true))
     .addBooleanOption(option =>
 			option
-				.setName('only-upcoming')
+				.setName('only-assigned')
 				.setDescription(`[TRUE] = Only notifies events you're assigned  |  [FALSE] = Sends ALL event notifications`)
 				.setRequired(true))
 
@@ -33,7 +33,7 @@ async function execute(interaction) {
 
     // Get selections:
     let userChoice_notificationsEnabled = interaction.options.getBoolean('enabled');
-    let userChoice_onlyUpcoming = interaction.options.getBoolean('only-upcoming');
+    let userChoice_onlyAssigned = interaction.options.getBoolean('only-assigned');
 
     // If User Non-DM-able | Send Alert:
     const sendNonDMableAlert = async () => {
@@ -57,12 +57,20 @@ async function execute(interaction) {
         if(!userAcceptsDMs) return await sendNonDMableAlert()
 
         // Defer Reply
-        // await interaction.deferReply();
-        console.log('{i} Not defering. . .')
 
         // Send DM Msg:
         await dmChannel.send({
-            content: 'Notification Command Used! | Selection: ' + '`' + userChoice_notificationsEnabled + '` ' + '`' + userChoice_onlyUpcoming + '`'
+            embeds: [
+                new EmbedBuilder()
+                .setTitle('⚙️ - Notifcation Adjusted:')
+                .setDescription(`Below are your currently selected options:`)
+                .setColor(global.colors.warning)
+                .addFields(
+                    {name: 'Notifications Enabled', value: '`'+userChoice_notificationsEnabled+'`'},
+                    {name: 'Only Assigned', value: '`'+userChoice_onlyAssigned+'`'},
+                )
+                .setTimestamp()
+            ]
         });
 
         // Respond to Command:
@@ -70,6 +78,15 @@ async function execute(interaction) {
             content: `📩 | <@${interaction.user.id}> | Please check your Direct Messages!`,
             flags: MessageFlags.Ephemeral
         })
+
+        // Schedule Deletion of Command Response:
+        setTimeout(async () => {
+            try {
+				await interaction.deleteReply();
+            } catch (err) {
+                console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
+            }
+        }, 1500)
 
     } catch (error) { // Error DMing User:
         // Send Alert:
