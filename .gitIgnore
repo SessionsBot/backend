@@ -1,7 +1,5 @@
 # Local Storage / Development:
 STORAGE/
-data/
-data/sessions.json
 .env 
 
 # Node modules
