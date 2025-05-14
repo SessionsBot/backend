@@ -47,30 +47,21 @@ async function execute(interaction) {
     async function sendResponseV2(){
 
         // Message Elements:
-        const text1 = new TextDisplayBuilder()
-            .setContent('#This is a text component!# [1]')
-
         const separator = new SeparatorBuilder()
 
-        const text2 = new TextDisplayBuilder()
-            .setContent('`This is a text component! [2]`')
+        const titleText = new TextDisplayBuilder()
+            .setContent('# My Events: / [1]')
 
+        const descText = new TextDisplayBuilder()
+            .setContent("#### Below are the events you're currently signed up for [2]")
 
-        const confirmButton = new ButtonBuilder()
-            .setCustomId('refresh-events-button')
-            .setStyle(ButtonStyle.Success)
-            .setEmoji('✅')
-        
-
-        const section1 = new SectionBuilder()
-            .addTextDisplayComponents(text1, text2)
-            .setButtonAccessory(confirmButton)
-
+        const topTitleSection = new SectionBuilder()
+            .addTextDisplayComponents(titleText, descText)
 
         const container1 = new ContainerBuilder()
-            .addSectionComponents(section1)
+            .addSectionComponents(topTitleSection)
             .addSeparatorComponents(separator)
-            .addTextDisplayComponents(text2)
+            .addTextDisplayComponents(new TextDisplayBuilder().setContent(' #### _End of list._ '))
 
         // Send:
         await interaction.reply({
@@ -79,12 +70,12 @@ async function execute(interaction) {
         })
 
         // Delete:
-        setTimeout(async () => {
-            await interaction.deleteReply().then().catch(error => {
-                console.log('Failed to delete reload events interaction reply:');
-                console.log(error)
-            })
-        }, 15_000);
+        // setTimeout(async () => {
+        //     await interaction.deleteReply().then().catch(error => {
+        //         console.log('Failed to delete reload events interaction reply:');
+        //         console.log(error)
+        //     })
+        // }, 15_000);
     }
 
    
