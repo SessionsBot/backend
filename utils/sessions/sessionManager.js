@@ -251,8 +251,8 @@ async function getEventMessageURL(sessionId) {
 	const sessionData = await getSession(sessionId);
 	// Confirm Session Data:
 	if(!sessionData || Object.entries(sessionData).length <= 0) {
-		confirm.log(`{!} Can't find session data for getEventMessageURL()`)
-		return null
+		confirm.log(`{!} Can't find session data for getEventMessageURL()`);
+		return null;
 	}
 	// Get IDs:
 	const guildId = process.env['GUILD_ID'];
