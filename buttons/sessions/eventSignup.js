@@ -228,10 +228,10 @@ module.exports = {
 			// On Response Collect Timeout:
 			collector.on('end', (collected, reason) => {
 				if (reason === 'time') {
-					reply.edit({
+					interaction.editReply({
 						content: '⏱️ Time expired. Please click the sign up button again.',
 						components: [],
-					}).catch(() => {});
+					}).catch((err) => {console.log('[i] Failed to edit "EventSignUp - Select Menu - TIMEOUT!"', err)});
 				}
 			});
 

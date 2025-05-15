@@ -1,198 +1,173 @@
-const { // Import Discord.js
+const {
     EmbedBuilder, 
     InteractionContextType, 
     SlashCommandBuilder, 
     MessageFlags,
-    ActionRowBuilder, 
-    ButtonBuilder, 
-    ButtonStyle  
-} = require('discord.js');
+    SectionBuilder,
+    SeparatorBuilder,
+    TextDisplayBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    ContainerBuilder,
+} = require('discord.js'); // Import Discord.js
 
-// Import Session Manager:
-const sessionManager = require('../../utils/sessions/sessionManager');
+const sessionManager = require('../../utils/sessions/sessionManager'); // Import Session Manager
+const global = require('../../global'); // Import Global Variables
 
+// Register Command:
+const data = new SlashCommandBuilder()
+    .setName('my-events')
+    .setDescription("Lists your currently assigned events with respective options.")
+    .setContexts(InteractionContextType.Guild)
+
+
+// Custom Response Methods:
+const responseMethods = { 
+    // Send User-Assigned Event List:
+    sendUsersEvents: async (interaction, eventsHosting, eventsTraining) => {
+        // Message Elements:
+        const container = new ContainerBuilder()
+        const separator = new SeparatorBuilder()
+        const eventCount = (Object.entries(eventsHosting).length + Object.entries(eventsTraining).length)
+
+        const titleText = new TextDisplayBuilder()
+            .setContent('## 📅  Your Events:')
+
+        const descText = new TextDisplayBuilder()
+            .setContent(`-# Events you're currently assigned to are listed below:`)
+
+        // Color & Ttitle:
+        container.setAccentColor(0x3bc2d1)
+        container.addTextDisplayComponents(titleText)
+        container.addTextDisplayComponents(descText)
+        container.addSeparatorComponents(separator)
+
+        // Add Hosting Role Sessions:
+        for (const [sessionId, sessionData] of Object.entries(eventsHosting)) {
+            // Add Event Details & Removal Button:
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`⏰:  <t:${sessionData['date']}:F>` + '\n\n💼:, *`Event Host`* \n '))
+            container.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
+            container.addActionRowComponents(
+                new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(`eventLeaveRole:${sessionId}`)
+                        .setEmoji('❌')
+                        .setLabel('Remove')
+                        .setStyle(ButtonStyle.Secondary)
+                )
+            )
+            container.addSeparatorComponents(separator)
+        }
+
+        // Add Trainer Role Sessions:
+        for (const [sessionId, sessionData] of Object.entries(eventsTraining)) {
+            // Add Event Details & Removal Button:
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`⏰:  <t:${sessionData['date']}:F>` + '\n\n💼:, *`Trainer Crew`* \n '))
+            container.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
+            container.addActionRowComponents(
+                new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(`eventLeaveRole:${sessionId}`)
+                        .setEmoji('❌')
+                        .setLabel('Remove')
+                        .setStyle(ButtonStyle.Secondary)
+                )
+            )
+            container.addSeparatorComponents(separator)
+        } 
+        
+        // Footer - Event Count:
+        container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Total Events: ${eventCount}`))
+
+        // Send:
+        await interaction.reply({
+            flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+            components: [container]
+        })
+    },
+
+    // Send No Assigned Events Alert:
+    sendNoEventsAlert: async (interaction) => {
+        // Message Elements:
+        const container = new ContainerBuilder()
+        const separator = new SeparatorBuilder()
+
+        // Title
+        container.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ No Events Assigned:'))
+        container.setAccentColor(0xfc9d03)
+        // Spacer
+        container.addSeparatorComponents(separator) 
+        // Info:
+        container.addTextDisplayComponents(new TextDisplayBuilder()
+            .setContent(`**You're currently not assigned to any events!** \n-\nTo view available events for sign up please visit this channel: <#${global.event_channelId}>.`)
+        )
+        // Spacer
+        container.addSeparatorComponents(separator) 
+        // Footer:
+        container.addTextDisplayComponents(new TextDisplayBuilder().setContent('-# This message will be deleted in 15s.'))
+        
+            
+
+        // Send:
+        await interaction.reply({
+            flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+            components: [container]
+        })
+
+        // Delete:
+        setTimeout(async () => {
+            await interaction.deleteReply().then().catch(error => {
+                console.log('Failed to delete interaction reply - /my-events:');
+                console.log(error)
+            })
+        }, 15_000);
+    }
+}
+
+
+// On Command Excecution:
+async function execute(interaction) { try {
+
+    // Variables:
+    const userId = interaction.user.id
+    let sessions_userHosting = {};
+    let sessions_userTraining = {};
+    let sessionCount = 0;
+
+    // Defer early to give yourself time:
+        // await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
+    // Load all sessions:
+    const allSessionsData = await sessionManager.readSessions()
+
+    // Check each session for user signed up:
+    for (const [sessionId, sessionData] of Object.entries(allSessionsData)){
+        // Check if Event Host:
+        if(sessionData['host'] === userId) {
+            sessions_userHosting[`${sessionId}`] = sessionData;
+            sessionCount += 1;
+        }
+        // Check if Training Crew:
+        if(sessionData['trainers'].includes(userId)) {
+            sessions_userTraining[`${sessionId}`] = sessionData;
+            sessionCount += 1;
+        }
+    }
+
+    // Check Session Count & Respond:
+    if(sessionCount >= 1){ // User Assigned Sessions:
+        await responseMethods.sendUsersEvents(interaction, sessions_userHosting, sessions_userTraining)
+    } else { // User NOT Assigned Sessions:
+        await responseMethods.sendNoEventsAlert(interaction)
+    } 
+        
+} catch (error) { // Error Occured:
+    console.log('[!] An Error Occured - /my-events');
+    console.log(error);
+}}
 
 module.exports = {
-
-    // Assign Command:
-    data: new SlashCommandBuilder()
-        .setName('my-events')
-        .setDescription(`Lists the sessions you've signed up for.`)
-        .setContexts(InteractionContextType.Guild),
-    
-    // On Execution:
-    async execute(interaction){
-
-        // Variables:
-        let sessions_hosting = {};
-        let sessions_training = {};
-        const userId = interaction.user.id
-
-        // Defer early to give yourself time:
-        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-
-        // Load all sessions:
-        const allSessionsData = await sessionManager.readSessions()
-
-        // Check each session for user signed up:
-        for (const [sessionId, sessionData] of Object.entries(allSessionsData)){
-            // Check if Event Host:
-            if(sessionData['host'] === userId) {
-                sessions_hosting[`${sessionId}`] = sessionData;
-            }
-            // Check if Training Crew:
-            if(sessionData['trainers'].includes(userId)) {
-                sessions_training[`${sessionId}`] = sessionData;
-            }
-        }
-
-        // Send results:
-        const interactionChannel = interaction.channel
-
-        // 1. Initial title embed (edit the initial reply after deferring)
-        await interaction.editReply({
-        embeds: [
-            new EmbedBuilder()
-            .setTitle('📋 Current Training Sessions:')
-            .setDescription(`Below are all upcoming sessions you've signed up for:`)
-            .setColor('#9BE75B')
-            .addFields( // Spacer
-                { name: ' ', value: ' ' }
-            )
-            .addFields(
-                { name: '🎙️ Hosting:', value: `> *${Object.keys(sessions_hosting).length}*`, inline: true },
-                { name: '🤝 Training:', value: `> *${Object.keys(sessions_training).length}*`, inline: true }
-            )
-            .addFields( // Spacer
-                { name: ' ', value: ' ' }
-            )
-        ]
-        });
-
-        // 2. Send the sessions the user is hosting:
-        for (const [sessionId, sessionData] of Object.entries(sessions_hosting)) {
-
-            // Create msg embed
-            const updatedEmbed = new EmbedBuilder()
-                .setColor('#9BE75B')
-                .setTitle('📋 - Training Session')
-                .addFields( // Spacer
-                    { name: ' ', value: ' ' }
-                )
-                .addFields(
-                    { name: '📆 Date:', value: `<t:${sessionData['date']}:F>\n(<t:${sessionData['date']}:R>)`, inline: true },
-                    { name: '📍 Location:', value: `[Event Game](${sessionData['location']})`, inline: true }
-                )
-                .addFields( // Spacer
-                    { name: ' ', value: ' ' }
-                )
-                .addFields(
-                    { 
-                        name: '🎙️ Host:', 
-                        value: sessionData['host'] 
-                        ? `> <@${sessionData['host']}>\n*(1/1)*` 
-                        : '*`Available`* \n *(0/1)*', 
-                        inline: true 
-                    },
-                    { 
-                        name: '🤝 Trainers:', 
-                        value: sessionData['trainers'] && sessionData['trainers'].length > 0 
-                        ? sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(${sessionData['trainers'].length}/3)*` 
-                        : '*`Available`* \n *(0/3)*', 
-                        inline: true 
-                    }
-                    
-                    
-                )          
-                .addFields( // Spacer
-                    { name: ' ', value: ' ' }
-                )
-                .setFooter({ text: `ID: ${sessionId.toUpperCase()}`, iconURL: interaction.client.user.displayAvatarURL() });
-
-            // Create msg buttons
-            const buttons = new ActionRowBuilder().addComponents(
-                new ButtonBuilder()
-                    .setCustomId(`eventLeaveRole:${sessionId}`)
-                    .setLabel('🚪 Leave Role')
-                    .setStyle(ButtonStyle.Danger),
-                new ButtonBuilder()
-                    .setLabel('🎮 Game Link')
-                    .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
-                    .setStyle(ButtonStyle.Link)
-            );
-
-
-            // Send full message:
-            interaction.followUp({
-                embeds: [updatedEmbed],
-                components: [buttons],
-                flags: MessageFlags.Ephemeral
-            })
-
-        }
-
-        // 3. Send the sessions the user is training crew:
-        for (const [sessionId, sessionData] of Object.entries(sessions_training)) {
-
-            // Create msg embed
-            const updatedEmbed = new EmbedBuilder()
-                .setColor('#9BE75B')
-                .setTitle('📋 - Training Session')
-                .addFields( // Spacer
-                    { name: ' ', value: ' ' }
-                )
-                .addFields(
-                    { name: '📆 Date:', value: `<t:${sessionData['date']}:F>\n(<t:${sessionData['date']}:R>)`, inline: true },
-                    { name: '📍 Location:', value: `[Event Game](${sessionData['location']})`, inline: true }
-                )
-                .addFields( // Spacer
-                    { name: ' ', value: ' ' }
-                )
-                .addFields(
-                    { 
-                        name: '🎙️ Host:', 
-                        value: sessionData['host'] 
-                        ? `> <@${sessionData['host']}>\n*(1/1)*` 
-                        : '*`Available`* \n *(0/1)*', 
-                        inline: true 
-                    },
-                    { 
-                        name: '🤝 Trainers:', 
-                        value: sessionData['trainers'] && sessionData['trainers'].length > 0 
-                        ? sessionData['trainers'].map(id => `> <@${id}>`).join('\n') + `\n*(${sessionData['trainers'].length}/3)*` 
-                        : '*`Available`* \n *(0/3)*', 
-                        inline: true 
-                    }
-                    
-                    
-                )          
-                .addFields( // Spacer
-                    { name: ' ', value: ' ' }
-                )
-                .setFooter({ text: `ID: ${sessionId.toUpperCase()}`, iconURL: interaction.client.user.displayAvatarURL() });
-
-            // Create msg buttons
-            const buttons = new ActionRowBuilder().addComponents(
-                new ButtonBuilder()
-                    .setCustomId(`eventLeaveRole:${sessionId}`)
-                    .setLabel('🚪 Leave Role')
-                    .setStyle(ButtonStyle.Danger),
-                new ButtonBuilder()
-                    .setLabel('🎮 Game Link')
-                    .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
-                    .setStyle(ButtonStyle.Link)
-            );
-
-
-            // Send full message:
-            interaction.followUp({
-                embeds: [updatedEmbed],
-                components: [buttons],
-                flags: MessageFlags.Ephemeral
-            })
-
-        }
-
-
-    },
-}
+    data,
+    execute
+};
