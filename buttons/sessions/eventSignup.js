@@ -231,7 +231,7 @@ module.exports = {
 					interaction.editReply({
 						content: '⏱️ Time expired. Please click the sign up button again.',
 						components: [],
-					}).catch((err) => {console.log('[i] Failed to edit "EventSignUp - Select Menu - TIMEOUT!"', err)});
+					}).catch(() => {});
 				}
 			});
 
