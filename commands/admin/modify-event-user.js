@@ -6,6 +6,7 @@ const {
     ContainerBuilder,
     TextDisplayBuilder,
     SeparatorBuilder,
+    PermissionFlagsBits,
 } = require('discord.js'); // Import Discord.js
 
 const sessionManager = require('../../utils/sessions/sessionManager'); // Import Session Manager
@@ -15,6 +16,7 @@ const global = require('../../global'); // Import Global Variables
 const data = new SlashCommandBuilder()
     .setName('modify-event-user')
     .setDescription("Modifies a user within an event by provided eventId.")
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
     .addStringOption(option => 
         option.setName('event-date')
 		    .setDescription('The date of the event to modify.')
