@@ -187,9 +187,6 @@ module.exports = {
 						flags: MessageFlags.Ephemeral
 					});
 
-					// Update Original Event Message:
-					sessionManager.refreshEventMessage(interactionEventId)
-
 				} else {
 					// ERROR - Respond:
 					await selectInteraction.update({

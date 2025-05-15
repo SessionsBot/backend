@@ -110,9 +110,9 @@ const responseMethods = {
                 .setContent(`**You're currently not assigned to any events!** \n-\nTo view available events for sign up please visit this channel: <#${global.event_channelId}>.`)
             )
             // Spacer
-            container.addSeparatorComponents(separator) 
-            // Footer:
-            container.addTextDisplayComponents(new TextDisplayBuilder().setContent('-# This message will be deleted in 15s.'))
+            // container.addSeparatorComponents(separator) 
+            // // Footer:
+            // container.addTextDisplayComponents(new TextDisplayBuilder().setContent('-# This message will be deleted in 15s.'))
 
             // RETURN MSG CONTAINER:
             return container

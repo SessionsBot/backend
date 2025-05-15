@@ -37,7 +37,7 @@ async function saveSession(sessionId, sessionData) {
 	await writeSessions(sessions);
 }
 
-// Update a session's role assignment => returns session data:
+// Update a session's role assignment => returns [updateSuccess, data]
 async function updateSessionRole(sessionId, role, newUserId) {
 	const sessions = await readSessions();
 	const session = sessions[sessionId];
@@ -77,6 +77,8 @@ async function updateSessionRole(sessionId, role, newUserId) {
 
 	// Success - Apply changes to session data:
 	await writeSessions(sessions);
+	// Update Origonal Event Message:
+	await refreshEventMessage(sessionId)
 	return [true, session]
 }
 
@@ -243,6 +245,24 @@ async function getEventEmbed(sessionId) {
 	};
 }
 
+// Fetch Events 'Announcement Message' ID:
+async function getEventMessageURL(sessionId) {
+	// Get Session Data:
+	const sessionData = await getSession(sessionId);
+	// Confirm Session Data:
+	if(!sessionData || Object.entries(sessionData).length <= 0) {
+		confirm.log(`{!} Can't find session data for getEventMessageURL()`)
+		return null
+	}
+	// Get IDs:
+	const guildId = process.env['GUILD_ID'];
+	const channelId = sessionData['channelId'];
+	const messageId = sessionData['messageId'];
+	// Compile URL:
+	const jumpLink = `https://discord.com/channels/${guildId}/${channelId}/${messageId}`;
+	return jumpLink
+}
+
 // Module Exports:
 module.exports = {
 	readSessions,
@@ -253,5 +273,6 @@ module.exports = {
 	updateSessionRole,
 	refreshEventMessage,
 	removePlayerFromEventById,
-	getEventEmbed
+	getEventEmbed,
+	getEventMessageURL
 };
