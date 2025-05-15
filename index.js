@@ -127,6 +127,6 @@ app.get('/sessions/data', async (req, res) => {
 // Initialize:
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🌐 Keep-alive server running on port ${PORT}`);
+//   console.log(`🌐 Keep-alive server running on port ${PORT}`);
 });
 
