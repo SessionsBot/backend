@@ -1,5 +1,6 @@
 # Local Storage / Development:
 STORAGE/
+.vscode/
 .env 
 
 # Node modules
