@@ -241,7 +241,8 @@ async function getEventEmbed(sessionId) {
 	return {
 		embeds: [updatedEmbed],
 		components: [buttons],
-		content: `<@&${global.event_mentionRoleId}>`
+		content: `<@&${global.event_mentionRoleId}>`,
+		flags: MessageFlags.Crossposted
 	};
 }
 

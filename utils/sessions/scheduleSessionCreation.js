@@ -4,7 +4,8 @@ const {
     MessageFlags,
     ActionRowBuilder, 
     ButtonBuilder, 
-    ButtonStyle  
+    ButtonStyle,  
+    ChannelType
 } = require('discord.js'); // Import Discord.js
 const global = require('../../global.js') // Import Global Variables
 const sessionManager = require('./sessionManager'); // Import Session Manager
@@ -86,6 +87,12 @@ async function createEvents(times = [10, 14, 19]) {
         // Send each event as embed msg:
         const messageContents = await sessionManager.getEventEmbed(sessionId);
         const sentMessage = await sessionAnnounceChannel.send(messageContents);
+        // Publish message:
+        if (sentMessage.channel.type === ChannelType.GuildAnnouncement) {
+        sentMessage.crosspost()
+            .then()
+            .catch(console.error);
+        }
 
         // Update the session data with message/channel ids
         await sessionManager.saveSession(sessionId, {
