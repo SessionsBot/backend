@@ -36,6 +36,7 @@ const data = new SlashCommandBuilder()
                 { name: 'Unassigned', value: 'remove' },
             ))
     .setContexts(InteractionContextType.Guild)
+//
 
 
 // On Command Excecution:
@@ -47,8 +48,14 @@ async function execute(interaction) {
     const actionString = action == 'host' || action == 'trainer' ? 'Adding' : 'Removing';
     const msgJumpLink  = await sessionManager.getEventMessageURL(eventIdProvided);
 
-    if(!eventIdProvided || !targetUser || !action){ // Confirm Arguments:
-        await interaction.reply({
+    
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral }).then().catch((err) => { // Defer Response:
+            console.log(`{!} Error Occured! - /${interaction.commandName}:`)
+            console.log(err)
+    });
+
+    if(!eventIdProvided || !targetUser || !action){ // On Missing Arguments:
+        await interaction.editReply({
             flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
             components: [
                 new ContainerBuilder()
@@ -61,8 +68,9 @@ async function execute(interaction) {
         return;
     }
 
+
     async function  sendSuccessMsg() { // Dynamic Success Msg:
-        await interaction.reply({
+        await interaction.editReply({
             flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
             components: [
                 new ContainerBuilder()
@@ -75,8 +83,9 @@ async function execute(interaction) {
         });
     }
 
+
     async function  sendErrorMsg(data) { // Dynamic Error Msg:
-        await interaction.reply({
+        await interaction.editReply({
             flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
             components: [
                 new ContainerBuilder()
@@ -91,27 +100,30 @@ async function execute(interaction) {
         });
     }
 
+
     if(action == 'host'){ // Assign User as Host to Event:
 
         // Attempt to Give Role:
         const [updateSucess, data] = await sessionManager.updateSessionRole(eventIdProvided, 'Event Host', targetUser.id)
-        if (updateSucess) {sendSuccessMsg()} else {sendErrorMsg(data)}
+        if (updateSucess) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
 
     }
     
+
     if(action == 'trainer'){ // Assign User as Trainer to Event:
 
         // Attempt to Give Role:
         const [updateSucess, data] = await sessionManager.updateSessionRole(eventIdProvided, 'Training Crew', targetUser.id)
-        if (updateSucess) {sendSuccessMsg()} else {sendErrorMsg(data)}
+        if (updateSucess) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
 
     }
     
+
     if(action == 'remove'){ // Removing User from Event:
        
         // Attempt to Remove Role:
         const [updateSucess, data] = await sessionManager.removePlayerFromEventById(eventIdProvided, targetUser.id)
-        if (updateSucess) {sendSuccessMsg()} else {sendErrorMsg(data)}
+        if (updateSucess) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
 
     } 
     
