@@ -161,7 +161,10 @@ async function refreshEventMessage(sessionId) {
 	const message = await channel.messages.fetch(sessionData['messageId']);
 
 	// Send Message:
-	await message.edit(await getEventEmbed(sessionId));
+	await message.edit(await getEventEmbed(sessionId)).catch((err) => {
+		console.log('{!} Failed to Update Event Embed:');
+		console.log(err);
+	});
 
 }
 

@@ -25,7 +25,7 @@ const data = new SlashCommandBuilder()
 async function execute(interaction) {
     try {
         // Defer Response:
-        await interaction.deferReply({ flags: MessageFlags.Ephemeral }).then().catch((err) => { // Defer Response:
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral }).catch((err) => { // Defer Response:
             console.log(`{!} Error Occured! - /${interaction.commandName}:`)
             console.log(err)
         });

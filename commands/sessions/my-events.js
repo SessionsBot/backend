@@ -1,9 +1,7 @@
 const {
-    EmbedBuilder, 
     InteractionContextType, 
     SlashCommandBuilder, 
     MessageFlags,
-    SectionBuilder,
     SeparatorBuilder,
     TextDisplayBuilder,
     ActionRowBuilder,
@@ -76,9 +74,9 @@ const responseMethods = {
                     new ActionRowBuilder().addComponents(
                         new ButtonBuilder()
                             .setCustomId(`startLeaveEventRole:${sessionId}`)
-                            .setEmoji('❌')
-                            .setLabel(' -  Remove')
-                            .setStyle(ButtonStyle.Secondary)
+                            // .setEmoji('❌')
+                            .setLabel('Remove')
+                            .setStyle(ButtonStyle.Primary)
                     )
                 )
                 container.addSeparatorComponents(separator)
@@ -139,6 +137,12 @@ async function execute(interaction) {
 
         // On Interaction Collection:
         collector.on('collect', async (collectorInteraction) => {
+            // // Defer Colector Response:
+            await collectorInteraction.deferUpdate().catch((err) => { // Defer Response:
+                console.log(`{!} Error Deffering: - /${interaction.commandName}:`)
+                console.log(err)
+            });
+
             // Parse Interaction Data:
             const [interactionID, eventID] = collectorInteraction.customId.split(':');
 
@@ -193,9 +197,8 @@ async function execute(interaction) {
                 // Attempt Removal:
                 const [updateSuccess, sessionData] = await sessionManager.removePlayerFromEventById(eventID, collectorInteraction.user.id)
 
+                // Build Message Response:
                 const removalResponseContainer = new ContainerBuilder()
-                
-
                 if (updateSuccess) { // Role Removal Success:
                     removalResponseContainer.setAccentColor(0x6dc441)
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - Success ✅'))
@@ -235,7 +238,6 @@ async function execute(interaction) {
                     )
 
                 }
-
 
                 // Send Response:
                 await interaction.editReply({
