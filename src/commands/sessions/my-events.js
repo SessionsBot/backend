@@ -12,7 +12,7 @@ const {
 } = require('discord.js'); // Import Discord.js
 
 const sessionManager = require('../../utils/sessions/sessionManager'); // Import Session Manager
-const global = require('../../global'); // Import Global Variables
+const global = require('../../utils/global'); // Import Global Variables
 
 // Register Command:
 const data = new SlashCommandBuilder()

@@ -29,7 +29,7 @@ function getAllFiles(dir, ext, fileList = []) {
 // ------- [ Initialize Commands: ] -------
 
 client.commands = new Collection();
-const commandFiles = getAllFiles(path.join(__dirname, 'src', 'commands'));
+const commandFiles = getAllFiles(path.join(__dirname, 'src', 'commands'), '.js');
 
 for (const filePath of commandFiles) {
 	const command = require(filePath);
@@ -83,32 +83,4 @@ client.login(botToken);
 
 // ------- [ Web Service (prevents inactivity): ] -------
 
-// HTTP server:
-const express = require('express');
-const app = express();
-
-// Root/Status Respond:
-app.get('/', (req, res) => res.status(200).json({ response: 'Root Directory: ALIVE', code: 200, timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }) }));
-app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is operational!', code: 200, timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }) }));
-
-// Session Data Fetch:
-app.get('/sessions/data', async (req, res) => {
-
-	// Get Session Data:
-	const allSessionsData = await require('./utils/sessions/sessionManager').getSessions('593097033368338435')
-
-	// Data Undefined:
-	if(!allSessionsData){ res.status(500).json({response: '"allSessionsData" NOT FOUND!', code: 500}); return }
-
-	// Data Found - Send JSON:
-	const prettyJSON = JSON.stringify({ data: allSessionsData, code: 200 }, null, 2);
-	res.setHeader('Content-Type', 'application/json');
-	res.status(200).send(prettyJSON);
-})
-
-// Initialize:
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-//   console.log(`🌐 Keep-alive server running on port ${PORT}`);
-});
-
+require('./src/webService.js')

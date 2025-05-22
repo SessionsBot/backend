@@ -9,7 +9,7 @@ const { // Import Discord.js
 } = require('discord.js');
 
 const sessionManager = require('../../utils/sessions/sessionManager');
-const global = require('../../global')
+const global = require('../../utils/global')
 
 // Register Command:
 const data = new SlashCommandBuilder()
