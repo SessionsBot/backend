@@ -5,6 +5,7 @@
     "discord.js": "^14.19.3",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "firebase-admin": "^13.4.0",
     "fs": "^0.0.1-security",
     "node-cron": "^4.0.5"
   },

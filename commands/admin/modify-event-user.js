@@ -46,7 +46,8 @@ async function execute(interaction) {
     const targetUser = interaction.options.getUser('target-user');
     const action = interaction.options.getString('role');
     const actionString = action == 'host' || action == 'trainer' ? 'Adding' : 'Removing';
-    const msgJumpLink  = await sessionManager.getEventMessageURL(eventIdProvided);
+    const guildId = interaction.guildId;
+  
 
     
     await interaction.deferReply({ flags: MessageFlags.Ephemeral }).then().catch((err) => { // Defer Response:
@@ -77,7 +78,7 @@ async function execute(interaction) {
                     .setAccentColor(0x6dc441)
                     .addTextDisplayComponents(new TextDisplayBuilder().setContent(`## ✅ Success ${actionString} User!`))
                     .addSeparatorComponents(new SeparatorBuilder())
-                    .addTextDisplayComponents(new TextDisplayBuilder().setContent(`🔠  __**Event Id:**__     [${eventIdProvided.toUpperCase()}](${msgJumpLink}) \n\n👤  __**Target User:**__     <@${targetUser.id}>`))
+                    .addTextDisplayComponents(new TextDisplayBuilder().setContent(`🔠  __**Event Id:**__     ${eventIdProvided.toUpperCase()} \n\n👤  __**Target User:**__     <@${targetUser.id}>`))
                     .addSeparatorComponents(new SeparatorBuilder())
             ]
         });
@@ -92,7 +93,7 @@ async function execute(interaction) {
                     .setAccentColor(0xd43f37)
                     .addTextDisplayComponents(new TextDisplayBuilder().setContent(`## ⚠️ ERROR ${actionString} User!`))
                     .addSeparatorComponents(new SeparatorBuilder())
-                    .addTextDisplayComponents(new TextDisplayBuilder().setContent(`🔠  __**Event Id:**__     [${eventIdProvided.toUpperCase()}](${msgJumpLink}) \n\n👤  __**Target User:**__     <@${targetUser.id}>`))
+                    .addTextDisplayComponents(new TextDisplayBuilder().setContent(`🔠  __**Event Id:**__     ${eventIdProvided.toUpperCase()} \n\n👤  __**Target User:**__     <@${targetUser.id}>`))
                     .addSeparatorComponents(new SeparatorBuilder())
                     .addTextDisplayComponents(new TextDisplayBuilder().setContent(`ℹ️ __**Details:**__ \n\n\`${data}\``))
                     .addSeparatorComponents(new SeparatorBuilder())
@@ -104,8 +105,8 @@ async function execute(interaction) {
     if(action == 'host'){ // Assign User as Host to Event:
 
         // Attempt to Give Role:
-        const [updateSucess, data] = await sessionManager.updateSessionRole(eventIdProvided, 'Event Host', targetUser.id)
-        if (updateSucess) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
+        const updateData = await sessionManager.assignUserSessionRole(String(guildId), String(eventIdProvided), String(targetUser.id), 'Event Host')
+        if (updateData[0]) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
 
     }
     
@@ -113,8 +114,8 @@ async function execute(interaction) {
     if(action == 'trainer'){ // Assign User as Trainer to Event:
 
         // Attempt to Give Role:
-        const [updateSucess, data] = await sessionManager.updateSessionRole(eventIdProvided, 'Training Crew', targetUser.id)
-        if (updateSucess) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
+        const updateData = await sessionManager.assignUserSessionRole(String(guildId), String(eventIdProvided), String(targetUser.id), 'Training Crew')
+        if (updateData[0]) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
 
     }
     
@@ -122,8 +123,8 @@ async function execute(interaction) {
     if(action == 'remove'){ // Removing User from Event:
        
         // Attempt to Remove Role:
-        const [updateSucess, data] = await sessionManager.removePlayerFromEventById(eventIdProvided, targetUser.id)
-        if (updateSucess) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
+        const updateData = await sessionManager.removeUserFromSessionRole(String(guildId), String(eventIdProvided), String(targetUser.id),)
+        if (updateData[0]) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
 
     } 
     
@@ -137,8 +138,11 @@ async function autocomplete(interaction) {
     let choices = [];
 
     if (focusedOption.name === 'event-date') {
-        const allSessionsObject = await sessionManager.readSessions();
+        const allSessionsObject = await sessionManager.getSessions(interaction.guildId);
         const allEventIds = Object.keys(allSessionsObject);
+
+        // console.log('AUTOCOMPLETE DEBUG: ', allEventIds)
+
         choices = allEventIds;
 
         // Filter based on user input
@@ -149,7 +153,7 @@ async function autocomplete(interaction) {
         // Convert session IDs to readable date strings
         const choicesWithLabels = await Promise.all(
             filtered.map(async (choice) => {
-                const sessionData = await sessionManager.getSession(choice);
+                const sessionData = allSessionsObject[choice]
                 let label = choice; // default to ID if something goes wrong
 
                 if (sessionData?.date) {

@@ -21,9 +21,16 @@ const data = new SlashCommandBuilder()
 //
 
 
+console.log('[ i ] /refresh-event-signup needs logic updates!!')
+
+
 // On Command Excecution:
 async function execute(interaction) {
     try {
+
+        interaction.reply('Uh oh! This command has been disbaled for the time being while we get it back up and running! Check back later...')
+        return;
+
         // Defer Response:
         await interaction.deferReply({ flags: MessageFlags.Ephemeral }).catch((err) => { // Defer Response:
             console.log(`{!} Error Occured! - /${interaction.commandName}:`)
@@ -59,7 +66,7 @@ async function execute(interaction) {
                     .setAccentColor(0xd43f37)
                     .addTextDisplayComponents(new TextDisplayBuilder().setContent(`## ⚠️ Error - Refreshing Events!`))
                     .addSeparatorComponents(new SeparatorBuilder())
-                    .addTextDisplayComponents(new TextDisplayBuilder().setContent(`* An error occured when trying to update the events! Please try again. . .*`))
+                    .addTextDisplayComponents(new TextDisplayBuilder().setContent(` *An error occured when trying to update the events! Please try again. . .*`))
             ]
         })
 

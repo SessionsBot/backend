@@ -113,7 +113,7 @@ app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is operat
 app.get('/sessions/data', async (req, res) => {
 
 	// Get Session Data:
-	const allSessionsData = await require('./utils/sessions/sessionManager').readSessions()
+	const allSessionsData = await require('./utils/sessions/sessionManager').getSessions('593097033368338435')
 
 	// Data Undefined:
 	if(!allSessionsData){ res.status(500).json({response: '"allSessionsData" NOT FOUND!', code: 500}); return }

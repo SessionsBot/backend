@@ -17,14 +17,19 @@ module.exports = {
 		// Parese Interaction Data:
 		const [interactionId, interactionEventId] = interaction.customId.split(':');
 
+
 		// Get Session Data:
-		const requestedSessionData = await sessionManager.getSession(interactionEventId)
+		const guildId = interaction.message.guildId
+		const guildSessions = await sessionManager.getSessions(guildId)
+		const requestedSessionData = guildSessions[interactionEventId]
+		const sessionSignupMessageId = guildSessions.sessionsSignupMessageId
+
 		// Confirm Data:
-		if(!requestedSessionData || Object.entries(requestedSessionData).length === 0) {
+		if(!requestedSessionData) {
 			return console.warn(`{!} Couldn't find session data!`)
 		}
 
-
+		
 		// Confirm positions available:
 		const eventHostTaken = (requestedSessionData['host'] != null);
 		const eventTrainersCount = requestedSessionData['trainers'].length;
@@ -96,7 +101,7 @@ module.exports = {
 			});
 
 			// Update Original Event Message: (hides sign up button if not already)
-			sessionManager.refreshEventMessage(interactionEventId)
+			sessionManager.getRefreshedSignupMessage(guildId, sessionSignupMessageId)
 
 			// Schedule response message deletion:
 			setTimeout(async () => {
@@ -161,7 +166,10 @@ module.exports = {
 
 
 				// Update & retreive session data:
-				const [assignRoleSuccess, sessionData] = await sessionManager.updateSessionRole(interactionEventId, selectedRole, selectInteraction.user.id)
+				const [assignRoleSuccess, sessionData] = await sessionManager.assignUserSessionRole(guildId, interactionEventId, interaction.user.id, selectedRole)
+
+				// Update Signup Message:
+				await sessionManager.getRefreshedSignupMessage(guildId, sessionSignupMessageId)
 
 				if (assignRoleSuccess) {
 					// SUCCESS - Respond:

@@ -24,13 +24,14 @@ const data = new SlashCommandBuilder()
 // Custom Response Methods:
 const responseMethods = { 
     // Get Update Events Container:
-    getUpdatedEventsList: async (interaction) => {
+    getUpdatedEventsList: async (interaction, allSessionsData) => {
         // Load all sessions:
-        const allSessionsData = await sessionManager.readSessions()
         const eventsHosting = {};
         const eventsTraining = {};
         let eventCount = 0;
         const userId = interaction.user.id
+        const guildId = interaction.guildId
+        
 
         // Check each session data for user signed up:
         for (const [sessionId, sessionData] of Object.entries(allSessionsData)){
@@ -40,7 +41,7 @@ const responseMethods = {
                 eventCount += 1;
             }
             // Check if Training Crew:
-            if(sessionData['trainers'].includes(userId)) {
+            if (Array.isArray(sessionData.trainers) && sessionData.trainers.includes(userId)) {
                 eventsTraining[`${sessionId}`] = sessionData;
                 eventCount += 1;
             }
@@ -122,8 +123,12 @@ const responseMethods = {
 // On Command Excecution:
 async function execute(interaction) { 
     try { // Safley Excecute
+        // Get guild sessions data:
+        let allSessionsData = await sessionManager.getSessions(interaction.guildId)
+
+
         // Respond to Cmd - Event List or No Events Alert:
-        const eventListContainer = await responseMethods.getUpdatedEventsList(interaction)
+        const eventListContainer = await responseMethods.getUpdatedEventsList(interaction, allSessionsData)
         await interaction.reply({
             flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
             components: [eventListContainer]
@@ -147,7 +152,10 @@ async function execute(interaction) {
             const [interactionID, eventID] = collectorInteraction.customId.split(':');
 
             if(interactionID == 'startLeaveEventRole') { // START CONFIRMATION - Event Role Removal Confirmation
-                const eventData = await sessionManager.getSession(eventID)
+
+                const eventData = allSessionsData[eventID]
+                if(!eventData) {return console.log(`{!} Cannot find session data for role removal confirmation!`)}
+
                 const usersRoleName = function() { // Get Role String from Event Data
                     // Event Host:
                     if (eventData['host'] === collectorInteraction.user.id) {
@@ -193,13 +201,13 @@ async function execute(interaction) {
                 })
             }
 
-            if(interactionID == 'confirmEventRemoval') { // CONFIRMED - Event Role Removal Confirmation
+            if(interactionID == 'confirmEventRemoval') { // CONFIRMED - Event Role Removal Confirmation String()
                 // Attempt Removal:
-                const [updateSuccess, sessionData] = await sessionManager.removePlayerFromEventById(eventID, collectorInteraction.user.id)
+                const updateData = await sessionManager.removeUserFromSessionRole(String(collectorInteraction.guildId), String(eventID), String(collectorInteraction.user.id)) //.removePlayerFromEventById(eventID, collectorInteraction.user.id)
 
                 // Build Message Response:
                 const removalResponseContainer = new ContainerBuilder()
-                if (updateSuccess) { // Role Removal Success:
+                if (updateData[0]) { // Role Removal Success:
                     removalResponseContainer.setAccentColor(0x6dc441)
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - Success ✅'))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
@@ -247,7 +255,8 @@ async function execute(interaction) {
 
             if(interactionID == 'cancelEventRemoval') { // REJECTED - Event Role Removal Confirmation 
                 // Edit Message w/ Response:
-                const eventListContainer = await responseMethods.getUpdatedEventsList(collectorInteraction)
+                allSessionsData = await sessionManager.getSessions(collectorInteraction.guildId)
+                const eventListContainer = await responseMethods.getUpdatedEventsList(collectorInteraction, allSessionsData)
                 await interaction.editReply({
                     components: [eventListContainer]
                 })
