@@ -11,7 +11,7 @@ const path = require('node:path');
 
 // ------- [ File Loader Utility: ] -------
 
-const debugFileLoader = false;
+const debugFileLoader = true;
 
 function getAllFiles(dir, ext, fileList = []) {
 	const files = fs.readdirSync(dir);
@@ -29,21 +29,14 @@ function getAllFiles(dir, ext, fileList = []) {
 // ------- [ Initialize Commands: ] -------
 
 client.commands = new Collection();
-const commandFolders = fs.readdirSync(path.join(__dirname, 'commands'));
+const commandFiles = getAllFiles(path.join(__dirname, 'src', 'commands'));
 
-for (const folder of commandFolders) {
-	const commandsPath = path.join(__dirname, 'commands', folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file);
-		const command = require(filePath);
-
-		if ('data' in command && 'execute' in command) {
-			client.commands.set(command.data.name, command);
-		} else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-		}
+for (const filePath of commandFiles) {
+	const command = require(filePath);
+	if ('data' in command && 'execute' in command) {
+		client.commands.set(command.data.name, command);
+	} else {
+		console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 	}
 }
 
@@ -52,7 +45,7 @@ if(debugFileLoader) {console.log(`[✅] Loaded ${client.commands.size} command(s
 // ------- [ Initialize Buttons: ] -------
 
 client.buttons = new Collection();
-const buttonFiles = getAllFiles(path.join(__dirname, 'buttons'), '.js');
+const buttonFiles = getAllFiles(path.join(__dirname, 'src', 'buttons'), '.js');
 
 for (const filePath of buttonFiles) {
 	const button = require(filePath);
@@ -66,25 +59,14 @@ for (const filePath of buttonFiles) {
 if(debugFileLoader) {console.log(`[✅] Loaded ${client.buttons.size} button(s).`);}
 
 // ------- [ Initialize Select Menus: (DISABLED) ] -------
-
-// client.selectMenus = new Collection();
-// const selectMenuFiles = getAllFiles(path.join(__dirname, 'selectMenus'), '.js');
-// for (const filePath of selectMenuFiles) {
-// 	const selectMenu = require(filePath);
-// 	if ('data' in selectMenu && 'execute' in selectMenu) {
-// 		client.selectMenus.set(selectMenu.data.customId, selectMenu);
-// 	} else {
-// 		console.log(`[WARNING] The select menu at ${filePath} is missing a required "data" or "execute" property.`);
-// 	}
-// }
-// if(debugFileLoader) {console.log(`[✅] Loaded ${client.selectMenus.size} select menu(s).`);}
+// { ... }
 
 // ------- [ Initialize Events: ] -------
 
-const eventFiles = fs.readdirSync(path.join(__dirname, 'events')).filter(file => file.endsWith('.js'));
+const eventFiles = fs.readdirSync(path.join(__dirname, 'src', 'events')).filter(file => file.endsWith('.js'));
 
 for (const file of eventFiles) {
-	const filePath = path.join(__dirname, 'events', file);
+	const filePath = path.join(__dirname, 'src', 'events', file);
 	const event = require(filePath);
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args));

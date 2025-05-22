@@ -8,7 +8,7 @@ const {
     ChannelType,
     time
 } = require('discord.js'); // Import Discord.js
-const global = require('../../global.js') // Import Global Variables
+const global = require('../global.js') // Import Global Variables
 const sessionManager = require('./sessionManager.js');
 const { db, createNewGuild } = require('../firebase.js'); // Import Firebase
 
@@ -116,7 +116,7 @@ async function createEvents(guildId, times = [10, 14, 19]) {
 async function startSchedule() {
     try {
         const cron = require('node-cron');
-        const global = require('../../global.js')
+        const global = require('../global.js')
 
         // Schedule the function to run every day at 10:15 AM CST
         cron.schedule('00 6 * * *', // MM HH (time to excecute)

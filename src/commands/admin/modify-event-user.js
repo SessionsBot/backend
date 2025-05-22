@@ -10,7 +10,7 @@ const {
 } = require('discord.js'); // Import Discord.js
 
 const sessionManager = require('../../utils/sessions/sessionManager'); // Import Session Manager
-const global = require('../../global'); // Import Global Variables
+const global = require('../../utils/global'); // Import Global Variables
 
 // Register Command:
 const data = new SlashCommandBuilder()
@@ -106,7 +106,7 @@ async function execute(interaction) {
 
         // Attempt to Give Role:
         const updateData = await sessionManager.assignUserSessionRole(String(guildId), String(eventIdProvided), String(targetUser.id), 'Event Host')
-        if (updateData[0]) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
+        if (updateData[0]) {await sendSuccessMsg()} else {await sendErrorMsg(updateData[1])}
 
     }
     
@@ -115,7 +115,7 @@ async function execute(interaction) {
 
         // Attempt to Give Role:
         const updateData = await sessionManager.assignUserSessionRole(String(guildId), String(eventIdProvided), String(targetUser.id), 'Training Crew')
-        if (updateData[0]) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
+        if (updateData[0]) {await sendSuccessMsg()} else {await sendErrorMsg(updateData[1])}
 
     }
     
@@ -124,7 +124,7 @@ async function execute(interaction) {
        
         // Attempt to Remove Role:
         const updateData = await sessionManager.removeUserFromSessionRole(String(guildId), String(eventIdProvided), String(targetUser.id),)
-        if (updateData[0]) {await sendSuccessMsg()} else {await sendErrorMsg(data)}
+        if (updateData[0]) {await sendSuccessMsg()} else {await sendErrorMsg(updateData[1])}
 
     } 
     

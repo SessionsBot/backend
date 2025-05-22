@@ -1,8 +1,8 @@
 // Imports:
 const fs = require('fs').promises; // Import File System
 const path = require('path'); // Import Path
-const { admin, db } = require('../../utils/firebase.js'); // Import Firebase
-const global = require('../../global.js'); // Import Global Variables
+const { admin, db } = require('../firebase.js'); // Import Firebase
+const global = require('../global.js'); // Import Global Variables
 const { compileFunction } = require('vm');
 
 // Get All Sessions for a Guild:

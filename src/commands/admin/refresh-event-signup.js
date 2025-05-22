@@ -9,8 +9,8 @@ const {
     PermissionFlagsBits,
 } = require('discord.js'); // Import Discord.js
 
-const sessionManager = require('../../utils/sessions/sessionManager'); // Import Session Manager
-const global = require('../../global'); // Import Global Variables
+const sessionManager = require('../../../utils/sessions/sessionManager'); // Import Session Manager
+const global = require('../../../utils/global'); // Import Global Variables
 
 // Register Command:
 const data = new SlashCommandBuilder()
@@ -28,7 +28,11 @@ console.log('[ i ] /refresh-event-signup needs logic updates!!')
 async function execute(interaction) {
     try {
 
-        interaction.reply('Uh oh! This command has been disbaled for the time being while we get it back up and running! Check back later...')
+        // Send disabled alert:
+        interaction.reply({
+            content: 'Uh oh! This command has been disbaled for the time being while we get it back up and running! Check back later...',
+            flags: MessageFlags.Ephemeral
+        })
         return;
 
         // Defer Response:
