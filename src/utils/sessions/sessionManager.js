@@ -12,7 +12,12 @@ async function getSessions(guildId) {
         console.log(`{!} Guild with ID ${guildId} does not exist.`);
         return {};
     }
-    return guildDoc.data().sessions || null;
+    const sessionData = guildDoc.data().sessions || null;
+    const guildData = guildDoc.data() || null;
+
+    sessionData && (sessionData.guildData = guildData);
+
+    return sessionData
 }
 
 // Create Session by Discord Timestamp:
@@ -54,22 +59,22 @@ async function assignUserSessionRole(guildId, sessionId, userId, role) {
     const session = guildDoc.sessions[sessionId];
     if (!session) {
         console.warn(`Session with ID ${sessionId} not found.`);
-        return [false, `Session with ID ${sessionId} not found.`];
+        return [false, `Session with ID ${sessionId} not found.`, guildDoc];
     }
 
     // Ensure only allowed roles are updated
-    if (!['Event Host', 'Training Crew'].includes(role)) {
+    if (!['Session Host', 'Training Crew'].includes(role)) {
         console.warn(`Invalid role "${role}" specified.`);
-        return [false, `Invalid role "${role}" specified.`];
+        return [false, `Invalid role "${role}" specified.`, guildDoc];
     }
 
-    // Selected Event Host:
-    if (role === 'Event Host') {
+    // Selected Session Host:
+    if (role === 'Session Host') {
         // Confirm Available:
         if (session["host"] === null && !session["trainers"].includes(userId)) {
             session["host"] = userId;
         } else {
-            return [false, `This position is already taken or you're already signed up!`];
+            return [false, `This position is already taken or you're already signed up!`, guildDoc];
         }
     }
 
@@ -79,7 +84,7 @@ async function assignUserSessionRole(guildId, sessionId, userId, role) {
         if (session["trainers"].length <= 2 && !session["trainers"].includes(userId) && session["host"] != userId) {
             session["trainers"].push(userId);
         } else {
-            return [false, `This position is already taken or you're already signed up!`];
+            return [false, `This position is already taken or you're already signed up!`, guildDoc];
         }
     }
 
@@ -96,7 +101,7 @@ async function assignUserSessionRole(guildId, sessionId, userId, role) {
     await getRefreshedSignupMessage(guildId, guildDoc.sessionsSignup_MessageId)
 
     // Return results:
-    return [true, session];
+    return [true, session, guildDoc];
 }
 
 // Assign User Role withing Session:
@@ -113,7 +118,7 @@ async function removeUserFromSessionRole(guildId, sessionId, userId) {
     const session = guildDoc.sessions[sessionId];
     if (!session) {
         console.warn(`Session with ID ${sessionId} not found.`);
-        return [false, `Session with ID ${sessionId} not found.`];
+        return [false, `Session with ID ${sessionId} not found.`, guildDoc];
     }
     // Remove User from Session:
     if (session["host"] === userId) {
@@ -121,7 +126,7 @@ async function removeUserFromSessionRole(guildId, sessionId, userId) {
     } else if (session["trainers"].includes(userId)) {
         session["trainers"] = session["trainers"].filter(trainer => trainer !== userId);
     } else {
-        return [false, `User is not part of this session!`];
+        return [false, `User is not part of this session!`, guildDoc];
     }
     // Success - Apply changes to session data:
     await db.collection('guilds').doc(guildId).update({
@@ -136,10 +141,152 @@ async function removeUserFromSessionRole(guildId, sessionId, userId) {
     await getRefreshedSignupMessage(guildId, guildDoc.sessionsSignup_MessageId)
 
     // Return results:
-    return [true, session];
+    return [true, session, guildDoc];
 }
 
-// Return Refreshed Session Signup Message / Edit Message if ID Provided:
+// [OLD - V1] Return Refreshed Session Signup Message / Edit Message if ID Provided:
+// async function getRefreshedSignupMessage_V1(guildId, messageId) {
+//     // Discord.js:
+//     const { 
+//         ContainerBuilder, 
+//         SeparatorBuilder, 
+//         TextDisplayBuilder,
+//         ActionRowBuilder,
+//         ButtonBuilder,
+//         ButtonStyle,
+//         MessageFlags
+//     } = require('discord.js');
+
+//     // Get Guild Data:
+//     const guildDoc = await db.collection('guilds').doc(String(guildId)).get({ source: 'server' });
+//     if (!guildDoc.exists) { // Confirm Guild:
+//         console.log(`Guild with ID ${guildId} does not exist.`);
+//         return null, 'An Error Occured! (guild not found?)'
+//     }
+//     const guildData = guildDoc.data();
+//     const sessionSignUp_ChannelId = String(guildData.sessionSignUp_Channel);
+//     const sessionSignUp_MentionRoleIds = guildData.sessionSignUp_MentionRoles;
+//     const unsortedSessions = guildData.sessions;
+//     const guildSessions = Object.entries(unsortedSessions).sort((a, b) => a[1].date - b[1].date);
+
+//     // Debug:
+//     if(global.outputDebug_InDepth) {console.log('Guild Sessions:', guildSessions);}
+
+//     // Build Message Contents:
+//     const messageContent = async () => {
+//         const signupContainer = new ContainerBuilder();
+//         const seperator = new SeparatorBuilder();
+//         signupContainer.setAccentColor(0x9b42f5)
+
+//         signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('# 📅  __Session Signup__  📅'))
+//         signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Upcoming group sessions are listed below:`))
+
+//         signupContainer.addSeparatorComponents(seperator)
+
+//         // Apend each session to msg:
+//         for ([sessionId, sessionData] of guildSessions) {
+
+//             // Roles Data:
+//             const sessionHostTaken = (sessionData['host'] != null);
+//             const sessionTrainersCount = sessionData['trainers']?.length || 0;
+//             const trainersFull = (sessionTrainersCount >= 3);
+//             const sessionFull = (trainersFull && sessionHostTaken)
+
+//             // Create updated feilds:
+//             const hostFieldValue = () => {
+//                 return sessionHostTaken
+//                 ? '*`UNAVAILABLE ⛔️`* - *(1/1)* \n' + `> <@${sessionData['host']}>`
+//                 : '*`AVAILABLE 🟢`* - *(0/1)*';
+//             };
+//             const trainersFieldValue = () => {
+//                 const sessionTrainers = Array.isArray(sessionData['trainers']) ? sessionData['trainers'] : []
+//                 return trainersFull
+//                 ? '*`UNAVAILABLE ⛔️`* -' +  ` *(${sessionTrainersCount}/3)* \n` + sessionTrainers.map(id => `> <@${id}>`).join('\n')
+//                 : '*`AVAILABLE 🟢`* -' +  ` *(${sessionTrainersCount}/3)* \n` + sessionTrainers.map(id => `> <@${id}>`).join('\n')
+//             }
+
+
+//             signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⏰  __Date:__  \n ### <t:${sessionData.date}:F> \n`)) // Date
+
+//             signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### 🎙️ __Session Host:__  \n ### ${hostFieldValue()} \n`)) // Host
+
+//             signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
+
+//             signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### 🤝  __Trainer Crew:__  \n ### ${trainersFieldValue()}`)) // Trainers
+
+//             signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
+//             signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
+
+//             // Check Capcity:
+//             let sessionButtons;
+//             if(sessionFull) { // Session Full - Hide Signup:
+//                 sessionButtons = new ActionRowBuilder().addComponents(	
+//                     new ButtonBuilder()
+//                         .setCustomId(`sessionSignup:${sessionId}`)
+//                         .setLabel('❌ Session Full')
+//                         .setStyle(ButtonStyle.Success)
+//                         .setDisabled(true),
+                    
+//                     new ButtonBuilder()
+//                         .setLabel('🎮 Game Link')
+//                         .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
+//                         .setStyle(ButtonStyle.Link)
+//                 );
+//             } else { // Session NOT Full - Show Signup:
+//                 sessionButtons = new ActionRowBuilder().addComponents(
+//                     new ButtonBuilder()
+//                         .setCustomId(`sessionSignup:${sessionId}`)
+//                         .setLabel('📝 Sign Up')
+//                         .setStyle(ButtonStyle.Success),
+                    
+//                     new ButtonBuilder()
+//                         .setLabel('🎮 Game Link')
+//                         .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
+//                         .setStyle(ButtonStyle.Link)
+//                 );
+//             }
+//             signupContainer.addActionRowComponents(sessionButtons)
+
+//             signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
+//             signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
+
+//             signupContainer.addSeparatorComponents(seperator)
+
+//         }
+
+//         return signupContainer // Return signupContainer message contents
+
+//     }
+    
+    
+
+//     // Edit Message by Id if provided:
+//     if(messageId){
+//         const announcementChannel = await global.client.channels.fetch(sessionSignUp_ChannelId);
+//         const message = await announcementChannel.messages.fetch(messageId);
+//         const messageContainer = await messageContent() 
+
+//         // Edit Original Message:
+//         await message.edit({
+//             flags: MessageFlags.IsComponentsV2,
+//             components : [messageContainer],
+//         }).catch((err) => {
+//             console.log('{!} Failed to Update Session Embed:');
+//             console.log(err);
+
+//         });
+//     } 
+
+//     // No message to edit - Return raw messgae contents:
+//     if(!messageId) { 
+//         const container = await messageContent() 
+//         return container // Return full message contents
+//     }
+
+// }
+
+
+// Returns Refreshed Session Signup Message / Edits Message if ID Provided:
 async function getRefreshedSignupMessage(guildId, messageId) {
     // Discord.js:
     const { 
@@ -165,7 +312,7 @@ async function getRefreshedSignupMessage(guildId, messageId) {
     const guildSessions = Object.entries(unsortedSessions).sort((a, b) => a[1].date - b[1].date);
 
     // Debug:
-    if(global.outputDebug_InDepth) {console.log('Guild Sessions:', guildSessions);}
+    if(global.outputDebug_InDepth) {console.log('Guild Sessions Fetched for Signup Message:', guildSessions);}
 
     // Build Message Contents:
     const messageContent = async () => {
@@ -173,80 +320,97 @@ async function getRefreshedSignupMessage(guildId, messageId) {
         const seperator = new SeparatorBuilder();
         signupContainer.setAccentColor(0x9b42f5)
 
-        signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('# 📅  __Session Signup__  📅'))
-        signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Upcoming group sessions are listed below:`))
+        // Title & Desc:
+        signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('# 📅  __Session Signup__  📅 \n-# Upcoming group sessions are listed below:'))
+        // Spacer:
+        signupContainer.addSeparatorComponents(seperator) 
 
-        signupContainer.addSeparatorComponents(seperator)
-
-        // Apend each event to msg:
+        // Apend each session to msg:
         for ([sessionId, sessionData] of guildSessions) {
 
             // Roles Data:
-            const eventHostTaken = (sessionData['host'] != null);
-            const eventTrainersCount = sessionData['trainers']?.length || 0;
-            const trainersFull = (eventTrainersCount >= 3);
-            const eventFull = (trainersFull && eventHostTaken)
+            const sessionHostTaken = (sessionData['host'] != null);
+            const sessionTrainersCount = sessionData['trainers']?.length || 0;
+            const trainersFull = (sessionTrainersCount >= 3);
+            const sessionFull = (trainersFull && sessionHostTaken)
 
             // Create updated feilds:
-            const hostFieldValue = () => {
-                return eventHostTaken
-                ? '*`UNAVAILABLE ⛔️`* - *(1/1)* \n' + `> <@${sessionData['host']}>`
-                : '*`AVAILABLE 🟢`* - *(0/1)*';
+            const hostFieldValue = async () => {
+                return sessionHostTaken
+                ? '### **[🎙️] Session Host : *`UNAVAILABLE ⛔️`*** *(1/1)* \n' + ` > <@${sessionData['host']}> \n`
+                : '### **[🎙️] Session Host : *`AVAILABLE 🟢`*** *(0/1)* \n'  + ` > *@AVAILABLE* \n`
             };
-            const trainersFieldValue = () => {
+
+            const trainersFieldValue = async () => {
                 const sessionTrainers = Array.isArray(sessionData['trainers']) ? sessionData['trainers'] : []
+                if(sessionTrainers.length === 0) {return '### **[ 🤝 ] Trainer Crew : *`AVAILABLE 🟢`***' +  ` *(0/3)* \n` + ` > *@AVAILABLE*  \n`}
                 return trainersFull
-                ? '*`UNAVAILABLE ⛔️`* -' +  ` *(${eventTrainersCount}/3)* \n` + sessionTrainers.map(id => `> <@${id}>`).join('\n')
-                : '*`AVAILABLE 🟢`* -' +  ` *(${eventTrainersCount}/3)* \n` + sessionTrainers.map(id => `> <@${id}>`).join('\n')
+                ? '### **[ 🤝 ] Trainer Crew : *`UNAVAILABLE ⛔️`***' +  ` *(${sessionTrainersCount}/3)* \n` + sessionTrainers.map(id => `> <@${id}>`).join('\n')
+                : '### **[ 🤝 ] Trainer Crew : *`AVAILABLE 🟢`***' +  ` *(${sessionTrainersCount}/3)* \n` + sessionTrainers.map(id => `> <@${id}>`).join('\n')
             }
 
-
-            signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⏰  __Date:__  \n ### <t:${sessionData.date}:F> \n\n`)) // Date
-
-            signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### 🎙️ __Event Host:__  \n ### ${hostFieldValue()} \n\n`)) // Host
-
-            signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
-
-            signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### 🤝  __Trainer Crew:__  \n ### ${trainersFieldValue()}`)) // Trainers
-
-            signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
-            signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
-
-            // Check Capcity:
-            let eventButtons;
-            if(eventFull) { // Event Full - Hide Signup:
-                eventButtons = new ActionRowBuilder().addComponents(	
-                    new ButtonBuilder()
-                        .setCustomId(`eventSignup:${sessionId}`)
-                        .setLabel('❌ Event Full')
-                        .setStyle(ButtonStyle.Success)
-                        .setDisabled(true),
-                    
-                    new ButtonBuilder()
-                        .setLabel('🎮 Game Link')
-                        .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
-                        .setStyle(ButtonStyle.Link)
-                );
-            } else { // Event NOT Full - Show Signup:
-                eventButtons = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder()
-                        .setCustomId(`eventSignup:${sessionId}`)
-                        .setLabel('📝 Sign Up')
-                        .setStyle(ButtonStyle.Success),
-                    
-                    new ButtonBuilder()
-                        .setLabel('🎮 Game Link')
-                        .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
-                        .setStyle(ButtonStyle.Link)
-                );
+            let sessionButtons = async () => {
+                if(sessionFull) { // Session Full - Hide Signup:
+                    return new ActionRowBuilder().addComponents(	
+                        new ButtonBuilder()
+                            .setCustomId(`sessionSignup:${sessionId}`)
+                            .setEmoji('⛔️')
+                            .setLabel('Session Full')
+                            .setStyle(ButtonStyle.Primary)
+                            .setDisabled(true),
+                        
+                        new ButtonBuilder()
+                            .setEmoji('🎯')
+                            .setLabel('Game Link')
+                            .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
+                            .setStyle(ButtonStyle.Link)
+                    );
+                } else { // Session NOT Full - Show Signup:
+                    return new ActionRowBuilder().addComponents(
+                        new ButtonBuilder()
+                            .setCustomId(`sessionSignup:${sessionId}`)
+                            .setEmoji('📝')
+                            .setLabel('Sign Up')
+                            .setStyle(ButtonStyle.Success),
+                        
+                        new ButtonBuilder()
+                            .setEmoji('🎯')
+                            .setLabel('Game Link')
+                            .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
+                            .setStyle(ButtonStyle.Link)
+                    );
+                }
             }
-            signupContainer.addActionRowComponents(eventButtons)
 
-            signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
-            signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
+            // Session Text Content:
+            let sessionTextContent = '';
+            // Session Date:
+            sessionTextContent += `### **[ ⏰ ] <t:${sessionData['date']}:F>** \n > <t:${sessionData['date']}:R> \n` 
+            // Session Host:
+            sessionTextContent += await hostFieldValue()
+            // Session Trainers:
+            sessionTextContent += await trainersFieldValue()
 
+            // Append text to container:
+            signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(sessionTextContent));
+            // Invisible Spacer:
+            signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) )
+            // Session Buttons:
+            signupContainer.addActionRowComponents(await sessionButtons())
+            // Invisible Spacer:
+            signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) )
+            // Seperator:
             signupContainer.addSeparatorComponents(seperator)
 
+        }
+
+        // Add signup mention role tag:
+        if(Array.isArray(sessionSignUp_MentionRoleIds) && sessionSignUp_MentionRoleIds.length >= 1) {
+            let mentionString = '🔔: '
+            for (const roleId of sessionSignUp_MentionRoleIds) {
+                mentionString += `<@&${roleId}> `
+            }
+            signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${mentionString}`))
         }
 
         return signupContainer // Return signupContainer message contents
@@ -266,10 +430,12 @@ async function getRefreshedSignupMessage(guildId, messageId) {
             flags: MessageFlags.IsComponentsV2,
             components : [messageContainer],
         }).catch((err) => {
-            console.log('{!} Failed to Update Event Embed:');
+            console.log('{!} Failed to Update Session Embed:');
             console.log(err);
 
         });
+
+        return true
     } 
 
     // No message to edit - Return raw messgae contents:
@@ -287,5 +453,5 @@ module.exports = {
     getSessions,
     assignUserSessionRole,
     removeUserFromSessionRole,
-    getRefreshedSignupMessage
+    getRefreshedSignupMessage,
 };

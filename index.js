@@ -11,7 +11,7 @@ const path = require('node:path');
 
 // ------- [ File Loader Utility: ] -------
 
-const debugFileLoader = true;
+const debugFileLoader = false;
 
 function getAllFiles(dir, ext, fileList = []) {
 	const files = fs.readdirSync(dir);

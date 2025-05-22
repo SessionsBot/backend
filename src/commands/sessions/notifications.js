@@ -13,18 +13,18 @@ const global = require('../../utils/global')
 
 // Register Command:
 const data = new SlashCommandBuilder()
-    .setName('event-notifications')
-    .setDescription("Toggles event notifications. DMs must be enabled to receive them.")
+    .setName('session-notifications')
+    .setDescription("Toggles session notifications. DMs must be enabled to receive them.")
     .setContexts(InteractionContextType.Guild)
     .addBooleanOption(option =>
 			option
 				.setName('enabled')
-				.setDescription('[TRUE] = Enables event notifications  |  [FALSE] = Disables event notifications')
+				.setDescription('[TRUE] = Enables session notifications  |  [FALSE] = Disables session notifications')
 				.setRequired(true))
     .addBooleanOption(option =>
 			option
 				.setName('only-assigned')
-				.setDescription(`[TRUE] = Only notifies events you're assigned  |  [FALSE] = Sends ALL event notifications`)
+				.setDescription(`[TRUE] = Only notifies sessions you're assigned  |  [FALSE] = Sends ALL session notifications`)
 				.setRequired(true))
 
 
@@ -42,7 +42,7 @@ async function execute(interaction) {
             embeds: [
                 new EmbedBuilder()
                 .setTitle('❗️ - Uh Oh!')
-                .setDescription(`*This bot user cannot send you DM messages!* You **won't receive event notifications** until you edit your privacy settings...`)
+                .setDescription(`*This bot user cannot send you DM messages!* You **won't receive session notifications** until you edit your privacy settings...`)
                 .setColor(global.colors.error)
             ],
             flags: MessageFlags.Ephemeral

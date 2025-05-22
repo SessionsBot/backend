@@ -14,7 +14,7 @@ const { db, createNewGuild } = require('../firebase.js'); // Import Firebase
 
 
 // Create New Sessions:
-async function createEvents(guildId, times = [10, 14, 19]) {
+async function createSessions(guildId, times = [10, 14, 19]) {
     // Get Guild Data:
     let guildDoc = await db.collection('guilds').doc(String(guildId)).get();
     if (!guildDoc.exists) { // Confirm Guild:
@@ -55,7 +55,7 @@ async function createEvents(guildId, times = [10, 14, 19]) {
     if(global.outputDebug_General) {console.log(`[⚙️] Adding today's sessions...`)}
 
     // Create each session by time:
-    for (const eventTimeHour of times) {
+    for (const sessionTimeHour of times) {
         
         // Generate Timestamp:
         // Get current time in UTC
@@ -73,7 +73,7 @@ async function createEvents(guildId, times = [10, 14, 19]) {
         const timezoneOffsetHours = timezoneOffsetMs / (1000 * 60 * 60);
     
         // Set desired time in UTC (CST/CDT + offset)
-        dateUTC.setUTCHours(eventTimeHour + timezoneOffsetHours, 30, 0, 0); // X:30 CST/CDT in UTC
+        dateUTC.setUTCHours(sessionTimeHour + timezoneOffsetHours, 30, 0, 0); // X:30 CST/CDT in UTC
     
         // Return timestamp:
         const discordTimestamp = Math.floor(dateUTC.getTime() / 1000);
@@ -120,7 +120,7 @@ async function startSchedule() {
         // Schedule the function to run every day at 10:15 AM CST
         cron.schedule('00 6 * * *', // MM HH (time to excecute)
             () => { // function to excecute
-                createEvents('593097033368338435');
+                createSessions('593097033368338435');
             },
             { // schedule options
                 scheduled: true,
@@ -129,18 +129,10 @@ async function startSchedule() {
         );
 
         // Call the function on bot start up:
-        await createEvents('593097033368338435');
-
-        // ------------------------ Testing Session Manager V2 ------------------------
-
-        // sessionManager.assignUserSessionRole('593097033368338435', 'e_mayjb25xs53z', 'USER_ID', 'host')
-        // const updateData = await sessionManager.assignUserSessionRole('593097033368338435', 'e_mayjb25xs53z', '298796807323123712', 'trainer')
-        // console.log(`Session Update Attempt:`, updateData)
-        // sessionManager.getRefreshedSignupMessage('593097033368338435')
+        await createSessions('593097033368338435');
         
-
         // Debug
-        if(global.outputDebug_General) {
+        if(global.outputDebug_InDepth) {
             const timestamp = new Date().toLocaleString('en-US', {
                 year: '2-digit',
                 month: '2-digit',

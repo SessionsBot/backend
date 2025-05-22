@@ -11,17 +11,17 @@ const sessionManager = require('../../utils/sessions/sessionManager.js')
 
 module.exports = {
 	data: {
-		customId: 'eventSignup',
+		customId: 'sessionSignup',
 	},
 	async execute(interaction) {
 		// Parese Interaction Data:
-		const [interactionId, interactionEventId] = interaction.customId.split(':');
+		const [interactionId, interactionSessionId] = interaction.customId.split(':');
 
 
 		// Get Session Data:
 		const guildId = interaction.message.guildId
 		const guildSessions = await sessionManager.getSessions(guildId)
-		const requestedSessionData = guildSessions[interactionEventId]
+		const requestedSessionData = guildSessions[interactionSessionId]
 		const sessionSignupMessageId = guildSessions.sessionsSignupMessageId
 
 		// Confirm Data:
@@ -31,18 +31,18 @@ module.exports = {
 
 		
 		// Confirm positions available:
-		const eventHostTaken = (requestedSessionData['host'] != null);
-		const eventTrainersCount = requestedSessionData['trainers'].length;
-		const trainersFull = (eventTrainersCount >= 3);
-		const userAlreadyInEvent = requestedSessionData['host'] === interaction.user.id || requestedSessionData['trainers'].includes(interaction.user.id);
+		const sessionHostTaken = (requestedSessionData['host'] != null);
+		const sessionTrainersCount = requestedSessionData['trainers'].length;
+		const trainersFull = (sessionTrainersCount >= 3);
+		const userAlreadyInSession = requestedSessionData['host'] === interaction.user.id || requestedSessionData['trainers'].includes(interaction.user.id);
 
-		// User already in event:
-		if(userAlreadyInEvent){
+		// User already in session:
+		if(userAlreadyInSession){
 			// Get current role:
 			const usersRoleName = function() {
-				// Event Host:
+				// Session Host:
 				if (requestedSessionData['host'] === interaction.user.id) {
-					return 'Event Host'
+					return 'Session Host'
 				}
 				// Training Crew:
 				if (requestedSessionData['trainers'].includes(interaction.user.id)) {
@@ -56,8 +56,8 @@ module.exports = {
 				embeds: [
 					new EmbedBuilder()
 					.setColor('#d43f37')
-					.setTitle('❗️ - Already Assigned Event!')
-					.setDescription('Could not sign up again for this event! To edit your position within this event please use the `/my-events` command!')
+					.setTitle('❗️ - Already Assigned Session!')
+					.setDescription('Could not sign up again for this session! To edit your position within this session please use the `/my-sessions` command!')
 					.addFields({name: '💼 Current Role', value: '`' + usersRoleName() + '`'})
   					.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
 				],
@@ -78,19 +78,19 @@ module.exports = {
 		}
 
 		// No positions availble:
-		if(eventHostTaken && trainersFull){
+		if(sessionHostTaken && trainersFull){
 			// Repond - Cancel:
 			await interaction.reply({
 				components: [],
 				embeds: [
 					new EmbedBuilder()
 						.setColor('#eb9234')
-						.setTitle('❗️ - Event at Capacity!')
+						.setTitle('❗️ - Session at Capacity!')
 						.addFields( // Spacer
 							{ name: ' ', value: ' ' }
 						)
 						.addFields(
-							{ name: '🧾 Details:', value: '` There are no positions within this event currently available, please check back later! `', inline: true },
+							{ name: '🧾 Details:', value: '` There are no positions within this session currently available, please check back later! `', inline: true },
 						)          
 						.addFields( // Spacer
 							{ name: ' ', value: ' ' }
@@ -100,7 +100,7 @@ module.exports = {
 				flags: MessageFlags.Ephemeral
 			});
 
-			// Update Original Event Message: (hides sign up button if not already)
+			// Update Original Session Message: (hides sign up button if not already)
 			sessionManager.getRefreshedSignupMessage(guildId, sessionSignupMessageId)
 
 			// Schedule response message deletion:
@@ -120,29 +120,29 @@ module.exports = {
 			 // Get available roles:
 			let roleSelections = []
 			const selectOption_Host = new StringSelectMenuOptionBuilder()
-					.setLabel('Event Host')
+					.setLabel('Session Host')
 					.setDescription('The main instructor who shall guide and facilitate the meeting.')
-					.setValue('Event Host');
+					.setValue('Session Host');
 			const selectOption_Trainer = 
 				new StringSelectMenuOptionBuilder()
 					.setLabel('Training Crew')
 					.setDescription('The crew responsible for training employees divided by groups.')
 					.setValue('Training Crew');
-			if(!eventHostTaken){roleSelections.push(selectOption_Host)}
+			if(!sessionHostTaken){roleSelections.push(selectOption_Host)}
 			if(!trainersFull){roleSelections.push(selectOption_Trainer)}
 
 			// Selection Menu:
 			const selectRoleMenu = new StringSelectMenuBuilder()
-				.setCustomId(`selectEventRole:${interactionEventId}`)
+				.setCustomId(`selectSessionRole:${interactionSessionId}`)
 				.setPlaceholder('Choose a role!')
 				.addOptions(roleSelections);
 
-			const row_selectEventRole = new ActionRowBuilder().addComponents(selectRoleMenu);
+			const row_selectSessionRole = new ActionRowBuilder().addComponents(selectRoleMenu);
 
 			// Send the select role message and store reply
 			await interaction.reply({
-				content: 'Select your role for this event:',
-				components: [row_selectEventRole],
+				content: 'Select your role for this session:',
+				components: [row_selectSessionRole],
 				flags: MessageFlags.Ephemeral
 			});
 
@@ -166,7 +166,7 @@ module.exports = {
 
 
 				// Update & retreive session data:
-				const [assignRoleSuccess, sessionData] = await sessionManager.assignUserSessionRole(guildId, interactionEventId, interaction.user.id, selectedRole)
+				const [assignRoleSuccess, sessionData] = await sessionManager.assignUserSessionRole(guildId, interactionSessionId, interaction.user.id, selectedRole)
 
 				// Update Signup Message:
 				await sessionManager.getRefreshedSignupMessage(guildId, sessionSignupMessageId)

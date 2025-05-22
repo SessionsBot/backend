@@ -16,48 +16,49 @@ const global = require('../../utils/global'); // Import Global Variables
 
 // Register Command:
 const data = new SlashCommandBuilder()
-    .setName('my-events')
-    .setDescription("Lists your currently assigned events with respective options.")
+    .setName('my-sessions')
+    .setDescription("Lists your currently assigned sessions with respective options.")
     .setContexts(InteractionContextType.Guild)
 
 
 // Custom Response Methods:
 const responseMethods = { 
-    // Get Update Events Container:
-    getUpdatedEventsList: async (interaction, allSessionsData) => {
+    // Get Update Sessions Container:
+    getUpdatedSessionsList: async (interaction, allSessionsData) => {
         // Load all sessions:
-        const eventsHosting = {};
-        const eventsTraining = {};
-        let eventCount = 0;
+        const sessionsHosting = {};
+        const sessionsTraining = {};
+        let sessionCount = 0;
         const userId = interaction.user.id
         const guildId = interaction.guildId
+        let sessionSignUp_Channel = allSessionsData.guildData.sessionSignUp_Channel || 'unknown?'
         
 
         // Check each session data for user signed up:
         for (const [sessionId, sessionData] of Object.entries(allSessionsData)){
-            // Check if Event Host:
+            // Check if Session Host:
             if(sessionData['host'] === userId) {
-                eventsHosting[`${sessionId}`] = sessionData;
-                eventCount += 1;
+                sessionsHosting[`${sessionId}`] = sessionData;
+                sessionCount += 1;
             }
             // Check if Training Crew:
             if (Array.isArray(sessionData.trainers) && sessionData.trainers.includes(userId)) {
-                eventsTraining[`${sessionId}`] = sessionData;
-                eventCount += 1;
+                sessionsTraining[`${sessionId}`] = sessionData;
+                sessionCount += 1;
             }
         }
 
-        // Check if user has events:
-        if(eventCount >= 1){ // Assigned Events:
+        // Check if user has sessions:
+        if(sessionCount >= 1){ // Assigned Sessions:
 
             const container = new ContainerBuilder()
             const separator = new SeparatorBuilder()
 
             const titleText = new TextDisplayBuilder()
-                .setContent('## 📅  Your Events:')
+                .setContent('## 📅  Your Sessions:')
 
             const descText = new TextDisplayBuilder()
-                .setContent(`-# Events you're currently assigned to are listed below:`)
+                .setContent(`-# Sessions you're currently assigned to are listed below:`)
 
             // Color & Ttitle:
             container.setAccentColor(0x3bc2d1)
@@ -65,16 +66,16 @@ const responseMethods = {
             container.addTextDisplayComponents(descText)
             container.addSeparatorComponents(separator)
 
-            // Local Function For Each Event Row:
-            let thisEventIndex = 0;
-            async function createEventRow(sessionId, dateString, roleString) {
-                thisEventIndex += 1;
+            // Local Function For Each Session Row:
+            let thisSessionIndex = 0;
+            async function createSessionRow(sessionId, dateString, roleString) {
+                thisSessionIndex += 1;
                 container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⏰:  <t:${dateString}:F>` + '\n\n### 💼:  **`'+ roleString +'`** \n '))
                 container.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
                 container.addActionRowComponents(
                     new ActionRowBuilder().addComponents(
                         new ButtonBuilder()
-                            .setCustomId(`startLeaveEventRole:${sessionId}`)
+                            .setCustomId(`startLeaveSessionRole:${sessionId}`)
                             // .setEmoji('❌')
                             .setLabel('Remove')
                             .setStyle(ButtonStyle.Primary)
@@ -84,29 +85,29 @@ const responseMethods = {
             }
 
             // Add Hosting Role Sessions:
-            for (const [sessionId, sessionData] of Object.entries(eventsHosting)) { await createEventRow(sessionId, sessionData['date'], 'Event Host') }
+            for (const [sessionId, sessionData] of Object.entries(sessionsHosting)) { await createSessionRow(sessionId, sessionData['date'], 'Session Host') }
 
-            for (const [sessionId, sessionData] of Object.entries(eventsTraining)) { await createEventRow(sessionId, sessionData['date'], 'Trainer Crew') }
+            for (const [sessionId, sessionData] of Object.entries(sessionsTraining)) { await createSessionRow(sessionId, sessionData['date'], 'Trainer Crew') }
             
-            // Footer - Event Count:
-            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Total Events: ${eventCount}`))
+            // Footer - Session Count:
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Total Sessions: ${sessionCount}`))
 
             // RETURN MSG CONTAINER:
             return container
 
-        } else { // Not Assigned Events:
+        } else { // Not Assigned Sessions:
 
             const container = new ContainerBuilder()
             const separator = new SeparatorBuilder()
 
             // Title
-            container.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ No Events Assigned:'))
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ No Sessions Assigned:'))
             container.setAccentColor(0xfc9d03)
             // Spacer
             container.addSeparatorComponents(separator) 
             // Info:
             container.addTextDisplayComponents(new TextDisplayBuilder()
-                .setContent(`**You're currently not assigned to any events!** \n-\nTo view available events for sign up please visit this channel: <#${global.event_channelId}>.`)
+                .setContent(`**You're currently not assigned to any sessions!** \n-\nTo view available sessions for sign up please visit: <#${sessionSignUp_Channel}>.`)
             )
             // Spacer
             // container.addSeparatorComponents(separator) 
@@ -127,11 +128,11 @@ async function execute(interaction) {
         let allSessionsData = await sessionManager.getSessions(interaction.guildId)
 
 
-        // Respond to Cmd - Event List or No Events Alert:
-        const eventListContainer = await responseMethods.getUpdatedEventsList(interaction, allSessionsData)
+        // Respond to Cmd - Session List or No Sessions Alert:
+        const sessionListContainer = await responseMethods.getUpdatedSessionsList(interaction, allSessionsData)
         await interaction.reply({
             flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
-            components: [eventListContainer]
+            components: [sessionListContainer]
         })
 
         // Await any further interactions:
@@ -149,20 +150,20 @@ async function execute(interaction) {
             });
 
             // Parse Interaction Data:
-            const [interactionID, eventID] = collectorInteraction.customId.split(':');
+            const [interactionID, sessionID] = collectorInteraction.customId.split(':');
 
-            if(interactionID == 'startLeaveEventRole') { // START CONFIRMATION - Event Role Removal Confirmation
+            if(interactionID == 'startLeaveSessionRole') { // START CONFIRMATION - Session Role Removal Confirmation
 
-                const eventData = allSessionsData[eventID]
-                if(!eventData) {return console.log(`{!} Cannot find session data for role removal confirmation!`)}
+                const sessionData = allSessionsData[sessionID]
+                if(!sessionData) {return console.log(`{!} Cannot find session data for role removal confirmation!`)}
 
-                const usersRoleName = function() { // Get Role String from Event Data
-                    // Event Host:
-                    if (eventData['host'] === collectorInteraction.user.id) {
-                        return 'Event Host'
+                const usersRoleName = function() { // Get Role String from Session Data
+                    // Session Host:
+                    if (sessionData['host'] === collectorInteraction.user.id) {
+                        return 'Session Host'
                     }
                     // Training Crew:
-                    if (eventData['trainers'].includes(collectorInteraction.user.id)) {
+                    if (sessionData['trainers'].includes(collectorInteraction.user.id)) {
                         return 'Training Crew'
                     }
                     // Unknown:
@@ -176,19 +177,19 @@ async function execute(interaction) {
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
                 confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('Are you sure you would like to ***unassign*** yourself from this role?')) 
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
-                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⏰:  <t:${eventData['date']}:F>` + '\n\n### 💼:  **`'+ usersRoleName() +'`** \n '))
+                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⏰:  <t:${sessionData['date']}:F>` + '\n\n### 💼:  **`'+ usersRoleName() +'`** \n '))
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
                 confirmContainer.addActionRowComponents(
                     new ActionRowBuilder()
                     .setComponents(
                         new ButtonBuilder()
-                            .setCustomId(`confirmEventRemoval:${eventID}`)
+                            .setCustomId(`confirmSessionRemoval:${sessionID}`)
                             .setLabel('REMOVE')
                             .setEmoji('🗑️')
                             .setStyle(ButtonStyle.Danger)
                             .setDisabled(false),
                         new ButtonBuilder()
-                            .setCustomId(`cancelEventRemoval:${eventID}`)
+                            .setCustomId(`cancelSessionRemoval:${sessionID}`)
                             .setLabel('Go Back')
                             .setEmoji('↩️')
                             .setStyle(ButtonStyle.Primary)
@@ -201,9 +202,9 @@ async function execute(interaction) {
                 })
             }
 
-            if(interactionID == 'confirmEventRemoval') { // CONFIRMED - Event Role Removal Confirmation String()
+            if(interactionID == 'confirmSessionRemoval') { // CONFIRMED - Session Role Removal Confirmation String()
                 // Attempt Removal:
-                const updateData = await sessionManager.removeUserFromSessionRole(String(collectorInteraction.guildId), String(eventID), String(collectorInteraction.user.id)) //.removePlayerFromEventById(eventID, collectorInteraction.user.id)
+                const updateData = await sessionManager.removeUserFromSessionRole(String(collectorInteraction.guildId), String(sessionID), String(collectorInteraction.user.id)) //.removePlayerFromSessionById(sessionID, collectorInteraction.user.id)
 
                 // Build Message Response:
                 const removalResponseContainer = new ContainerBuilder()
@@ -211,15 +212,15 @@ async function execute(interaction) {
                     removalResponseContainer.setAccentColor(0x6dc441)
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - Success ✅'))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('*`You have successfully removed yourself as an attendee from this event!`*'))
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# (${eventID})`))
+                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('*`You have successfully removed yourself as an attendee from this session!`*'))
+                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# (${sessionID})`))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
                     removalResponseContainer.addActionRowComponents(
                         new ActionRowBuilder()
                         .setComponents(
                             new ButtonBuilder()
-                                .setCustomId(`cancelEventRemoval:${eventID}`)
-                                .setLabel(' -  My Events')
+                                .setCustomId(`cancelSessionRemoval:${sessionID}`)
+                                .setLabel(' -  My Sessions')
                                 .setEmoji('📋')
                                 .setStyle(ButtonStyle.Primary)
                                 .setDisabled(false)
@@ -230,15 +231,15 @@ async function execute(interaction) {
                     removalResponseContainer.setAccentColor(0xd43f37)
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - ERROR ⚠️'))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("*`An error occured while trying to remove yourself from this event, are you sure you're assigned it?`*"))
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# (${eventID})`))
+                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("*`An error occured while trying to remove yourself from this session, are you sure you're assigned it?`*"))
+                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# (${sessionID})`))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
                     removalResponseContainer.addActionRowComponents(
                         new ActionRowBuilder()
                         .setComponents(
                             new ButtonBuilder()
-                                .setCustomId(`cancelEventRemoval:${eventID}`)
-                                .setLabel(' -  My Events')
+                                .setCustomId(`cancelSessionRemoval:${sessionID}`)
+                                .setLabel(' -  My Sessions')
                                 .setEmoji('📋')
                                 .setStyle(ButtonStyle.Primary)
                                 .setDisabled(false)
@@ -253,12 +254,12 @@ async function execute(interaction) {
                 })
             }
 
-            if(interactionID == 'cancelEventRemoval') { // REJECTED - Event Role Removal Confirmation 
+            if(interactionID == 'cancelSessionRemoval') { // REJECTED - Session Role Removal Confirmation 
                 // Edit Message w/ Response:
                 allSessionsData = await sessionManager.getSessions(collectorInteraction.guildId)
-                const eventListContainer = await responseMethods.getUpdatedEventsList(collectorInteraction, allSessionsData)
+                const sessionListContainer = await responseMethods.getUpdatedSessionsList(collectorInteraction, allSessionsData)
                 await interaction.editReply({
-                    components: [eventListContainer]
+                    components: [sessionListContainer]
                 })
             }
 
@@ -266,7 +267,7 @@ async function execute(interaction) {
 
         
     } catch (error) { // Error Occured:
-        console.log('[!] An Error Occured - /my-events');
+        console.log('[!] An Error Occured - /my-sessions');
         console.log(error);
     }
 }
