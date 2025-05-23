@@ -33,7 +33,7 @@ async function createSession(guildId, discordTimestamp) {
                 date: discordTimestamp,
                 host: null,
                 trainers: [],
-                location: '',
+                location: 'https://www.roblox.com/games/407106466/Munch-V1',
             }
         }
     }, { merge: true }).then(() => {

@@ -1,4 +1,4 @@
-# Local Storage / Development:
+# Local Development Paths:
 .vscode/
 .env 
 node_modules/
