@@ -11,7 +11,7 @@ const CLIENT_SECRET = process.env['CLIENT_SECRET']
 const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app/dashboard/login/discord-redirect'; // Make sure this matches your registered Discord redirect
 
 // Connect to Folder:
-app.use(express.static('web_service')) 
+app.use(express.static('webService')) 
 
 // Root/Status Respond:
 app.get('/', (req, res) => res.status(200).json({ response: 'Root Directory: ALIVE', code: 200, timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }) }));
@@ -21,7 +21,7 @@ app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is operat
 app.get('/sessions/data', async (req, res) => {
 
     // Get Session Data:
-    const allSessionsData = await require('./utils/sessions/sessionManager').readSessions()
+    const allSessionsData = await require('../utils/sessions/sessionManager').readSessions()
 
     // Data Undefined:
     if(!allSessionsData){ res.status(500).json({response: '"allSessionsData" NOT FOUND!', code: 500}); return }
@@ -59,7 +59,6 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
         });
 
         const accessToken = tokenResponse.data.access_token;
-        console.log('Access Token:', accessToken);
 
         // Step 2: Fetch user info
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
@@ -79,7 +78,9 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
 
         console.log('Guilds:', guildsResponse.data);
 
-        res.send('Logged in with Discord! You can now close this tab.');
+        // res.send('Logged in with Discord! You can now close this tab.');
+        // Send loading page:
+        res.sendFile(__dirname + '/html/loading.html');
 
     } catch (err) {
         console.error('Error during OAuth2 process:', err.response?.data || err.message);
@@ -103,18 +104,39 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
 app.get('/dashboard', async (req, res) => {
     // Get Request:
     const dashboardSecretProvided = req.query.DASHBOARD_SECRET || null
-    const dashboardSecretRequired = await process.env[['DASHBOARD_SECRET']]
+    const dashboardSecretRequired = await process.env['DASHBOARD_SECRET']
     // Confirm Secret Provided:
     if (!dashboardSecretProvided ) { // Access Denied:
-        res.status(401).send("Access Denied - No Secret Provided")
+        return res.status(401).send("Access Denied - No Secret Provided")
     }
     // Confirm Correct Secret 
     if (dashboardSecretProvided != dashboardSecretRequired) {
-        res.status(401).send("Access Denied - Incorrect Secret")
+        return res.status(401).send("Access Denied - Incorrect Secret")
     }else { // Access Granted:
         res.sendFile(__dirname + '/src/html/dashboard.html')
     }
 })
+
+
+// Dashboard - Discord Login Redirect:
+// app.get('/dashboard/login/discord-redirect', async (req, res) => {
+//     const code = req.query.code;
+//     if(!code){return res.status(404).send('Error 404 - Code not received/found!')}
+
+//     res.send('Discord Login Redirect Received - \n Code: ', code)
+
+//     console.log('DISCORD LOGIN REDIRECT - CODE RECEIVED:')
+//     console.log(code)
+// })
+
+
+// Test loading page send:
+app.get('/loading', async (req, res) => {
+
+        res.sendFile(__dirname + '/html/loading.html');
+
+})
+
 
 // Initialize:
 const PORT = process.env.PORT || 3000;

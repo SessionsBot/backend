@@ -83,4 +83,4 @@ client.login(botToken);
 
 // ------- [ Web Service (prevents inactivity): ] -------
 
-require('./src/webService.js')
+require('./src/webService/webService.js')
