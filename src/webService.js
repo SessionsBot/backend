@@ -1,5 +1,6 @@
 // HTTP server:
 const express = require('express');
+const axios = require('axios');
 const app = express();
 
 // Connect to Folder:
@@ -22,6 +23,16 @@ app.get('/sessions/data', async (req, res) => {
     const prettyJSON = JSON.stringify({ data: allSessionsData, code: 200 }, null, 2);
     res.setHeader('Content-Type', 'application/json');
     res.status(200).send(prettyJSON);
+})
+
+// Dashboard - Discord Login Redirect:
+app.get('/dashboard/login/discord-redirect', async (req, res) => {
+    res.send('Redirect Received - Check Console')
+    console.log('DISCORD LOGIN - REDIRECT RECEIVED:')
+    const code = req.query.code;
+    console.log(req)
+    console.log('CODE RECEIVED:')
+    console.log(code)
 })
 
 // Visit Dashboard:
