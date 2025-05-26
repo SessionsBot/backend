@@ -27,11 +27,12 @@ app.get('/sessions/data', async (req, res) => {
 
 // Dashboard - Discord Login Redirect:
 app.get('/dashboard/login/discord-redirect', async (req, res) => {
-    res.send('Redirect Received - Check Console')
-    console.log('DISCORD LOGIN - REDIRECT RECEIVED:')
     const code = req.query.code;
-    console.log(req)
-    console.log('CODE RECEIVED:')
+    if(!code){return res.status(404).send('Error 404 - Code not received/found!')}
+
+    res.send('Discord Login Redirect Received - \n Code: ', code)
+
+    console.log('DISCORD LOGIN REDIRECT - CODE RECEIVED:')
     console.log(code)
 })
 
