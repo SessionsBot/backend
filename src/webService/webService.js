@@ -51,32 +51,32 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
             }
         });
 
-        console.log('User Info:', userResponse.data);
+        const userData = userResponse.data;
+        console.log('User Info:', userData);
+        
 
         // Step 3: Fetch user guilds
         const ADMINISTRATOR = 0x00000008;
         const MANAGE_GUILD = 0x00000020;
 
         const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
-        headers: {
-            Authorization: `Bearer ${accessToken}`
-        }
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
         });
 
         const guilds = guildsResponse.data;
+        console.log('Guilds:', guilds);
 
-        // Filter for guilds where the user has 'manage server' or 'admin' permissions
+
+        // Step 4. Filter for guilds where the user has 'manage server' or 'admin' permissions
         const manageableGuilds = guilds.filter(guild => {
         const permissions = BigInt(guild.permissions_new ?? guild.permissions); 
         return (permissions & BigInt(ADMINISTRATOR)) !== 0n || (permissions & BigInt(MANAGE_GUILD)) !== 0n;
         });
-
-        // Optionally, extract just the guild IDs (or more if needed)
         const manageableGuildIDs = manageableGuilds.map(g => g.id);
 
-
-        console.log('Guilds:', guildsResponse.data);
-
+        // Step 5. Prepair Data for Sending to Frontend
         const userToSend = {
             id: userData.id,
             username: userData.username,
@@ -85,13 +85,11 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
             guilds: manageableGuildIDs
         };
 
-        // Optional: encode the user data in base64 to make it URL-safe
+        // Step 6. Encode the user data in base64 to make it URL-safe
         const encoded = encodeURIComponent(Buffer.from(JSON.stringify(userToSend)).toString('base64'));
 
-        // Redirect to Dashboard | Frontend:
-        // const redirectLink = `https://painful-peri-sessions-bot-web-app-868faa41.koyeb.app/api/login-success?token=${code}`;
-        // Redirect back to frontend with user data in query
-        res.redirect(`https://painful-peri-sessions-bot-web-app-868faa41.koyeb.app/api/login-success?token=${code}&user=${encoded}`);
+        // Step 7. Redirect User back to Frontend:
+        res.redirect(`https://painful-peri-sessions-bot-web-app-868faa41.koyeb.app/api/login-redirect?user=${encoded}`);
 
 
 
