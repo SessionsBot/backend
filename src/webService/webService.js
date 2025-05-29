@@ -89,7 +89,7 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
         const encoded = encodeURIComponent(Buffer.from(JSON.stringify(userToSend)).toString('base64'));
 
         // Step 7. Redirect User back to Frontend:
-        res.redirect(`https://painful-peri-sessions-bot-web-app-868faa41.koyeb.app/api/login-redirect?user=${encoded}`);
+        res.redirect(`https://sessionsbot.fyi/api/login-redirect?user=${encoded}`);
 
 
 
