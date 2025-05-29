@@ -38,6 +38,12 @@ app.get('/sessions/data', async (req, res) => {
 
 app.get('/dashboard/login/discord-redirect', async (req, res) => {
     const code = req.query.code;
+    const error = req.query.error;
+
+    if (error) {
+        // Show error response:
+        return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
+    }
 
     if (!code) {
         return res.status(400).send('Missing code in query.');
