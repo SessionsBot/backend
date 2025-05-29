@@ -17,24 +17,6 @@ app.use(express.static('webService'))
 app.get('/', (req, res) => res.status(200).json({ response: 'Root Directory: ALIVE', code: 200, timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }) }));
 app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is operational!', code: 200, timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }) }));
 
-// Session Data Fetch:
-app.get('/sessions/data', async (req, res) => {
-
-    // Get Session Data:
-    const allSessionsData = await require('../utils/sessions/sessionManager').readSessions()
-
-    // Data Undefined:
-    if(!allSessionsData){ res.status(500).json({response: '"allSessionsData" NOT FOUND!', code: 500}); return }
-
-    // Data Found - Send JSON:
-    const prettyJSON = JSON.stringify({ data: allSessionsData, code: 200 }, null, 2);
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).send(prettyJSON);
-})
-
-
-
-
 
 app.get('/dashboard/login/discord-redirect', async (req, res) => {
     const code = req.query.code;
@@ -43,10 +25,6 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
     if (error) {
         // Show error response:
         return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
-    }
-
-    if (!code) {
-        return res.status(400).send('Missing code in query.');
     }
 
     try {
@@ -76,72 +54,52 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
         console.log('User Info:', userResponse.data);
 
         // Step 3: Fetch user guilds
+        const ADMINISTRATOR = 0x00000008;
+        const MANAGE_GUILD = 0x00000020;
+
         const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            }
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        }
         });
+
+        const guilds = guildsResponse.data;
+
+        // Filter for guilds where the user has 'manage server' or 'admin' permissions
+        const manageableGuilds = guilds.filter(guild => {
+        const permissions = BigInt(guild.permissions_new ?? guild.permissions); 
+        return (permissions & BigInt(ADMINISTRATOR)) !== 0n || (permissions & BigInt(MANAGE_GUILD)) !== 0n;
+        });
+
+        // Optionally, extract just the guild IDs (or more if needed)
+        const manageableGuildIDs = manageableGuilds.map(g => g.id);
+
 
         console.log('Guilds:', guildsResponse.data);
 
-        // res.send('Logged in with Discord! You can now close this tab.');
-        // Send loading page:
-        res.sendFile(__dirname + '/html/loading.html');
+        const userToSend = {
+            id: userData.id,
+            username: userData.username,
+            discriminator: userData.discriminator,
+            avatar: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`,
+            guilds: manageableGuildIDs
+        };
+
+        // Optional: encode the user data in base64 to make it URL-safe
+        const encoded = encodeURIComponent(Buffer.from(JSON.stringify(userToSend)).toString('base64'));
+
+        // Redirect to Dashboard | Frontend:
+        // const redirectLink = `https://painful-peri-sessions-bot-web-app-868faa41.koyeb.app/api/login-success?token=${code}`;
+        // Redirect back to frontend with user data in query
+        res.redirect(`https://painful-peri-sessions-bot-web-app-868faa41.koyeb.app/api/login-success?token=${code}&user=${encoded}`);
+
+
 
     } catch (err) {
         console.error('Error during OAuth2 process:', err.response?.data || err.message);
-        res.status(500).send('OAuth2 login failed.');
+        return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
     }
 });
-
-
-// Dashboard - Discord Login Redirect:
-// app.get('/dashboard/login/discord-redirect', async (req, res) => {
-//     const code = req.query.code;
-//     if(!code){return res.status(404).send('Error 404 - Code not received/found!')}
-
-//     res.send('Discord Login Redirect Received - \n Code: ', code)
-
-//     console.log('DISCORD LOGIN REDIRECT - CODE RECEIVED:')
-//     console.log(code)
-// })
-
-// Visit Dashboard:
-app.get('/dashboard', async (req, res) => {
-    // Get Request:
-    const dashboardSecretProvided = req.query.DASHBOARD_SECRET || null
-    const dashboardSecretRequired = await process.env['DASHBOARD_SECRET']
-    // Confirm Secret Provided:
-    if (!dashboardSecretProvided ) { // Access Denied:
-        return res.status(401).send("Access Denied - No Secret Provided")
-    }
-    // Confirm Correct Secret 
-    if (dashboardSecretProvided != dashboardSecretRequired) {
-        return res.status(401).send("Access Denied - Incorrect Secret")
-    }else { // Access Granted:
-        res.sendFile(__dirname + '/src/html/dashboard.html')
-    }
-})
-
-
-// Dashboard - Discord Login Redirect:
-// app.get('/dashboard/login/discord-redirect', async (req, res) => {
-//     const code = req.query.code;
-//     if(!code){return res.status(404).send('Error 404 - Code not received/found!')}
-
-//     res.send('Discord Login Redirect Received - \n Code: ', code)
-
-//     console.log('DISCORD LOGIN REDIRECT - CODE RECEIVED:')
-//     console.log(code)
-// })
-
-
-// Test loading page send:
-app.get('/loading', async (req, res) => {
-
-        res.sendFile(__dirname + '/html/loading.html');
-
-})
 
 
 // Initialize:
