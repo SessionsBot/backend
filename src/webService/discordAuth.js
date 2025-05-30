@@ -68,11 +68,9 @@ module.exports = function(app, axios, jwt) {
 
             // Step 5. Prepair Data for Sending to Frontend
             const userToSend = {
-                id: userData.id,
-                username: userData.username,
-                discriminator: userData.discriminator,
-                avatar: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`,
-                guilds: manageableGuildIDs
+                userData,
+                avatar_url: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`,
+                manageable_guilds: manageableGuildIDs
             };
 
             // Step 6. Create Secure JSON Token:
