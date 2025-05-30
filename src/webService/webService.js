@@ -3,6 +3,7 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
 
 // Replace with your real values:
@@ -18,6 +19,7 @@ app.get('/', (req, res) => res.status(200).json({ response: 'Root Directory: ALI
 app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is operational!', code: 200, timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }) }));
 
 
+// Discord Login - Begin Auth:
 app.get('/dashboard/login/discord-redirect', async (req, res) => {
     const code = req.query.code;
     const error = req.query.error;
@@ -100,6 +102,20 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
     }
 });
 
+// Verify Auth - Secure Access:
+app.post('/api/secure-action', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'No token provided' });
+
+  try {
+    const user = jwt.verify(token, JSON_SECRET);
+    // user = your decoded Discord user info
+    // Do permission checks etc.
+    res.json({ message: 'Secure action done!', user });
+  } catch (e) {
+    res.status(403).json({ error: 'Invalid or expired token' });
+  }
+});
 
 // Initialize:
 const PORT = process.env.PORT || 3000;
