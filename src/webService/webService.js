@@ -3,7 +3,7 @@ const express = require('express');
 const axios = require('axios');
 const app = express();
 require('dotenv').config();
-const botToken = process.env['BOT_TOKEN']
+const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
 
 // Replace with your real values:
 const CLIENT_ID = process.env['CLIENT_ID']
@@ -50,26 +50,24 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-
         const userData = userResponse.data;
-        console.log('User Info:', userData);
+        // console.log('User Info:', userData);
+        console.log(`[ i ] User Authenticated: ${userData?.username}`);
         
 
         // Step 3: Fetch user guilds
         const ADMINISTRATOR = 0x00000008;
         const MANAGE_GUILD = 0x00000020;
-
         const guildsResponse = await axios.get('https://discord.com/api/users/@me/guilds', {
             headers: {
                 Authorization: `Bearer ${accessToken}`
             }
         });
-
         const guilds = guildsResponse.data;
-        console.log('Guilds:', guilds);
+        // console.log('Guilds:', guilds);
 
 
-        // Step 4. Filter for guilds where the user has 'manage server' or 'admin' permissions
+        // Step 4. Filter guilds where user has manage or admin permissions
         const manageableGuilds = guilds.filter(guild => {
         const permissions = BigInt(guild.permissions_new ?? guild.permissions); 
         return (permissions & BigInt(ADMINISTRATOR)) !== 0n || (permissions & BigInt(MANAGE_GUILD)) !== 0n;
@@ -85,11 +83,14 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
             guilds: manageableGuildIDs
         };
 
-        // Step 6. Encode the user data in base64 to make it URL-safe
+        // Step 6. Create Secure JSON Token:
+        const token = jwt.sign(userData, JSON_SECRET, { expiresIn: '7d' }); // expires in 7 days
+
+        // Step 7. Encode the user data / URL-safe:
         const encoded = encodeURIComponent(Buffer.from(JSON.stringify(userToSend)).toString('base64'));
 
-        // Step 7. Redirect User back to Frontend:
-        res.redirect(`https://sessionsbot.fyi/api/login-redirect?user=${encoded}`);
+        // Step 8. Redirect User back to Frontend:
+        res.redirect(`https://sessionsbot.fyi/api/login-redirect?user=${encoded}&token=${token}`);
 
 
 
