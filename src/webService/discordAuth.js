@@ -1,14 +1,21 @@
 // Imports:
+const express = require('express');
 const app = express();
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
 
+
+// Secure Variables:
 require('dotenv').config();
+const CLIENT_ID = process.env['CLIENT_ID']
+const CLIENT_SECRET = process.env['CLIENT_SECRET']
 const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
+const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app/dashboard/login/discord-redirect'; // Must match registered Discord redirect
 
 
 
-// Begin Auth - Discord Redirect:
+
+// [Begin Auth] - Discord Redirect:
 app.get('/dashboard/login/discord-redirect', async (req, res) => {
     const code = req.query.code;
     const error = req.query.error;
@@ -93,7 +100,8 @@ app.get('/dashboard/login/discord-redirect', async (req, res) => {
 });
 
 
-// Verify Auth - Secure Access:
+
+// [Verify Auth] - Secure Access:
 app.post('/api/secure-action', (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'No token provided' });
