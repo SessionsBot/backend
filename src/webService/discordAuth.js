@@ -13,12 +13,14 @@ module.exports = function(app, axios, jwt) {
         const code = req.query.code;
         const error = req.query.error;
 
-        if (error) {
-            // Show error response:
-            console.error('Error during redirect process:', error);
+        // If error provided from Discord redirect:
+        if (error || !code) {
+            console.error('Error during redirect process:', error, 'Code provided:', code);
+            // Show error - redirect home
             return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
         }
 
+        // Attempt retrevial of Discord user credentials using code:
         try {
             // Step 1: Exchange code for access token
             const tokenResponse = await axios.post('https://discord.com/api/oauth2/token', new URLSearchParams({
@@ -73,18 +75,14 @@ module.exports = function(app, axios, jwt) {
                 manageable_guilds: manageableGuildIDs
             };
 
-            // Step 6. Create Secure JSON Token:
-            const token = jwt.sign(userData, JSON_SECRET, { expiresIn: '7d' }); // expires in 7 days
-
-            // Step 7. Encode the user data / URL-safe:
-            const encoded = encodeURIComponent(Buffer.from(JSON.stringify(userToSend)).toString('base64'));
+            // Step 7. Create Secure JSON Token:
+            const token = jwt.sign(userToSend, JSON_SECRET, { expiresIn: '7d' }); // expires in 7 days
 
             // Step 8. Redirect User back to Frontend:
-            res.redirect(`https://sessionsbot.fyi/api/login-redirect?user=${encoded}&token=${token}`);
-
-
+            res.redirect(`https://sessionsbot.fyi/api/login-redirect?token=${token}`);
 
         } catch (err) {
+            // Error Occured - OAuth2 process:
             console.error('Error during OAuth2 process:', err.response?.data || err.message);
             return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
         }
@@ -94,17 +92,17 @@ module.exports = function(app, axios, jwt) {
 
     // [Verify Auth] - Secure Access:
     app.post('/api/secure-action', (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ error: 'No token provided' });
 
-    try {
-        const user = jwt.verify(token, JSON_SECRET);
-        // user = your decoded Discord user info
-        // Do permission checks etc.
-        res.json({ message: 'Secure action done!', user });
-    } catch (e) {
-        res.status(403).json({ error: 'Invalid or expired token' });
-    }
+        try {
+            const user = jwt.verify(token, JSON_SECRET);
+            // user = your decoded Discord user info
+            // Do permission checks etc.
+            res.json({ message: 'Secure action done!', user });
+        } catch (e) {
+            res.status(403).json({ error: 'Invalid or expired token' });
+        }
     });
 
 }
