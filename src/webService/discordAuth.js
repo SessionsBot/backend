@@ -68,7 +68,7 @@ module.exports = function(app, axios, jwt) {
 
             // Step 5. Prepair Data for Sending to Frontend
             const userToSend = {
-                userData,
+                ...userData,
                 avatar_url: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`,
                 manageable_guilds: manageableGuildIDs
             };
