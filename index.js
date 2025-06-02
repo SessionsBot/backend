@@ -11,8 +11,6 @@ const path = require('node:path');
 
 // ------- [ File Loader Utility: ] -------
 
-const debugFileLoader = false;
-
 function getAllFiles(dir, ext, fileList = []) {
 	const files = fs.readdirSync(dir);
 	for (const file of files) {
@@ -40,7 +38,6 @@ for (const filePath of commandFiles) {
 	}
 }
 
-if(debugFileLoader) {console.log(`[✅] Loaded ${client.commands.size} command(s).`);}
 
 // ------- [ Initialize Buttons: ] -------
 
@@ -56,10 +53,6 @@ for (const filePath of buttonFiles) {
 	}
 }
 
-if(debugFileLoader) {console.log(`[✅] Loaded ${client.buttons.size} button(s).`);}
-
-// ------- [ Initialize Select Menus: (DISABLED) ] -------
-// { ... }
 
 // ------- [ Initialize Events: ] -------
 
@@ -75,11 +68,22 @@ for (const file of eventFiles) {
 	}
 }
 
-if(debugFileLoader) {console.log(`[✅] Loaded ${eventFiles.length} event file(s).`);}
+
+// ------- [ DEBUG - File Loader Utility: ] -------
+
+const debugFileLoader = false;
+
+if(debugFileLoader) {
+	console.log(`[✅] Loaded ${client.commands.size} command(s).`);
+	console.log(`[✅] Loaded ${client.buttons.size} button(s).`);
+	console.log(`[✅] Loaded ${eventFiles.length} event file(s).`);
+}
+
 
 // ------- [ Login (via Token): ] -------
 
 client.login(botToken);
+
 
 // ------- [ Web Service (prevents inactivity): ] -------
 
