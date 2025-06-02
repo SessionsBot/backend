@@ -1,6 +1,7 @@
 // Improts:
 const { Events, ChannelType, PermissionsBitField } = require('discord.js');
 const global = require('../utils/global')
+const guildManager = require('../utils/guildManager')
 
 // Event:
 module.exports = {
@@ -11,11 +12,19 @@ module.exports = {
             console.log('guildCreate Event Fired!:')
             console.log(`guildID: ${guild.id}`)
         // }
+
+        
+        // 1. Add New Guild to Database:
+        const addGuildResult = await guildManager.createNewGuildDoc(guild.id);
+        if(!addGuildResult.success){
+            console.warn('Failed to add new guild to database!', addGuildResult.data)
+        }
+
         
         // Send Welcome/Setup Message:
         const welcomeMessage = `👋 Hi! I'm your new bot. Please visit https://sessionsbot.fyi/api/guild-setup?guildId=${guild.id}`;
 
-        // 1. Attempt to send in default system channel:
+        // 2. Attempt to send in default system channel:
         if (
             guild.systemChannel &&
             guild.systemChannel.viewable &&
@@ -23,14 +32,13 @@ module.exports = {
         ){
             try {
                 await guild.systemChannel.send(welcomeMessage);
-                console.log('Sent welcome message to system channel.');
                 return;
             } catch (err) {
                 console.warn('Failed to send to system channel:', err);
             }
         }
 
-        // 2. Attempt to send in any chattable channel:
+        // 3. Attempt to send in any chattable channel:
         const fallbackChannel = guild.channels.cache.find(channel =>
             channel.type === ChannelType.GuildText &&
             channel.viewable &&
@@ -40,26 +48,22 @@ module.exports = {
         if (fallbackChannel) {
             try {
                 await fallbackChannel.send(welcomeMessage);
-                console.log(`Sent welcome message to channel: ${fallbackChannel.name}`);
                 return;
             } catch (err) {
                 console.warn(`Failed to send to fallback channel (${fallbackChannel.name}):`, err);
             }
         }
 
-        // 3. Direct message server owner:
+        // 4. Direct message server owner:
         try {
             const owner = await guild.fetchOwner();
             await owner.send(`Thanks for adding me to **${guild.name}**!\n\n${welcomeMessage}`);
-            console.log('Sent welcome message to guild owner via DM.');
             return;
         } catch (err) {
             console.warn('Failed to DM the guild owner:', err);
+            return console.warn(`{!} CRITICAL ERROR: Failed to send welcome/setup message for ${guild.name}.`);
         }
-
-
-        // 4. [ERROR!] No welcome/setup message destination:
-        return console.warn(`{!} CRITICAL ERROR: Failed to send welcome/setup message for ${guild.name}.`);
+        
 
     }
 }
