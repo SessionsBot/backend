@@ -1,19 +1,19 @@
 // Improts:
 const { Events, ChannelType, PermissionsBitField } = require('discord.js');
 const global = require('../utils/global')
-const guildManager = require('../utils/guildManager')
+const guildManager = require('../utils/guildManager');
 
 // Event:
 module.exports = {
     name: Events.GuildCreate,
     async execute(guild) {
         // Debug New Guild:
-        // if(global.outputDebug_InDepth) {
+        if(global.outputDebug_InDepth) {
             console.log('guildCreate Event Fired!:')
             console.log(`guildID: ${guild.id}`)
-        // }
+        }
 
-        
+
         // 1. Add New Guild to Database:
         const addGuildResult = await guildManager.createNewGuildDoc(guild.id);
         if(!addGuildResult.success){

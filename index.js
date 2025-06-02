@@ -4,6 +4,7 @@ require('dotenv').config();
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const botToken = process.env['BOT_TOKEN'];
+const global = require('./src/utils/global.js')
 
 const fs = require('fs');
 const path = require('node:path');
@@ -71,7 +72,7 @@ for (const file of eventFiles) {
 
 // ------- [ DEBUG - File Loader Utility: ] -------
 
-const debugFileLoader = false;
+const debugFileLoader = global.outputDebug_InDepth // true;
 
 if(debugFileLoader) {
 	console.log(`[✅] Loaded ${client.commands.size} command(s).`);

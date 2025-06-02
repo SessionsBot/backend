@@ -1,7 +1,7 @@
 module.exports = {
     botVersion: 'v0.7.2d',
     outputDebug_General: true,
-    outputDebug_InDepth: false,
+    outputDebug_InDepth: true,
     client: null,
     colors: {
         success: '#6dc441', // green

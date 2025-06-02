@@ -171,9 +171,6 @@ async function getRefreshedSignupMessage(guildId, messageId) {
     const unsortedSessions = guildData.sessions;
     const guildSessions = Object.entries(unsortedSessions).sort((a, b) => a[1].date - b[1].date);
 
-    // Debug:
-    if(global.outputDebug_InDepth) {console.log('Guild Sessions Fetched for Signup Message:', guildSessions);}
-
     // Build Message Contents:
     const messageContent = async () => {
         const signupContainer = new ContainerBuilder();
