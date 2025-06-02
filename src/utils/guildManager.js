@@ -122,7 +122,7 @@ const incomingData_GuildSetup =  {
 console.info('Loaded Guild Manager!');
 setTimeout(async () => {
     // await createNewGuildDoc('EX_1234567');
-    await guildConfiguration('EX_1234567').setSessionSchedules(incomingData_GuildSetup)
+    // await guildConfiguration('EX_1234567').setSessionSchedules(incomingData_GuildSetup)
 }, 1000);
 
 
