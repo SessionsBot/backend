@@ -37,8 +37,42 @@ async function createNewGuildDoc(guildId) {
 }
 
 
-// Updating Guild Doc:
-async function updateGuildDataField(guildId, fieldPath, fieldValue) {
+// Move Guild to Archive:
+async function archiveGuildDoc(guildId) {
+    const guildRef = db.collection('guilds').doc(guildId);
+    const archivedRef = db.collection('archivedGuilds').doc(guildId);
+
+    try {
+        // 1. Read original doc
+        const doc = await guildRef.get();
+
+        if (!doc.exists) {
+            console.warn(`Guild document ${guildId} does not exist.`);
+            return { success: false, error: 'Document not found' };
+        }
+
+        const data = doc.data();
+
+        // 2. Write to archive
+        await archivedRef.set({
+            ...data,
+            archivedAt: new Date()
+        });
+
+        // 3. Delete original
+        await guildRef.delete();
+
+        console.log(`Guild ${guildId} moved to archive successfully.`);
+        return { success: true };
+    } catch (err) {
+        console.error(`Failed to move guild ${guildId} to archive:`, err);
+        return { success: false, data: err };
+    }
+}
+
+
+// Updating Guild Doc's Specific Field:
+async function updateGuildDocField(guildId, fieldPath, fieldValue) {
     
     try {
         // Attempt to save new guild data to database:
@@ -64,22 +98,22 @@ const guildConfiguration = (guildID) => { return {
     
     // Updating Accent Color:
     setAccentColor : async (hexNumber) => {
-        return await updateGuildDataField(guildID, 'accentColor', hexNumber)
+        return await updateGuildDocField(guildID, 'accentColor', hexNumber)
     },
 
     // Updating Admin Role Ids:
     setAdminRoleIds : async (roleIdsArray) => {
-        return await updateGuildDataField(guildID, 'adminRoleIds', roleIdsArray)
+        return await updateGuildDocField(guildID, 'adminRoleIds', roleIdsArray)
     },
 
     // Updating Session Schedules:
     setSessionSchedules : async (sessionSchedulesObject) => {
-        return await updateGuildDataField(guildID, 'sessionSchedules', sessionSchedulesObject)
+        return await updateGuildDocField(guildID, 'sessionSchedules', sessionSchedulesObject)
     },
 
     // Adjust Guild Setup Flag:
     setSetupComplete : async (isComplete) => {
-        return await updateGuildDataField(guildID, 'setupCompleted', isComplete)
+        return await updateGuildDocField(guildID, 'setupCompleted', isComplete)
     },
 
 }}
@@ -87,54 +121,12 @@ const guildConfiguration = (guildID) => { return {
 
 
 
-// Example Guild Setup Incoming Data:
-const incomingData_GuildSetup =  {
-    dailySignupPostTime: {
-        hour: 6,
-        minuets: 30,
-        timeZone: 'US Chicago'
-    },
-    exampleScheduleID123: {
-        sessionTitle: 'Title Example',
-        sessionUrl: 'https://www.games.roblox.com',
-        roles: [
-            {
-                roleName: 'Role Name 1',
-                roleDescription: 'This is an example role description.',
-                roleCapcity: 1,
-            },
-            {
-                roleName: 'Role Name 2',
-                roleDescription: 'This is an example role description.',
-                roleCapcity: 3,
-            },
-        ],
-        eventDateDaily: {
-            hour: 6,
-            minuets: 30,
-            timeZone: 'US Chicago'
-        },
-    }
-}
-
-
-// Testing:
-console.info('Loaded Guild Manager!');
-setTimeout(async () => {
-    // await createNewGuildDoc('EX_1234567');
-    // await guildConfiguration('EX_1234567').setSessionSchedules(incomingData_GuildSetup)
-}, 1000);
-
-
-// TODO List:
-// ! Just Finished: Testing adding 'default first batch' session schedule for guild
-// ? Next Steps: Decide on layout of sessions data/ decifier by schedule id? for edititing later on?
-// ? Next Steps: Remaking/updating session manager
-
 
 // -------------------------- [ Exports ] -------------------------- \\
 
 module.exports = {
     createNewGuildDoc,
-    guildConfiguration
+    archiveGuildDoc,
+    updateGuildDocField,
+    guildConfiguration,
 }

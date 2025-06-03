@@ -1,5 +1,7 @@
 // Secure Variables:
 require('dotenv').config();
+const { glob } = require('fs');
+const global = require('../utils/global.js')
 const CLIENT_ID = process.env['CLIENT_ID']
 const CLIENT_SECRET = process.env['CLIENT_SECRET']
 const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
@@ -16,7 +18,11 @@ module.exports = function(app, axios, jwt) {
         // If error provided from Discord redirect:
         if (error || !code) {
             console.error('Error during redirect process:', error, 'Code provided:', code);
-            // Show error - redirect home
+            // Redirect to Homepage after Delay:
+            setTimeout(() => {
+                window.location.href = global.frontend_Url;
+            }, 4500);
+            // Return HTML Response:
             return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
         }
 
@@ -78,12 +84,17 @@ module.exports = function(app, axios, jwt) {
             // Step 7. Create Secure JSON Token:
             const token = jwt.sign(userToSend, JSON_SECRET, { expiresIn: '7d' }); // expires in 7 days
 
-            // Step 8. Redirect User back to Frontend:
-            res.redirect(`https://sessionsbot.fyi/api/login-redirect?token=${token}`);
+            // Step 8. Redirect User back to Frontend w/ token:
+            res.redirect(`${global.frontend_Url}/api/login-redirect?token=${token}`);
 
         } catch (err) {
             // Error Occured - OAuth2 process:
             console.error('Error during OAuth2 process:', err.response?.data || err.message);
+            // Redirect to Homepage after Delay:
+            setTimeout(() => {
+                window.location.href = global.frontend_Url;
+            }, 4500);
+            // Return HTML Response:
             return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
         }
     });

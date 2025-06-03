@@ -57,20 +57,12 @@
     <!-- Scripts -->
     <script>
 
-        // HOMEPAGE REDIRECT LINK:
-        const redirectLink = `https://sessionsbot.fyi/`;
-
         // On Page Load:
         document.addEventListener('DOMContentLoaded', () => {
             
             // Update footer status:
             const footerCodeText = document.getElementById('footerCodeText');
             footerCodeText.innerText = 'Check console for error details.'
-            
-            // Redirect to Homepage:
-            setTimeout(() => {
-                window.location.href = redirectLink;
-            }, 4500);
 
         })
 

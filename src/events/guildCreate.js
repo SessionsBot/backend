@@ -17,12 +17,13 @@ module.exports = {
         // 1. Add New Guild to Database:
         const addGuildResult = await guildManager.createNewGuildDoc(guild.id);
         if(!addGuildResult.success){
-            console.warn('Failed to add new guild to database!', addGuildResult.data)
+            // CRITICAL ERROR: Failed to add new guild to database!
+            return console.warn('Failed to add new guild to database!', addGuildResult.data)
         }
 
         
         // Send Welcome/Setup Message:
-        const welcomeMessage = `👋 Hi! I'm your new bot. Please visit https://sessionsbot.fyi/api/guild-setup?guildId=${guild.id}`;
+        const welcomeMessage = `👋 Hi! I'm your new bot. Please visit ${global.frontend_Url}api/guild-setup?guildId=${guild.id}`;
 
         // 2. Attempt to send in default system channel:
         if (
