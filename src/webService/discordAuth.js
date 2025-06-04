@@ -116,4 +116,39 @@ module.exports = function(app, axios, jwt) {
         }
     });
 
+
+
+    // [Discord API] - Get Guild Info:
+    app.get('/api/discord/guild', async (req, res) => {
+        const botToken = process.env['BOT_TOKEN'];
+        const guildId = req.query.guildId;
+        // Confirm Guild Id:
+        if (!guildId) {
+            return res.status(400).json({ error: 'Guild ID is required' });
+        }
+        
+        // Make Discord API Request:
+        const discordReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, {
+            headers: {
+                Authorization: `Bot ${botToken}`,
+            },
+        });
+
+        // Check for Errors:
+        if (!discordReq.ok) {
+            console.error('Failed to fetch guild data:', guildData);
+            return res.status(discordReq.status).json({ error: guildData.message || 'Failed to fetch guild data' });
+        }
+
+        const guildData = await discordReq.json();
+
+        // Return Guild Data:
+        res.json({ 
+            data: guildData, // <-- Full JSON response from Discord API
+            guildIcon: guildData.icon ? `https://cdn.discordapp.com/icons/${guildId}/${guildData.icon}.png` : null,
+            guildBanner: guildData.banner ? `https://cdn.discordapp.com/banners/${guildId}/${guildData.banner}.png` : null
+        });
+
+    });
+
 }

@@ -2,7 +2,7 @@ module.exports = {
     botVersion: 'v0.7.2d',
     frontend_Url: 'https://sessionsbot.fyi',
     outputDebug_General: true,
-    outputDebug_InDepth: true,
+    outputDebug_InDepth: false,
     client: null,
     colors: {
         success: '#6dc441', // green
