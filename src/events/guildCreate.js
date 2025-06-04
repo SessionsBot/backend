@@ -23,7 +23,7 @@ module.exports = {
 
         
         // Send Welcome/Setup Message:
-        const welcomeMessage = `👋 Hi! I'm your new bot. Please visit ${global.frontend_Url}api/guild-setup?guildId=${guild.id}`;
+        const welcomeMessage = `👋 Hi! I'm your new bot. Please visit ${global.frontend_Url}/api/guild-setup?guildId=${guild.id}`;
 
         // 2. Attempt to send in default system channel:
         if (

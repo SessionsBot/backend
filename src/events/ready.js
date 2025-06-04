@@ -35,5 +35,33 @@ module.exports = {
 		// Start Session Schedule:
 		sessionScheduleManager.startSchedule()
 
+		// [ GUILD MANAGER TESTING ] \\
+		const guildManager = require('../utils/guildManager.js')
+		let guildId = '1379160686629880028';
+		const scheduleId = 'shd_0218308213012';
+		const scheduleObject = {
+			sessionDateDaily: {
+				hour: 6,
+				minuets: 30,
+				timeZone: 'US Chicago'
+			},
+			roles: [
+				{ roleName: 'Role Name', roleCapcity: 1, users: [], roleDescription: 'This is an example role description.' },
+				{ roleName: 'Role2 Name', roleCapcity: 3, users: [], roleDescription: 'This is an example role description.' }
+			],
+			sessionTitle: 'Title Example',
+			sessionUrl: 'https://www.games.roblox.com'
+		}
+
+
+
+		// Test:
+		setTimeout(() => {
+			console.log('[+] Attempting Firebase / Guild Manager Testing:')
+
+			
+		}, 2_500);
+
+
 	},
 };
