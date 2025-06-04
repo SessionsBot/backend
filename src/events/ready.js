@@ -35,6 +35,9 @@ module.exports = {
 		// Start Session Schedule:
 		sessionScheduleManager.startSchedule()
 
+
+
+
 		// [ GUILD MANAGER TESTING ] \\
 		const guildManager = require('../utils/guildManager.js')
 		let guildId = '1379160686629880028';
@@ -53,13 +56,13 @@ module.exports = {
 			sessionUrl: 'https://www.games.roblox.com'
 		}
 
-
-
-		// Test:
-		setTimeout(() => {
+		// After Startup - Delay:
+		setTimeout(async () => {
 			console.log('[+] Attempting Firebase / Guild Manager Testing:')
 
-			
+			const result = await guildManager.guildSessions(guildId).assignUserSessionRole()
+			console.log(result)
+
 		}, 2_500);
 
 

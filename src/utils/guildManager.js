@@ -192,16 +192,51 @@ const guildSessions = (guildId) => { return {
 
     // Assing User to an Upcoming Session:
     assignUserSessionRole: async (sessionId, userId, roleName) => {
-        // 1. Get Guild Data:
+        // 1. Get Guild Data
         // 2. Confirm Role Availability
         // 3. Apply Chnages to Database
         // 4. Update Signup Message
+
+        const scheduleObject = {
+			sessionDateDaily: {
+				hour: 6,
+				minuets: 30,
+				timeZone: 'US Chicago'
+			},
+			roles: [
+				{ roleName: 'Role Name', roleCapcity: 1, users: [], roleDescription: 'This is an example role description.' },
+				{ roleName: 'Role2 Name', roleCapcity: 3, users: [], roleDescription: 'This is an example role description.' }
+			],
+			sessionTitle: 'Title Example',
+			sessionUrl: 'https://www.games.roblox.com'
+		}
+        
+        // Confirm Guild Data:
+        const guildDataRetrvial = await readGuildDoc(guildId)
+        if(!guildDataRetrvial.success) return {success: false, data: 'Could not get Guild data for session modifications!'};
+        const guildData = guildDataRetrvial.data;
+        
+        // Confirm Session Exists:
+        if(!Object.entries(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to assign user.`};
+
+        // Confirm User's not already in Session:
+        const sessionData = guildData.upcomingSessions.sessionId;
+        const sessionRoles = sessionData.roles || []
+
+        // Check each role:
+        sessionRoles.forEach(role => {
+            if(role.users.includes(userId)) return {success: false, data: `You're already assigned to this session!`, currentRole: role.roleName};
+        });
+
+
+        return {success: true, data: 'Function Excecution Success!?'};
+
     },
 
 
     // Assing User to an Upcoming Session:
     removeUserSessionRole: async (sessionId, userId) => {
-        // 1. Get Guild Data:
+        // 1. Get Guild Data
         // 2. Confirm User Assigned
         // 3. Apply Chnages to Database
         // 4. Update Signup Message
@@ -210,7 +245,7 @@ const guildSessions = (guildId) => { return {
 
     // Get Session Signup Embded Contents - Edits Msg if Id Provided:
     getSignupEmbedContents: async (messageId) => {
-        // 1. Get Guild Data:
+        // 1. Get Guild Data
         // 2. Return Embed Contents
     },
 
