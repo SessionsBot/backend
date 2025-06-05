@@ -27,8 +27,10 @@ async function createNewGuildDoc(guildId) {
         adminRoleIds: [],
         sessionSchedules: {},
         upcomingSessions: {},
-        sessionSignup: {},
-        signupMsgId: null
+        sessionSignup: {
+            signupMsgId: null,
+            dailySignupPostTime: null
+        },
     }
 
     try {
@@ -180,24 +182,27 @@ const guildSessions = (guildId) => { return {
         const sessionId = 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
         
         // [FIREBASE] Add Session to Firestore:
-        await db.collection('guilds').doc(String(guildId)).update({
-            [`upcomingSessions.${sessionId}`]: { // Use dot notation for nested field
-                date: sessionDateDaily,
-                roles: sessionRoles,
-                title: sessionTitle,
-                location: sessionUrl,
-            }
-        }).then(() => {
+        try {
+            await db.collection('guilds').doc(String(guildId)).update({
+                [`upcomingSessions.${sessionId}`]: { // Use dot notation for nested field
+                    date: sessionDateDaily,
+                    roles: sessionRoles,
+                    title: sessionTitle,
+                    location: sessionUrl,
+                }
+            });
+
             // Success:
             if (global.outputDebug_InDepth) {console.log(`Session created for: ${sessionId}`)}
             const result = { success: true, data: `Successfully updated guild doc! Id: ${guildId}` };
             return result;
-        }).catch((error) => {
+
+        } catch (error) {
             // Error:
             console.error("Error creating session: ", error);
             const result = { success: false, data: `An error occured when adding the session ${sessionId} to database!` };
             return result;
-        });
+        }
     },
 
 
@@ -209,20 +214,21 @@ const guildSessions = (guildId) => { return {
         const guildData = guildDataRetrvial.data;
         
         // Confirm Session Exists:
-        if(!Object.entries(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to assign user.`};
+        if(!Object.keys(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to assign user.`};
 
         // Confirm User's not already in Session:
         let sessionData = guildData['upcomingSessions'][sessionId];
         let sessionRoles = sessionData['roles'] || []
 
         // Check if users already assigned session:
-        sessionRoles.forEach(role => {
-            if(role.users.includes(userId)) return {success: false, data: `You're already assigned to this session!`, currentRole: role.roleName};
-        });
+        let existingRoleAssigned = sessionRoles.find(role => role['users'].includes(String(userId)))
+        if(existingRoleAssigned) return {success: false, data: `You're already assigned this role! Please unassign yourself and try again.`, currentRole: existingRoleAssigned['roleName']}
+        
 
         // Find requested role:
         let requestedRole = sessionRoles.find(role => role.roleName === roleName)
         if(!requestedRole) return {success: false, data: `Couldn't find role("${roleName}") to assign user.`};
+        if( requestedRole['users'].length >= Number(requestedRole['roleCapcity']) ) return {success: false, data: `This role is at capacity! Please choose a different role.`};
 
         // Add user to requested role:
         requestedRole.users.push(String(userId))
@@ -243,7 +249,7 @@ const guildSessions = (guildId) => { return {
         const guildData = guildDataRetrvial.data;
 
         // Confirm Session Exists:
-        if(!Object.entries(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to assign user.`};
+        if(!Object.keys(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to assign user.`};
 
         let sessionData = guildData['upcomingSessions'][sessionId];
         let sessionRoles = sessionData['roles'] || []

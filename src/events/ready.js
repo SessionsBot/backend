@@ -60,8 +60,8 @@ module.exports = {
 		setTimeout(async () => {
 			console.log('[+] Attempting Firebase / Guild Manager Testing:')
 
-			const result = await guildManager.guildSessions(guildId).assignUserSessionRole()
-			console.log(result)
+			// const result = await guildManager.updateGuildDocField(guildId, 'upcomingSessions', {})
+			console.log('No testing done...')
 
 		}, 2_500);
 
