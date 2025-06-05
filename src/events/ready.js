@@ -61,9 +61,10 @@ module.exports = {
 
 			console.log('[+] Attempting Firebase / Guild Manager Testing:');
 
-			const result = await guildManager.guildConfiguration(guildId).setDailySignupPostTime({hour: 6, minuets: 30, timeZone: 'US Chicago'})
-			console.log(result)
-	
+			// const result = await guildManager.guildConfiguration(guildId).setDailySignupPostTime({hour: 6, minuets: 30, timeZone: 'US Chicago'})
+			// console.log(result)
+			
+			console.log('[i] All Clear - Testing Aborted');
 
 		}, 2_500);
 

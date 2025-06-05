@@ -12,7 +12,7 @@ const global = require('../../utils/global.js')
 
 const responses = {
 
-	failure: async (interaction, sessionId, responseTitle, responseString) => {
+	databaseFailure: async (interaction, sessionId, responseTitle, responseString) => {
 		// Send alert:
 		await interaction.reply({
 			embeds: [
@@ -36,7 +36,7 @@ const responses = {
 
 	},
 
-	alreadyAssigned: async (interaction, sessionId, existingRoleAssigned) => {
+	alreadyAssignedRole: async (interaction, sessionId, existingRoleAssigned) => {
 		// Send alert:
 		await interaction.reply({
 			embeds: [
@@ -75,14 +75,14 @@ module.exports = {
 		// Get Guild Data:
 		const guildId = interaction.message.guildId;
 		const guildDataRetrieval = await guildManager.readGuildDoc(guildId);
-		if(!guildDataRetrieval.success) return await responses.failure(interaction, interactionSessionId, '❗️ - Error Occured!', 'An internal server error occured! Cannot find guild data, please contact an administrator...');
+		if(!guildDataRetrieval.success) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occured!', 'An internal server error occured! Cannot find guild data, please contact an administrator...');
 		let guildData = guildDataRetrieval.data;
 
 		// Get Session Data:
 		let upcomingSessions = guildData['upcomingSessions'];
 		let requestedSessionData = upcomingSessions[interactionSessionId];
 		let sessionRoles = requestedSessionData['roles']
-		if(!upcomingSessions || !requestedSessionData || !sessionRoles) return await responses.failure(interaction, interactionSessionId, '❗️ - Error Occured!', 'An internal server error occured! Cannot find session data, please contact an administrator...');
+		if(!upcomingSessions || !requestedSessionData || !sessionRoles) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occured!', 'An internal server error occured! Cannot find session data, please contact an administrator...');
 
 		// Check if User Already Assigned:
 		let userAlreadyInSession = false;
@@ -93,7 +93,7 @@ module.exports = {
 				exisitngRoleName = role['roleName'] || 'Undefined';
 			}
 		});
-		if(userAlreadyInSession) return await responses.alreadyAssigned(interaction, interactionSessionId, exisitngRoleName)
+		if(userAlreadyInSession) return await responses.alreadyAssignedRole(interaction, interactionSessionId, exisitngRoleName)
 
 		// Check Roles are Available:
 		let availableRoles = []
@@ -101,10 +101,10 @@ module.exports = {
 			if(role['users'].length >= role['roleCapcity']) return
 		 	else availableRoles.push(role)
 		});
-		if(!availableRoles.length) return await responses.failure(interaction, interactionSessionId, '❗️ - Session at Capacity!', 'This session currently has no available role positions. Please select a different session and try again.');
+		if(!availableRoles.length) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Session at Capacity!', 'This session currently has no available role positions. Please select a different session and try again.');
 
 
-		// {i} // Pretty Sure the next thing to do is create the select menu based on available roles
+		// {*} // Pretty sure the next thing to do is create the select menu based on available roles
 
 
 		// ! // -------------------- OUTDATED CODE BELOW: -------------------- \\ ! \\

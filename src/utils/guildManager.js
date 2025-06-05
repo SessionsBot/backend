@@ -318,9 +318,9 @@ module.exports = {
 
 
 
-const scheduleObject = {
+const EXAMPLE_scheduleObject = {
 			sessionDateDaily: {
-				hour: 6,
+				hour: 7,
 				minuets: 30,
 				timeZone: 'US Chicago'
 			},
