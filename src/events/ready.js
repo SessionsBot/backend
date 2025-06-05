@@ -49,8 +49,8 @@ module.exports = {
 				timeZone: 'US Chicago'
 			},
 			roles: [
-				{ roleName: 'Event Host', roleCapcity: 1, users: [], roleDescription: 'This is the main cordinator/speaker of the session.' },
-				{ roleName: 'Trainer Crew', roleCapcity: 3, users: [], roleDescription: 'This is the crew resposible for training/onboarding new employees.' }
+				{ roleName: 'Event Host', roleCapacity: 1, users: [], roleDescription: 'This is the main cordinator/speaker of the session.' },
+				{ roleName: 'Trainer Crew', roleCapacity: 3, users: [], roleDescription: 'This is the crew resposible for training/onboarding new employees.' }
 			],
 			sessionTitle: 'Training Session',
 			sessionUrl: 'https://www.games.roblox.com'

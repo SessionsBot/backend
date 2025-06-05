@@ -278,8 +278,9 @@ async function getRefreshedSignupMessage(guildId, messageId) {
 
     // Edit Message by Id if provided:
     if(messageId){
-        const announcementChannel = await global.client.channels.fetch(sessionSignUp_ChannelId);
-        const message = await announcementChannel.messages.fetch(messageId);
+        const signupChannelId = guildData['sessionSignup']['signupChannelId']
+        const signupChannel = await global.client.channels.fetch();
+        const message = await signupChannel.messages.fetch(messageId);
         const messageContainer = await messageContent() 
 
         // Edit Original Message:

@@ -15,7 +15,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js --ignore data/",
-    "deploy-cmds": "node src/utils/deploy-commands.js"
+    "deploy-cmds": "node src/utils/deployCommands.js"
   },
   "main": "index.js"
 }

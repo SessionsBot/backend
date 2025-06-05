@@ -29,8 +29,10 @@ async function createNewGuildDoc(guildId) {
         sessionSchedules: {},
         upcomingSessions: {},
         sessionSignup: {
-            signupMsgId: null,
-            dailySignupPostTime: null
+            dailySignupPostTime: null,
+            mentionRoleIds: [],
+            signupChannelId: null,
+            signupMessageId: null,
         },
     }
 
@@ -232,7 +234,7 @@ const guildSessions = (guildId) => { return {
         // Find requested role:
         let requestedRole = sessionRoles.find(role => role.roleName === roleName)
         if(!requestedRole) return {success: false, data: `Couldn't find role("${roleName}") to assign user.`};
-        if( requestedRole['users'].length >= Number(requestedRole['roleCapcity']) ) return {success: false, data: `This role is at capacity! Please choose a different role.`};
+        if( requestedRole['users'].length >= Number(requestedRole['roleCapacity']) ) return {success: false, data: `This role is at capacity! Please choose a different role.`};
 
         // Add user to requested role:
         requestedRole.users.push(String(userId))
@@ -241,7 +243,7 @@ const guildSessions = (guildId) => { return {
         const updateSuccess = await updateGuildDocField(guildId, `upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!'};
 
-        return {success: true, data: 'Successfully added user to role!'};
+        return {success: true, data: 'Successfully added user to role!', sessionData: sessionData};
     },
 
 
@@ -269,35 +271,190 @@ const guildSessions = (guildId) => { return {
         const updateSuccess = await updateGuildDocField(guildId, `upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!'};
 
-        return {success: true, data: 'Successfully removed user from role!'};
+        return {success: true, data: 'Successfully removed user from role!', sessionData: sessionData};
     },
 
 
     // Get Session Signup Embded Contents - Edits Msg if Id Provided:
-    getSignupEmbedContents: async () => {
-        // 1. Get Guild Data
+    updateSessionSignup: async () => {
+        // 1. Get Guild Data:
         const guildDataRetrvial = await readGuildDoc(guildId);
         if(!guildDataRetrvial.success) return {success: false, data: `Couldn't find guild(${guildId}) to embed signup message.`};
         const guildData = guildDataRetrvial.data;
 
-        const upcomingSessions = guildData?.['upcomingSessions']
+        const unsortedSessions  = guildData?.['upcomingSessions']
         if(!upcomingSessions || !Object.entries(upcomingSessions).length) return {success: false, data: `Guild does not have any upcoming sessions.`};
+        const upcomingSessions = Object.entries(unsortedSessions).sort((a, b) => a[1].date - b[1].date);
 
+        const signupMentionRoles = guildData['sessionSignup']['mentionRoleIds'];
+
+        // {*} Large Debugging - Delete Later:
         console.log('Signup Embed - Sessions Found:', JSON.stringify(upcomingSessions, null, 2))
+        // {*} Large Debugging
+        
+        // 2. Create Embed Contents:
+        const messageContent = async () => {
 
-        // 2. Create Embed Contents
+            const signupContainer = new ContainerBuilder();
+            const seperator = new SeparatorBuilder();
+            signupContainer.setAccentColor(0x9b42f5)
+
+            // Title & Desc:
+            signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('# 📅  __Session Signup__  📅 \n-# Upcoming group sessions are listed below:'))
+            // Spacer:
+            signupContainer.addSeparatorComponents(seperator) 
+
+            // Apend each session to msg:
+            for ([sessionId, sessionData] of upcomingSessions) {
+                // Get Session Data:
+                const sessionRoles = sessionData['roles'] || [];
+                const sessionFull = async () => {
+                    let availability = false;
+                    sessionRoles.forEach(role => {
+                        if(role['users'].length >= role['roleCapacity']) {return}
+                        else {availability = true;}
+                    })
+                    return availability
+                }
+
+                let sessionButtons = async () => {
+                    if(await sessionFull()) { // Session Full - Hide Signup:
+                        return new ActionRowBuilder().addComponents(	
+                            new ButtonBuilder()
+                                .setCustomId(`sessionSignup:${sessionId}`)
+                                .setEmoji('⛔️')
+                                .setLabel('Session Full')
+                                .setStyle(ButtonStyle.Primary)
+                                .setDisabled(true),
+                            
+                            new ButtonBuilder()
+                                .setEmoji('🎯')
+                                .setLabel('Game Link')
+                                .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
+                                .setStyle(ButtonStyle.Link)
+                        );
+                    } else { // Session NOT Full - Show Signup:
+                        return new ActionRowBuilder().addComponents(
+                            new ButtonBuilder()
+                                .setCustomId(`sessionSignup:${sessionId}`)
+                                .setEmoji('📝')
+                                .setLabel('Sign Up')
+                                .setStyle(ButtonStyle.Success),
+                            
+                            new ButtonBuilder()
+                                .setEmoji('🎯')
+                                .setLabel('Game Link')
+                                .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
+                                .setStyle(ButtonStyle.Link)
+                        );
+                    }
+                }
+
+                // Get Session Text Content:
+                let sessionTextContent = '';
+                // Session Date:
+                sessionTextContent += `### **[ ⏰ ] <t:${sessionData['date']}:F>** \n > <t:${sessionData['date']}:R> \n` 
+                // Session Role(s):
+                sessionRoles.forEach(role => {
+                    const roleName = role['roleName'];
+                    const roleEmoji = role['roleEmoji'];
+                    const roleUsers = Array.isArray(role['users']) ? role['users'] : [];
+                    const roleCapcity = role['roleCapacity'];
+                    const roleFull = (roleUsers.length >= roleCapcity)
+                    let roleString;
+
+                    // No Users Assigned:
+                    if(roleUsers.length === 0) {
+                        roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(0/${roleCapcity})* \n` + ` > *@AVAILABLE*  \n`
+                        return sessionTextContent += roleString
+                    }
+                    
+                    // Role at Max Capcity
+                    if(roleFull){
+                        roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`UNAVAILABLE ⛔️\`***` +  ` *(${roleCapcity}/3)* \n` + roleUsers.map(id => `> <@${id}>`).join('\n');
+                        return sessionTextContent += roleString;
+                    }else {
+                    // Role Availale:
+                        roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(${roleUsers.length}/3)* \n` + roleUsers.map(id => `> <@${id}>`).join('\n');
+                        return sessionTextContent += roleString;
+                    }
+                })
+
+                // Append All Text to Container:
+                signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(sessionTextContent));
 
 
+                // Invisible Spacer:
+                signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) )
+                // Session Buttons:
+                signupContainer.addActionRowComponents(await sessionButtons())
+                // Invisible Spacer:
+                signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) )
+                // Seperator:
+                signupContainer.addSeparatorComponents(seperator)
 
-        // 3. Return/Edit Message:
-        const exisitingSignupMsgId = guildData['sessionSignup']?.['signupMsgId']
-        if(!exisitingSignupMsgId) {
-            // Exisiting Signup Message Edit/Replace:
+            }
 
-        } else {
-            // No Exisiting Signup Message - Send New:
+            // Add signup mention role tag:
+            if(Array.isArray(signupMentionRoles) && signupMentionRoles.length >= 1) {
+                let mentionString = '🔔: '
+                for (const roleId of sessionSignUp_MentionRoleIds) {
+                    mentionString += `<@&${roleId}> `
+                }
+                signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${mentionString}`))
+            }
+
+            return signupContainer // Return signupContainer message contents
 
         }
+
+        // 3. Get Existing Signup Message:
+        const exisitingSignupMsgId = guildData['sessionSignup']['signupMessageId']
+        if(exisitingSignupMsgId) {
+            try{
+                // Existing Signup Message - Edit/Replace:
+                const signupChannelId = guildData['sessionSignup']['signupChannelId']
+                const signupChannel = await global.client.channels.fetch(signupChannelId);
+                const message = await signupChannel.messages.fetch(exisitingSignupMsgId);
+                const messageContainer = await messageContent() 
+        
+                // Edit Original Message:
+                await message.edit({
+                    flags: MessageFlags.IsComponentsV2,
+                    components : [messageContainer],
+                }).catch((err) => {
+                    console.log('{!} Failed to Update Session Embed:');
+                    console.log(err);
+        
+                });
+
+            }catch(e){
+                console.warn('[!] An error occured when trying to update an exisiting signup message:', e);
+            }
+
+        }else{
+            // No Existing Signup Message - Send New:
+            try{
+                // Existing Signup Message - Edit/Replace:
+                const signupChannelId = guildData['sessionSignup']['signupChannelId']
+                const signupChannel = await global.client.channels.fetch(signupChannelId);
+                const messageContainer = await messageContent() 
+        
+                // Edit Original Message:
+                await signupChannel.send({
+                    flags: MessageFlags.IsComponentsV2,
+                    components : [messageContainer],
+                }).catch((err) => {
+                    console.log('{!} Failed to Send Session Embed:');
+                    console.log(err);
+        
+                });
+
+            }catch(e){
+                console.warn('[!] An error occured when trying to send a new signup message:', e);
+            }
+        }
+        
     },
 
 }}
@@ -319,15 +476,15 @@ module.exports = {
 
 
 const EXAMPLE_scheduleObject = {
-			sessionDateDaily: {
-				hour: 7,
-				minuets: 30,
-				timeZone: 'US Chicago'
-			},
-			roles: [
-				{ roleName: 'Role Name', roleCapcity: 1, users: [], roleDescription: 'This is an example role description.' },
-				{ roleName: 'Role2 Name', roleCapcity: 3, users: [], roleDescription: 'This is an example role description.' }
-			],
-			sessionTitle: 'Title Example',
-			sessionUrl: 'https://www.games.roblox.com'
-		}
+    sessionDateDaily: {
+        hour: 7,
+        minuets: 30,
+        timeZone: 'US Chicago'
+    },
+    roles: [
+        { roleName: 'Role Name', roleEmoji: '💼', roleCapacity: 1, users: [], roleDescription: 'This is an example role description.' },
+        { roleName: 'Role2 Name', roleEmoji: '💼', roleCapacity: 3, users: [], roleDescription: 'This is an example role description.' }
+    ],
+    sessionTitle: 'Title Example',
+    sessionUrl: 'https://www.games.roblox.com'
+}

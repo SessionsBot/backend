@@ -1,0 +1,19 @@
+
+// -------------------------- [ Imports/Variables ] -------------------------- \\
+const cron = require('node-cron');
+const global = require('../global.js') // Import Global Variables
+const guildManager = require('./guildManager.js')
+const { db } = require('../firebase.js'); // Import Firebase
+
+// -------------------------- [ Functions ] -------------------------- \\
+
+
+// [TO-DO]  
+// Create the 'Initializer' scheudle/function that loads all 'session post schedules' once daily
+// the Initializer function will read all guilds/session schedules for SIGNUP POST TIME and schedule them with cron accordingly
+
+
+// Runs Daily @12AM - Loads and schedules all other 'Guild Schedules':
+async function dailyInitialize() {
+
+}
