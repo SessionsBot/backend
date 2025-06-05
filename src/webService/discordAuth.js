@@ -26,7 +26,7 @@ module.exports = function(app, axios, jwt) {
             return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
         }
 
-        // Attempt retrevial of Discord user credentials using code:
+        // Attempt retrieval of Discord user credentials using code:
         try {
             // Step 1: Exchange code for access token
             const tokenResponse = await axios.post('https://discord.com/api/oauth2/token', new URLSearchParams({
