@@ -1,5 +1,6 @@
 // -------------------------- [ Imports/Variables ] -------------------------- \\
 
+const { json } = require('express');
 const { db } = require('./firebase.js'); // Import Firebase
 const global = require('./global.js'); // Import Global Variables
 const { // Discord.js:
@@ -44,7 +45,7 @@ async function createNewGuildDoc(guildId) {
     } catch (error) {
         // Error:
         console.warn('[!] Error adding new guild document: ', error);
-        const result = { success: false, data: 'An error occured when trying to save this guild!' };
+        const result = { success: false, data: `An error occured when trying to save this guild! (${guildId})` };
         return result;
     }
 }
@@ -58,7 +59,7 @@ async function readGuildDoc(guildId) {
         return { success: true, data: guildData };
     } catch (e) {
         console.warn('[!] Error reading guild document: ', e);
-        return { success: false, data: 'An error occurred when trying to read this guild!' };
+        return { success: false, data: 'An error occurred when trying to read this guild!', rawError: e};
     }
 }
 
@@ -70,18 +71,18 @@ async function archiveGuildDoc(guildId) {
 
     try {
         // 1. Read original doc
-        const doc = await guildRef.get();
+        const guildDoc = await guildRef.get();
 
-        if (!doc.exists) {
+        if (!guildDoc.exists) {
             console.warn(`Guild document ${guildId} does not exist.`);
-            return { success: false, error: 'Document not found' };
+            return { success: false, error: `Couldn't find exisiting guild doc to archive!` };
         }
 
-        const data = doc.data();
+        const guildData = guildDoc.data();
 
         // 2. Write to archive
         await archivedRef.set({
-            ...data,
+            ...guildData,
             archivedAt: new Date()
         });
 
@@ -91,9 +92,9 @@ async function archiveGuildDoc(guildId) {
         console.log(`[-] Guild ${guildId} moved to archive successfully.`);
         return { success: true };
 
-    } catch (err) {
+    } catch (e) {
         console.error(`Failed to move guild ${guildId} to archive:`, err);
-        return { success: false, data: err };
+        return { success: false, data: `Failed to move guild ${guildId} to archive:`, rawError: e };
     }
 }
 
@@ -111,10 +112,10 @@ async function updateGuildDocField(guildId, fieldPath, fieldValue) {
         inDepthDebug(`Successfully updated guild doc! Id: ${guildId}`);
         const result = { success: true, data: `Successfully updated guild doc! Id: ${guildId}` };
         return result;
-    } catch (error) {
+    } catch (e) {
         // Error:
         console.warn('[!] Error updating guild document: ', error);
-        const result = { success: false, data: 'An error occured when trying to update this guild!' };
+        const result = { success: false, data: 'An error occured when trying to update a guild field!', rawError: e  };
         return result;
     }
 }
@@ -139,7 +140,10 @@ const guildConfiguration = (guildId) => { return {
     },
 
     // Update/Set Specific Session Schedule:
-    setSessionSchedule : async (scheduleId, sessionScheduleObject) => {
+    setSessionSchedule : async (sessionScheduleObject) => {
+        // Generate Session Id:
+        const scheduleId = 'shd_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        
         return await updateGuildDocField(guildId, `sessionSchedules.${scheduleId}`, sessionScheduleObject)
     },
 
@@ -159,7 +163,7 @@ const guildSessions = (guildId) => { return {
         const guildDoc = await db.collection('guilds').doc(String(guildId)).get();
         if (!guildDoc.exists) {
             // No Guild Doc:
-            const result = { success: false, data: `[92813] Cannot find guild data/configuration for: ${guildId}` };
+            const result = { success: false, data: `Cannot find guild doc/data for: ${guildId}` };
             return result;
         }
 
@@ -249,7 +253,7 @@ const guildSessions = (guildId) => { return {
         const guildData = guildDataRetrvial.data;
 
         // Confirm Session Exists:
-        if(!Object.keys(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to assign user.`};
+        if(!Object.keys(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to remove user.`};
 
         let sessionData = guildData['upcomingSessions'][sessionId];
         let sessionRoles = sessionData['roles'] || []
@@ -278,6 +282,8 @@ const guildSessions = (guildId) => { return {
 
         const upcomingSessions = guildData?.['upcomingSessions']
         if(!upcomingSessions || !Object.entries(upcomingSessions).length) return {success: false, data: `Guild does not have any upcoming sessions.`};
+
+        console.log('Signup Embed - Sessions Found:', JSON.stringify(upcomingSessions, null, 2))
 
         // 2. Create Embed Contents
 

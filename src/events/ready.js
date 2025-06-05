@@ -40,28 +40,30 @@ module.exports = {
 
 		// [ GUILD MANAGER TESTING ] \\
 		const guildManager = require('../utils/guildManager.js')
-		let guildId = '1379160686629880028';
-		const scheduleId = 'shd_0218308213012';
+		let guildId = 'N_593097033368338435';
+		const scheduleId = 'shd_EX0218308213012';
 		const scheduleObject = {
 			sessionDateDaily: {
-				hour: 6,
+				hour: 7,
 				minuets: 30,
 				timeZone: 'US Chicago'
 			},
 			roles: [
-				{ roleName: 'Role Name', roleCapcity: 1, users: [], roleDescription: 'This is an example role description.' },
-				{ roleName: 'Role2 Name', roleCapcity: 3, users: [], roleDescription: 'This is an example role description.' }
+				{ roleName: 'Event Host', roleCapcity: 1, users: [], roleDescription: 'This is the main cordinator/speaker of the session.' },
+				{ roleName: 'Trainer Crew', roleCapcity: 3, users: [], roleDescription: 'This is the crew resposible for training/onboarding new employees.' }
 			],
-			sessionTitle: 'Title Example',
+			sessionTitle: 'Training Session',
 			sessionUrl: 'https://www.games.roblox.com'
 		}
 
 		// After Startup - Delay:
 		setTimeout(async () => {
-			console.log('[+] Attempting Firebase / Guild Manager Testing:')
 
-			// const result = await guildManager.updateGuildDocField(guildId, 'upcomingSessions', {})
-			console.log('No testing done...')
+			console.log('[+] Attempting Firebase / Guild Manager Testing:');
+
+			const result = await guildManager.guildConfiguration(guildId).setDailySignupPostTime({hour: 6, minuets: 30, timeZone: 'US Chicago'})
+			console.log(result)
+	
 
 		}, 2_500);
 
