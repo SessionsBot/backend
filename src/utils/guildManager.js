@@ -1,6 +1,5 @@
 // -------------------------- [ Imports/Variables ] -------------------------- \\
-
-const { json } = require('express');
+const { DateTime } = require('luxon');
 const { db } = require('./firebase.js'); // Import Firebase
 const global = require('./global.js'); // Import Global Variables
 const { // Discord.js:
@@ -141,8 +140,8 @@ const guildConfiguration = (guildId) => { return {
         return await updateGuildDocField(guildId, 'sessionSignup.dailySignupPostTime', dailyPostTimeObject)
     },
 
-    // Update/Set Specific Session Schedule:
-    setSessionSchedule : async (sessionScheduleObject) => {
+    // Add Specific Session Schedule:
+    addSessionSchedule : async (sessionScheduleObject) => {
         // Generate Session Id:
         const scheduleId = 'shd_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
         
@@ -186,6 +185,25 @@ const guildSessions = (guildId) => { return {
 
         // Generate Session Id:
         const sessionId = 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+        // Create Discord Timestamp from sessionDateDaily object
+        const createDiscordTimestamp = (sessionDateDaily) => {
+            const { hours, minuets, timeZone } = sessionDateDaily;
+
+            // Create a DateTime in the specified time zone
+            const dateTime = DateTime.fromObject(
+                { hour: hours, minute: minuets, second: 0, millisecond: 0 },
+                { zone: timeZone }
+            );
+
+            // Convert to UNIX timestamp (seconds, not ms)
+            const discordTimestamp = String(Math.floor(dateTime.toSeconds()));
+
+            return discordTimestamp;
+        };
+
+        // Assign Discord Timestamp:
+        sessionDateDaily.discordTimestamp = createDiscordTimestamp(sessionDateDaily);
         
         // [FIREBASE] Add Session to Firestore:
         try {
@@ -243,7 +261,7 @@ const guildSessions = (guildId) => { return {
         const updateSuccess = await updateGuildDocField(guildId, `upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!'};
 
-        return {success: true, data: 'Successfully added user to role!', sessionData: sessionData};
+        return {success: true, data: 'Successfully added user to role!', sessionData: sessionData, guildData: guildData};
     },
 
 
@@ -271,7 +289,7 @@ const guildSessions = (guildId) => { return {
         const updateSuccess = await updateGuildDocField(guildId, `upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!'};
 
-        return {success: true, data: 'Successfully removed user from role!', sessionData: sessionData};
+        return {success: true, data: 'Successfully removed user from role!', sessionData: sessionData, guildData: guildData};
     },
 
 
@@ -283,14 +301,11 @@ const guildSessions = (guildId) => { return {
         const guildData = guildDataRetrvial.data;
 
         const unsortedSessions  = guildData?.['upcomingSessions']
-        if(!upcomingSessions || !Object.entries(upcomingSessions).length) return {success: false, data: `Guild does not have any upcoming sessions.`};
+        if(!unsortedSessions || !Object.entries(unsortedSessions).length) return {success: false, data: `Guild does not have any upcoming sessions.`};
         const upcomingSessions = Object.entries(unsortedSessions).sort((a, b) => a[1].date - b[1].date);
 
         const signupMentionRoles = guildData['sessionSignup']['mentionRoleIds'];
 
-        // {*} Large Debugging - Delete Later:
-        console.log('Signup Embed - Sessions Found:', JSON.stringify(upcomingSessions, null, 2))
-        // {*} Large Debugging
         
         // 2. Create Embed Contents:
         const messageContent = async () => {
@@ -308,28 +323,22 @@ const guildSessions = (guildId) => { return {
             for ([sessionId, sessionData] of upcomingSessions) {
                 // Get Session Data:
                 const sessionRoles = sessionData['roles'] || [];
-                const sessionFull = async () => {
-                    let availability = false;
-                    sessionRoles.forEach(role => {
-                        if(role['users'].length >= role['roleCapacity']) {return}
-                        else {availability = true;}
-                    })
-                    return availability
+                const sessionFull = () => {
+                    // Returns true if every role is full
+                    return sessionRoles.every(role => role['users'].length >= role['roleCapacity']);
                 }
 
                 let sessionButtons = async () => {
-                    if(await sessionFull()) { // Session Full - Hide Signup:
+                    if(sessionFull()) { // Session Full - Hide Signup:
                         return new ActionRowBuilder().addComponents(	
                             new ButtonBuilder()
                                 .setCustomId(`sessionSignup:${sessionId}`)
-                                .setEmoji('⛔️')
-                                .setLabel('Session Full')
+                                .setLabel('⛔️ Session Full')
                                 .setStyle(ButtonStyle.Primary)
                                 .setDisabled(true),
                             
                             new ButtonBuilder()
-                                .setEmoji('🎯')
-                                .setLabel('Game Link')
+                                .setLabel('🎯 Game Link')
                                 .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
                                 .setStyle(ButtonStyle.Link)
                         );
@@ -337,13 +346,11 @@ const guildSessions = (guildId) => { return {
                         return new ActionRowBuilder().addComponents(
                             new ButtonBuilder()
                                 .setCustomId(`sessionSignup:${sessionId}`)
-                                .setEmoji('📝')
-                                .setLabel('Sign Up')
+                                .setLabel('📝 Sign Up')
                                 .setStyle(ButtonStyle.Success),
                             
                             new ButtonBuilder()
-                                .setEmoji('🎯')
-                                .setLabel('Game Link')
+                                .setLabel('🎯 Game Link')
                                 .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
                                 .setStyle(ButtonStyle.Link)
                         );
@@ -353,7 +360,7 @@ const guildSessions = (guildId) => { return {
                 // Get Session Text Content:
                 let sessionTextContent = '';
                 // Session Date:
-                sessionTextContent += `### **[ ⏰ ] <t:${sessionData['date']}:F>** \n > <t:${sessionData['date']}:R> \n` 
+                sessionTextContent += `### **[ ⏰ ] <t:${sessionData['date']['discordTimestamp']}:F>** \n > <t:${sessionData['date']['discordTimestamp']}:R> \n` 
                 // Session Role(s):
                 sessionRoles.forEach(role => {
                     const roleName = role['roleName'];
@@ -371,11 +378,11 @@ const guildSessions = (guildId) => { return {
                     
                     // Role at Max Capcity
                     if(roleFull){
-                        roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`UNAVAILABLE ⛔️\`***` +  ` *(${roleCapcity}/3)* \n` + roleUsers.map(id => `> <@${id}>`).join('\n');
+                        roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`UNAVAILABLE ⛔️\`***` +  ` *(${roleCapcity}/3)* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
                         return sessionTextContent += roleString;
                     }else {
                     // Role Availale:
-                        roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(${roleUsers.length}/3)* \n` + roleUsers.map(id => `> <@${id}>`).join('\n');
+                        roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(${roleUsers.length}/3)* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
                         return sessionTextContent += roleString;
                     }
                 })
@@ -398,7 +405,7 @@ const guildSessions = (guildId) => { return {
             // Add signup mention role tag:
             if(Array.isArray(signupMentionRoles) && signupMentionRoles.length >= 1) {
                 let mentionString = '🔔: '
-                for (const roleId of sessionSignUp_MentionRoleIds) {
+                for (const roleId of signupMentionRoles) {
                     mentionString += `<@&${roleId}> `
                 }
                 signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${mentionString}`))
@@ -428,20 +435,25 @@ const guildSessions = (guildId) => { return {
         
                 });
 
+                // Return Result:
+                return {success: true, data: `Successfully edited signup message.`};
+
             }catch(e){
                 console.warn('[!] An error occured when trying to update an exisiting signup message:', e);
+                // Return Result:
+                return {success: false, data: `Failed to edit signup message.`};
             }
 
         }else{
             // No Existing Signup Message - Send New:
             try{
-                // Existing Signup Message - Edit/Replace:
+                // Fetch Destination/Contents:
                 const signupChannelId = guildData['sessionSignup']['signupChannelId']
                 const signupChannel = await global.client.channels.fetch(signupChannelId);
                 const messageContainer = await messageContent() 
         
-                // Edit Original Message:
-                await signupChannel.send({
+                // Send Message:
+                const newSignupMsg = await signupChannel.send({
                     flags: MessageFlags.IsComponentsV2,
                     components : [messageContainer],
                 }).catch((err) => {
@@ -450,8 +462,19 @@ const guildSessions = (guildId) => { return {
         
                 });
 
+                // Save new msg id:
+                if(newSignupMsg){
+                    const newSignupMsgId = newSignupMsg.id
+                    updateGuildDocField(guildId, 'sessionSignup.signupMessageId', newSignupMsgId)
+                }
+
+                // Return Result:
+                return {success: true, data: `Successfully sent new signup message.`};
+
             }catch(e){
                 console.warn('[!] An error occured when trying to send a new signup message:', e);
+                // Return Result:
+                return {success: false, data: `Failed to send new signup message.`};
             }
         }
         
@@ -459,6 +482,19 @@ const guildSessions = (guildId) => { return {
 
 }}
 
+const EXAMPLE_scheduleObject = {
+    sessionDateDaily: {
+        hours: 7,
+        minuets: 30,
+        timeZone: 'America/Chicago'
+    },
+    roles: [
+        { roleName: 'Event Host', roleEmoji: '🎙️', roleCapacity: 1, users: [], roleDescription: 'This is main speaker/cordinator of the session.' },
+        { roleName: 'Training Crew', roleEmoji: '🤝', roleCapacity: 3, users: [], roleDescription: 'This is crew responsible for training new employees.' }
+    ],
+    sessionTitle: 'Title Example',
+    sessionUrl: 'https://www.games.roblox.com'
+}
 
 
 // -------------------------- [ Exports ] -------------------------- \\
@@ -470,21 +506,5 @@ module.exports = {
     updateGuildDocField,
     guildConfiguration,
     guildSessions,
-}
-
-
-
-
-const EXAMPLE_scheduleObject = {
-    sessionDateDaily: {
-        hour: 7,
-        minuets: 30,
-        timeZone: 'US Chicago'
-    },
-    roles: [
-        { roleName: 'Role Name', roleEmoji: '💼', roleCapacity: 1, users: [], roleDescription: 'This is an example role description.' },
-        { roleName: 'Role2 Name', roleEmoji: '💼', roleCapacity: 3, users: [], roleDescription: 'This is an example role description.' }
-    ],
-    sessionTitle: 'Title Example',
-    sessionUrl: 'https://www.games.roblox.com'
+    EXAMPLE_scheduleObject
 }

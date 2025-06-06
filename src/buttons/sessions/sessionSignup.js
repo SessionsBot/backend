@@ -75,7 +75,7 @@ const responses = {
 					)
 					.addFields(
 						{ name: '💼 Role:', value: '`' + selectedRole + '`', inline: true },
-						{ name: '📆 Date:', value: `<t:${sessionData.date}:F>\n(<t:${sessionData.date}:R>)`, inline: true }
+						{ name: '📆 Date:', value: `<t:${sessionData['date']['discordTimestamp']}:F>\n(<t:${sessionData['date']['discordTimestamp']}:R>)`, inline: true }
 					)          
 					.addFields( // Spacer
 						{ name: ' ', value: ' ' }
@@ -148,9 +148,9 @@ module.exports = {
 
 
 		// Get Session Data:
-		let upcomingSessions = guildData['upcomingSessions'];
-		let requestedSessionData = upcomingSessions[interactionSessionId];
-		let sessionRoles = requestedSessionData['roles']
+		let upcomingSessions = guildData?.['upcomingSessions'];
+		let requestedSessionData = upcomingSessions?.[interactionSessionId];
+		let sessionRoles = requestedSessionData?.['roles']
 		if(!upcomingSessions || !requestedSessionData || !sessionRoles) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occured!', 'An internal server error occured! Cannot find session data, please contact an administrator...');
 
 
@@ -179,7 +179,7 @@ module.exports = {
 		let selectMenuOptions = [];
 		availableRoles.forEach(role => {
 			const newOption = new StringSelectMenuOptionBuilder()
-				.setLabel(role['roleName'])
+				.setLabel(role['roleEmoji'] + ' ' + role['roleName'])
 				.setDescription(role['roleDescription'])
 				.setValue(role['roleName']);
 			selectMenuOptions.push(newOption)

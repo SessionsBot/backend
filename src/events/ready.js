@@ -1,5 +1,6 @@
 const { Events, ActivityType } = require('discord.js');
-
+const guildManager = require('../utils/guildManager.js')
+const scheduleManager = require('../utils/scheduleManager.js')
 const global = require('../utils/global.js') // Import Global Variables
 const sessionScheduleManager = require('../utils/sessions/sessionScheduler.js'); // Import Session Schedule:
 
@@ -32,42 +33,33 @@ module.exports = {
 		// Set Bot User's Activity:
 		client.user.setActivity('📅 Training Sessions', { type: ActivityType.Watching });
 
-		// Start Session Schedule:
-		sessionScheduleManager.startSchedule()
-
 
 
 
 		// [ GUILD MANAGER TESTING ] \\
-		const guildManager = require('../utils/guildManager.js')
-		let guildId = 'N_593097033368338435';
-		const scheduleId = 'shd_EX0218308213012';
-		const scheduleObject = {
-			sessionDateDaily: {
-				hour: 7,
-				minuets: 30,
-				timeZone: 'US Chicago'
-			},
-			roles: [
-				{ roleName: 'Event Host', roleCapacity: 1, users: [], roleDescription: 'This is the main cordinator/speaker of the session.' },
-				{ roleName: 'Trainer Crew', roleCapacity: 3, users: [], roleDescription: 'This is the crew resposible for training/onboarding new employees.' }
-			],
-			sessionTitle: 'Training Session',
-			sessionUrl: 'https://www.games.roblox.com'
-		}
+
+		
 
 		// After Startup - Delay:
 		setTimeout(async () => {
 
 			console.log('[+] Attempting Firebase / Guild Manager Testing:');
-
-			// const result = await guildManager.guildConfiguration(guildId).setDailySignupPostTime({hour: 6, minuets: 30, timeZone: 'US Chicago'})
-			// console.log(result)
 			
-			console.log('[i] All Clear - Testing Aborted');
+			const guildId = '1379160686629880028';
 
-		}, 2_500);
+			// Initialize Schedule System:
+			await scheduleManager.dailyInitialize()
+
+			const result = await guildManager.guildSessions(guildId).updateSessionSignup()
+			console.log(result)
+			
+			console.log('[i] Testing Completed');
+
+		}, 1_500);
 
 
 	},
 };
+
+
+		

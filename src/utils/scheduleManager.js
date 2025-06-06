@@ -1,9 +1,9 @@
 
 // -------------------------- [ Imports/Variables ] -------------------------- \\
 const cron = require('node-cron');
-const global = require('../global.js') // Import Global Variables
+const global = require('./global.js') // Import Global Variables
 const guildManager = require('./guildManager.js')
-const { db } = require('../firebase.js'); // Import Firebase
+const { db } = require('./firebase.js'); // Import Firebase
 
 // -------------------------- [ Functions ] -------------------------- \\
 
@@ -16,4 +16,21 @@ const { db } = require('../firebase.js'); // Import Firebase
 // Runs Daily @12AM - Loads and schedules all other 'Guild Schedules':
 async function dailyInitialize() {
 
+    // Get all guilds:
+    const guildsRef = db.collection('guilds')
+    const guildsSnapshot = await guildsRef.get();
+    
+    // For each guild:
+    // console.log('DAILY INITIALIZE - ALL GUILDS:')
+    guildsSnapshot.forEach(doc => {
+        // console.log(doc.id, '=>', doc.data());
+    });
+
+}
+
+
+
+// -------------------------- [ Exports ] -------------------------- \\
+module.exports = {
+    dailyInitialize,
 }

@@ -10,6 +10,7 @@
     "firebase-admin": "^13.4.0",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
+    "luxon": "^3.6.1",
     "node-cron": "^4.0.5"
   },
   "scripts": {

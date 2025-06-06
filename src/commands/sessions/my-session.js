@@ -143,7 +143,7 @@ async function execute(interaction) {
 
         // On Interaction Collection:
         collector.on('collect', async (collectorInteraction) => {
-            // // Defer Colector Response:
+            // Defer Colector Response:
             await collectorInteraction.deferUpdate().catch((err) => { // Defer Response:
                 console.log(`{!} Error Deffering: - /${interaction.commandName}:`)
                 console.log(err)
