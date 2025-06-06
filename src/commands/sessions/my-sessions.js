@@ -1,3 +1,7 @@
+// {*} Next Steps: This file needs to be recreated with the new guildManager.
+// ! This will not function until that is completed.
+// ! Make according function call switches to maintain functionality
+
 const {
     InteractionContextType, 
     SlashCommandBuilder, 
@@ -19,7 +23,6 @@ const data = new SlashCommandBuilder()
     .setName('my-sessions')
     .setDescription("Lists your currently assigned sessions with respective options.")
     .setContexts(InteractionContextType.Guild)
-
 
 // Custom Response Methods:
 const responseMethods = { 

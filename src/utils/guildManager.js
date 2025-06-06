@@ -482,6 +482,7 @@ const guildSessions = (guildId) => { return {
 
 }}
 
+
 const EXAMPLE_scheduleObject = {
     sessionDateDaily: {
         hours: 7,
