@@ -140,6 +140,11 @@ const guildConfiguration = (guildId) => { return {
         return await updateGuildDocField(guildId, 'sessionSignup.dailySignupPostTime', dailyPostTimeObject)
     },
 
+    // Updating Daily Signup Mention Role Ids:
+    setSignupMentionIds : async (roleIdsArray) => {
+        return await updateGuildDocField(guildId, 'sessionSignup.mentionRoleIds', roleIdsArray)
+    },
+
     // Add Specific Session Schedule:
     addSessionSchedule : async (sessionScheduleObject) => {
         // Generate Session Id:
@@ -176,6 +181,67 @@ const guildSessions = (guildId) => { return {
     },
 
 
+    // Create Todays Sessions from Schedules:
+    createAllUpcomingSessions: async (fullSchedulesObject) => { try{
+
+        const upcomingSessions = {};
+
+        // For Each Sechedule:
+        for(const[scheduleId, scheduleData] of Object.entries(fullSchedulesObject)) {
+            // Session Data:
+            const sessionDateDaily = scheduleData?.['sessionDateDaily'];
+            const sessionRoles = scheduleData?.['roles'];
+            const sessionTitle = scheduleData?.['sessionTitle'] ;
+            const sessionUrl = scheduleData?.['sessionUrl'];
+            
+            // Generate Session Id:
+            const sessionId = 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+            // Create Discord Timestamp from sessionDateDaily object
+            const createDiscordTimestamp = (sessionDateDaily) => {
+                const { hours, minutes, timeZone } = sessionDateDaily;
+
+                // Create a DateTime in the specified time zone
+                const dateTime = DateTime.fromObject(
+                    { hour: hours, minute: minutes, second: 0, millisecond: 0 },
+                    { zone: timeZone }
+                );
+
+                // Convert to UNIX timestamp (seconds, not ms)
+                const discordTimestamp = String(Math.floor(dateTime.toSeconds()));
+
+                return discordTimestamp;
+            };
+
+            // Assign Discord Timestamp:
+            sessionDateDaily.discordTimestamp = createDiscordTimestamp(sessionDateDaily);
+            
+            // Add to upcomingSessions Table:
+            upcomingSessions[sessionId] = {
+                date: sessionDateDaily,
+                roles: sessionRoles,
+                title: sessionTitle,
+                location: sessionUrl,
+            }
+        }
+
+        // Save all Session to Upcoming Sessions:
+        const saveResult = await updateGuildDocField(guildId, 'upcomingSessions', upcomingSessions);
+        if(saveResult.success){
+            // Update Signup Message:
+            return await guildSessions(guildId).updateSessionSignup()
+        }
+
+        // Creation Success:
+        const result = { success: true, data: `Successfully created guilds sessions from schedules! Id: ${guildId}` };
+        return result;
+    } catch(e){
+        // Error Occured:
+        const result = { success: false, data: `Failed to create guilds sessions from schedules! Id: ${guildId}`, rawError: e };
+        return result;
+    }},
+
+
     // Create New Upcomming Session:
     createSession: async (sessionScheduleObject) => {
         const sessionDateDaily = sessionScheduleObject.sessionDateDaily;
@@ -188,11 +254,11 @@ const guildSessions = (guildId) => { return {
 
         // Create Discord Timestamp from sessionDateDaily object
         const createDiscordTimestamp = (sessionDateDaily) => {
-            const { hours, minuets, timeZone } = sessionDateDaily;
+            const { hours, minutes, timeZone } = sessionDateDaily;
 
             // Create a DateTime in the specified time zone
             const dateTime = DateTime.fromObject(
-                { hour: hours, minute: minuets, second: 0, millisecond: 0 },
+                { hour: hours, minute: minutes, second: 0, millisecond: 0 },
                 { zone: timeZone }
             );
 
@@ -491,21 +557,6 @@ const guildSessions = (guildId) => { return {
 }}
 
 
-const EXAMPLE_scheduleObject = {
-    sessionDateDaily: {
-        hours: 7,
-        minuets: 30,
-        timeZone: 'America/Chicago'
-    },
-    roles: [
-        { roleName: 'Event Host', roleEmoji: '🎙️', roleCapacity: 1, users: [], roleDescription: 'This is main speaker/cordinator of the session.' },
-        { roleName: 'Training Crew', roleEmoji: '🤝', roleCapacity: 3, users: [], roleDescription: 'This is crew responsible for training new employees.' }
-    ],
-    sessionTitle: 'Title Example',
-    sessionUrl: 'https://www.games.roblox.com'
-}
-
-
 // -------------------------- [ Exports ] -------------------------- \\
 
 module.exports = {
@@ -514,6 +565,5 @@ module.exports = {
     archiveGuildDoc,
     updateGuildDocField,
     guildConfiguration,
-    guildSessions,
-    EXAMPLE_scheduleObject
+    guildSessions
 }

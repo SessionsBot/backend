@@ -1,6 +1,6 @@
 const { Events, ActivityType } = require('discord.js');
 const guildManager = require('../utils/guildManager.js')
-const scheduleManager = require('../../private/scheduleManager.js')
+const scheduleManager = require('../utils/scheduleManager.js')
 const global = require('../utils/global.js') // Import Global Variables
 
 module.exports = {
@@ -36,25 +36,36 @@ module.exports = {
 
 
 		// [ GUILD MANAGER TESTING ] \\
+		const guildId = '593097033368338435';
+
+		const singupPostConfig = {
+			hours: 5,
+			minutes: 30,
+			timeZone: 'America/Chicago'
+		}
+
+		const EXAMPLE_scheduleObject = {
+			sessionDateDaily: {
+				hours: 10,
+				minutes: 30,
+				timeZone: 'America/Chicago'
+			},
+			roles: [
+				{ roleName: 'Event Host', roleEmoji: '🎙️', roleCapacity: 1, users: [], roleDescription: 'This is main speaker/cordinator of the session. Max of 1.' },
+				{ roleName: 'Training Crew', roleEmoji: '🤝', roleCapacity: 3, users: [], roleDescription: 'This is the crew responsible for training new employees.' }
+			],
+			sessionTitle: 'Training Session',
+			sessionUrl: 'https://www.roblox.com/games/407106466/Munch-V1'
+		}
 
 		
 
 		// After Startup - Delay:
 		setTimeout(async () => {
 
-			console.log('[+] Attempting Firebase / Guild Manager Testing:');
-			
-			const guildId = '1379160686629880028';
-
 			// Initialize Schedule System:
-			await scheduleManager.dailyInitialize()
+			await scheduleManager.botInitialize()
 
-			const result = await guildManager.guildSessions(guildId).createSession(guildManager.EXAMPLE_scheduleObject)
-			console.log(result)
-			
-			setTimeout(() => {
-				guildManager.guildSessions(guildId).updateSessionSignup()
-			}, 2000);
 
 			console.log('[i] Testing Completed');
 
