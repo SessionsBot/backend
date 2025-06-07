@@ -8,7 +8,6 @@ const { // Import Discord.js
     messageLink,
 } = require('discord.js');
 
-const sessionManager = require('../../utils/sessions/sessionManager');
 const global = require('../../utils/global')
 
 // Register Command:

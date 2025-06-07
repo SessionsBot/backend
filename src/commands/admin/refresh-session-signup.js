@@ -2,16 +2,13 @@ const {
     SlashCommandBuilder,
     InteractionContextType,
     MessageFlags,
-    SectionBuilder,
     ContainerBuilder,
     TextDisplayBuilder,
     SeparatorBuilder,
     PermissionFlagsBits,
 } = require('discord.js'); // Import Discord.js
 
-const sessionManager = require('../../utils/sessions/sessionManager'); // Import Session Manager
-const { db } = require('../../utils/firebase'); // Import Firebase
-const global = require('../../utils/global'); // Import Global Variables
+const guildManager = require('../../utils/guildManager.js'); // Import Session Manager
 
 // Register Command:
 const data = new SlashCommandBuilder()
@@ -32,20 +29,8 @@ async function execute(interaction) {
             console.log(err)
         });
 
-        // Get guild data from firebase:
-        let guildDoc = await db.collection('guilds').doc(String(interaction.guildId)).get();
-        if (!guildDoc.exists) {
-            throw new Error(`{!} Guild with ID ${guildId} does not exist.`);
-        } else { guildDoc = guildDoc.data() } // assign var to data
-
-        let sessionsSignup_MessageId = String(guildDoc.sessionsSignup_MessageId).trim()
-        if(!sessionsSignup_MessageId) {
-            // Original Message NOT FOUND - Send New:
-            await sessionManager.getRefreshedSignupMessage(interaction.guildId)
-        }else {
-            // Original Message FOUND - EDIT:
-            await sessionManager.getRefreshedSignupMessage(interaction.guildId, sessionsSignup_MessageId)
-        }
+        // Update Signup Message using Guild Manager:
+        guildManager.guildSessions(interaction.guild.id).updateSessionSignup()
 
         // Send Success Response:
         await interaction.editReply({

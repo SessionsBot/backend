@@ -26,7 +26,7 @@ module.exports = function(app, axios, jwt) {
             return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
         }
 
-        // Attempt retrevial of Discord user credentials using code:
+        // Attempt retrieval of Discord user credentials using code:
         try {
             // Step 1: Exchange code for access token
             const tokenResponse = await axios.post('https://discord.com/api/oauth2/token', new URLSearchParams({
@@ -103,16 +103,24 @@ module.exports = function(app, axios, jwt) {
 
     // [Verify Auth] - Secure Access:
     app.post('/api/secure-action', (req, res) => {
+        // Get Access Token from Request:
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) return res.status(401).json({ error: 'No token provided' });
 
+        // Attempt Action using Token:
         try {
             const user = jwt.verify(token, JSON_SECRET);
-            // user = your decoded Discord user info
-            // Do permission checks etc.
             res.json({ message: 'Secure action done!', user });
-        } catch (e) {
-            res.status(403).json({ error: 'Invalid or expired token' });
+        } catch (err) {
+            // Expired Token:
+            if (err.name === 'TokenExpiredError') {
+                return res.status(401).json({ error: 'TokenExpired' });
+            }
+            // Invalid Token:
+            if (err.name === 'JsonWebTokenError') {
+                return res.status(403).json({ error: 'InvalidToken' });
+            }
+            return res.status(500).json({ error: 'Unknown token error' });
         }
     });
 

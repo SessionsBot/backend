@@ -1,7 +1,7 @@
 const { Events, ActivityType } = require('discord.js');
-
+const guildManager = require('../utils/guildManager.js')
+const scheduleManager = require('../utils/scheduleManager.js')
 const global = require('../utils/global.js') // Import Global Variables
-const sessionScheduleManager = require('../utils/sessions/sessionScheduler.js'); // Import Session Schedule:
 
 module.exports = {
 	name: Events.ClientReady,
@@ -32,8 +32,19 @@ module.exports = {
 		// Set Bot User's Activity:
 		client.user.setActivity('📅 Training Sessions', { type: ActivityType.Watching });
 
-		// Start Session Schedule:
-		sessionScheduleManager.startSchedule()
-		
+
+
+		// After Startup - Delay:
+		setTimeout(async () => {
+
+			// Initialize Schedule System:
+			await scheduleManager.botInitialize()
+
+		}, 1_500);
+
+
 	},
 };
+
+
+		
