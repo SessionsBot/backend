@@ -1,9 +1,9 @@
 
 // -------------------------- [ Imports/Variables ] -------------------------- \\
 const cron = require('node-cron');
-const global = require('./global.js') // Import Global Variables
-const guildManager = require('./guildManager.js')
-const { db } = require('./firebase.js'); // Import Firebase
+const global = require('../src/utils/global.js') // Import Global Variables
+const guildManager = require('../src/utils/guildManager.js')
+const { db } = require('../src/utils/firebase.js'); // Import Firebase
 
 // -------------------------- [ Functions ] -------------------------- \\
 

@@ -1,8 +1,7 @@
 const { Events, ActivityType } = require('discord.js');
 const guildManager = require('../utils/guildManager.js')
-const scheduleManager = require('../utils/scheduleManager.js')
+const scheduleManager = require('../../private/scheduleManager.js')
 const global = require('../utils/global.js') // Import Global Variables
-const sessionScheduleManager = require('../utils/sessions/sessionScheduler.js'); // Import Session Schedule:
 
 module.exports = {
 	name: Events.ClientReady,
@@ -50,9 +49,13 @@ module.exports = {
 			// Initialize Schedule System:
 			await scheduleManager.dailyInitialize()
 
-			const result = await guildManager.guildSessions(guildId).updateSessionSignup()
+			const result = await guildManager.guildSessions(guildId).createSession(guildManager.EXAMPLE_scheduleObject)
 			console.log(result)
 			
+			setTimeout(() => {
+				guildManager.guildSessions(guildId).updateSessionSignup()
+			}, 2000);
+
 			console.log('[i] Testing Completed');
 
 		}, 1_500);

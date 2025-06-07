@@ -222,9 +222,6 @@ module.exports = {
 			if(userAssignAttempt.success){
 				// Send Success Message:
 				responses.roleAssignSuccess(selectInteraction, interactionSessionId, selectedRole, userAssignAttempt.sessionData)
-
-				// Update Guilds Signup Message:
-				await guildManager.guildSessions(guildId).updateSessionSignup()
 			}
 
 			// Assign Error:

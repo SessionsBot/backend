@@ -8,9 +8,9 @@ const {
     ChannelType,
     time
 } = require('discord.js'); // Import Discord.js
-const global = require('../global.js') // Import Global Variables
+const global = require('../../src/utils/global.js') // Import Global Variables
 const sessionManager = require('./sessionManager.js');
-const { db } = require('../firebase.js'); // Import Firebase
+const { db } = require('../../src/utils/firebase.js'); // Import Firebase
 
 
 // Create New Sessions:

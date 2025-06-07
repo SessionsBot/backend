@@ -2,17 +2,13 @@ const {
     SlashCommandBuilder,
     InteractionContextType,
     MessageFlags,
-    SectionBuilder,
     ContainerBuilder,
     TextDisplayBuilder,
     SeparatorBuilder,
     PermissionFlagsBits,
 } = require('discord.js'); // Import Discord.js
 
-const sessionManager = require('../../utils/sessions/sessionManager'); // Import Session Manager
 const guildManager = require('../../utils/guildManager.js'); // Import Session Manager
-const { db } = require('../../utils/firebase'); // Import Firebase
-const global = require('../../utils/global'); // Import Global Variables
 
 // Register Command:
 const data = new SlashCommandBuilder()

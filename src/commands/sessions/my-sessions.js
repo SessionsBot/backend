@@ -1,6 +1,4 @@
-// {*} Next Steps: This file needs to be recreated with the new guildManager.
-// ! This will not function until that is completed.
-// ! Make according function call switches to maintain functionality
+// --------------------- [Imports/Variables] --------------------- \\
 
 const {
     InteractionContextType, 
@@ -14,9 +12,149 @@ const {
     ContainerBuilder,
     ComponentType,
 } = require('discord.js'); // Import Discord.js
+const guildManager = require('../../utils/guildManager.js'); // Import Guild Manager
+const global = require('../../utils/global.js'); // Import Global Variables
 
-const sessionManager = require('../../utils/sessions/sessionManager'); // Import Session Manager
-const global = require('../../utils/global'); // Import Global Variables
+// Bot Responses - Get Contents:
+const getContents = (interaction) => {return {
+    
+    signupFollowUp: async (guildData) => {
+        // Guild Data:
+        const accentColor = Number(guildData?.['accentColor'] || 0xfc9d03);
+        const sessionSignupChannelId = guildData?.['sessionSignup']['signupChannelId'];
+        const sessionSignupMessageId = guildData?.['sessionSignup']['signupMessageId'];
+        const markdownLink = `[Signup Panel](https://discord.com/channels/${interaction.guild.id}/${sessionSignupChannelId}/${sessionSignupMessageId})`;
+
+        // No Signup Msg Saved - Abort:
+        if(!sessionSignupMessageId || !sessionSignupChannelId) return console.log(`{!} [${interaction.commandName}]: Couldn't send singup follow up message, no saved signup message found?`)
+
+        // Build Response Container:
+        const msgContainer = new ContainerBuilder()
+        const separator = new SeparatorBuilder()
+        // Title
+        msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('### 📝 Signup Now'))
+        // Desc:
+        msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('-# Want to sign up for more sessions?'))
+        // Accent Color:
+        msgContainer.setAccentColor(0x6dc441)
+        // Spacer
+        msgContainer.addSeparatorComponents(separator)
+        // Info
+        msgContainer.addTextDisplayComponents(new TextDisplayBuilder()
+            .setContent(`View our latest ${markdownLink} to join available sessions!`)
+        )
+        // Spacer
+        msgContainer.addSeparatorComponents(separator)
+
+        // Return Full Container:
+        return msgContainer
+    }
+
+}}
+
+// Bot Responses - Send Response:
+const respond = (interaction) => {return {
+
+    userSessionsList: async (guildData) => {
+
+        // Guild Data:
+        const accentColor = Number(guildData?.['accentColor'] || 0xfc9d03);
+        const sessionSignupChannelId = guildData?.['sessionSignup']['signupChannelId'];
+        const sessionSignupMessageId = guildData?.['sessionSignup']['signupMessageId'];
+        
+        // Get User's Sessions:
+        const guildSessions = guildData['upcomingSessions']
+        let userSessions = {};
+        if (!guildSessions || !typeof guildSessions === 'object' ) { // Invalid Sessions:
+            // Respond:
+            respond(interaction).commandError('Could not find any upcoming sessoions for this guild, if this is incorrect please contact an administrator.')
+            // Log Error:
+            console.log(`{?} [/${interaction.commandName}] Invalid/No Sessions Recevied for Command Interaction:`)
+            console.log(guildSessions)
+        }
+        for(const [sessionId, sessionData] of Object.entries(guildSessions)) { // Check each session for user assigned a role:
+            const sessionRoles = sessionData?.['roles'];
+            if(sessionRoles && Array.isArray(sessionRoles)) {
+                sessionRoles.forEach(role => { // Check each session role for the user signed up:
+                    if(role['users'].includes(interaction.user.id)) {
+                        // User assigned this role - Add session to user sessions:
+                        userSessions[sessionId] = sessionData;
+                        userSessions[sessionId]['roleName'] = role['roleName'];
+                    }
+                })
+            }
+        };
+
+
+        // Build Session List Container:
+        const userSessionsContainer = new ContainerBuilder()
+        const separator = new SeparatorBuilder()
+        // Title
+        userSessionsContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 📥  My Sessions'))
+        // Desc:
+        userSessionsContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Your currently assigned sessions:`))
+        // Accent Color:
+        userSessionsContainer.setAccentColor(accentColor)
+        // Spacer
+        userSessionsContainer.addSeparatorComponents(separator)
+
+        // Local Function For Each Session Row:
+        async function createSessionRow(sessionId, dateString, roleString) {
+            userSessionsContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⏰:  <t:${dateString}:F>` + '\n\n### 💼:  **`'+ roleString +'`** \n '))
+            userSessionsContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
+            userSessionsContainer.addActionRowComponents(
+                new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(`startLeaveSessionRole:${sessionId}:${roleString}`)
+                        .setLabel('❌ Remove')
+                        .setStyle(ButtonStyle.Primary)
+                )
+            )
+            userSessionsContainer.addSeparatorComponents(separator)
+        }
+
+        // Session List:
+        if(Object.entries(userSessions).length >= 1) { // Confirm user assigned 1+ session(s):
+            for(const [sessionId, sessionData] of Object.entries(userSessions)) { await createSessionRow(sessionId, sessionData['date']['discordTimestamp'], sessionData['roleName']) }
+        } else { // User not assigned to any sessions:
+            userSessionsContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`🥺 *You're not currently assigned to any sessions!*`))
+            userSessionsContainer.addSeparatorComponents(separator)
+        }
+        
+        // Get Signup Follow Up Embed:
+        const signUpContainer = await getContents(interaction).signupFollowUp(guildData)
+
+        // Send Response:
+        await interaction.editReply({
+            flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+            components: [userSessionsContainer, signUpContainer]
+        })
+    },
+
+    commandError: async (detailString) => {
+        // Build Response Container:
+        const msgContainer = new ContainerBuilder()
+        const separator = new SeparatorBuilder()
+        // Title
+        msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Command Error:'))
+        msgContainer.setAccentColor(0xfc9d03)
+        // Spacer
+        msgContainer.addSeparatorComponents(separator) 
+        // Info
+        msgContainer.addTextDisplayComponents(new TextDisplayBuilder()
+            .setContent(`*${detailString}*.`)
+        )
+
+        // Send Response:
+        await interaction.editReply({
+            flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+            components: [msgContainer]
+        })
+    },
+    
+}}
+
+// --------------------- [Command/Excecution] --------------------- \\
 
 // Register Command:
 const data = new SlashCommandBuilder()
@@ -24,119 +162,24 @@ const data = new SlashCommandBuilder()
     .setDescription("Lists your currently assigned sessions with respective options.")
     .setContexts(InteractionContextType.Guild)
 
-// Custom Response Methods:
-const responseMethods = { 
-    // Get Update Sessions Container:
-    getUpdatedSessionsList: async (interaction, allSessionsData) => {
-        // Load all sessions:
-        const sessionsHosting = {};
-        const sessionsTraining = {};
-        let sessionCount = 0;
-        const userId = interaction.user.id
-        const guildId = interaction.guildId
-        let sessionSignUp_Channel = allSessionsData.guildData.sessionSignUp_Channel || 'unknown?'
-        
-
-        // Check each session data for user signed up:
-        for (const [sessionId, sessionData] of Object.entries(allSessionsData)){
-            // Check if Session Host:
-            if(sessionData['host'] === userId) {
-                sessionsHosting[`${sessionId}`] = sessionData;
-                sessionCount += 1;
-            }
-            // Check if Training Crew:
-            if (Array.isArray(sessionData.trainers) && sessionData.trainers.includes(userId)) {
-                sessionsTraining[`${sessionId}`] = sessionData;
-                sessionCount += 1;
-            }
-        }
-
-        // Check if user has sessions:
-        if(sessionCount >= 1){ // Assigned Sessions:
-
-            const container = new ContainerBuilder()
-            const separator = new SeparatorBuilder()
-
-            const titleText = new TextDisplayBuilder()
-                .setContent('## 📅  Your Sessions:')
-
-            const descText = new TextDisplayBuilder()
-                .setContent(`-# Sessions you're currently assigned to are listed below:`)
-
-            // Color & Ttitle:
-            container.setAccentColor(0x3bc2d1)
-            container.addTextDisplayComponents(titleText)
-            container.addTextDisplayComponents(descText)
-            container.addSeparatorComponents(separator)
-
-            // Local Function For Each Session Row:
-            let thisSessionIndex = 0;
-            async function createSessionRow(sessionId, dateString, roleString) {
-                thisSessionIndex += 1;
-                container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⏰:  <t:${dateString}:F>` + '\n\n### 💼:  **`'+ roleString +'`** \n '))
-                container.addSeparatorComponents( new SeparatorBuilder().setDivider(false) ) // Invisible Spacer
-                container.addActionRowComponents(
-                    new ActionRowBuilder().addComponents(
-                        new ButtonBuilder()
-                            .setCustomId(`startLeaveSessionRole:${sessionId}`)
-                            // .setEmoji('❌')
-                            .setLabel('Remove')
-                            .setStyle(ButtonStyle.Primary)
-                    )
-                )
-                container.addSeparatorComponents(separator)
-            }
-
-            // Add Hosting Role Sessions:
-            for (const [sessionId, sessionData] of Object.entries(sessionsHosting)) { await createSessionRow(sessionId, sessionData['date'], 'Session Host') }
-
-            for (const [sessionId, sessionData] of Object.entries(sessionsTraining)) { await createSessionRow(sessionId, sessionData['date'], 'Trainer Crew') }
-            
-            // Footer - Session Count:
-            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Total Sessions: ${sessionCount}`))
-
-            // RETURN MSG CONTAINER:
-            return container
-
-        } else { // Not Assigned Sessions:
-
-            const container = new ContainerBuilder()
-            const separator = new SeparatorBuilder()
-
-            // Title
-            container.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ No Sessions Assigned:'))
-            container.setAccentColor(0xfc9d03)
-            // Spacer
-            container.addSeparatorComponents(separator) 
-            // Info:
-            container.addTextDisplayComponents(new TextDisplayBuilder()
-                .setContent(`**You're currently not assigned to any sessions!** \n-\nTo view available sessions for sign up please visit: <#${sessionSignUp_Channel}>.`)
-            )
-            // Spacer
-            // container.addSeparatorComponents(separator) 
-            // // Footer:
-            // container.addTextDisplayComponents(new TextDisplayBuilder().setContent('-# This message will be deleted in 15s.'))
-
-            // RETURN MSG CONTAINER:
-            return container
-        }
-    }
-}
-
-
 // On Command Excecution:
 async function execute(interaction) { 
-    try { // Safley Excecute
-        // Get guild sessions data:
-        let allSessionsData = await sessionManager.getSessions(interaction.guildId)
+    try {
+        // Defer Response:
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral }).catch((err) => { // Error Deffering:
+            console.log(`{!} Couldn't defer /my-sessions response:`)
+            console.log(err)
+        });
 
-
-        // Respond to Cmd - Session List or No Sessions Alert:
-        const sessionListContainer = await responseMethods.getUpdatedSessionsList(interaction, allSessionsData)
-        await interaction.reply({
-            flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
-            components: [sessionListContainer]
-        })
+        // Send Session List:
+        const guildRetrieval = await guildManager.readGuildDoc(interaction.guild.id)
+        if(guildRetrieval.success){ // Retrieval Success:
+            if(global.outputDebug_InDepth) { console.log('Retrieval Success:'); console.log(guildRetrieval); }
+            await respond(interaction).userSessionsList(guildRetrieval.data)
+        }else{ // Retrieval Error:
+            if(global.outputDebug_InDepth) { console.log('Retrieval Error:'); console.log(guildRetrieval); }
+            await respond(interaction).commandError(guildRetrieval.data)
+        }
 
         // Await any further interactions:
         const reply = await interaction.fetchReply();
@@ -155,23 +198,11 @@ async function execute(interaction) {
             // Parse Interaction Data:
             const [interactionID, sessionID] = collectorInteraction.customId.split(':');
 
-            if(interactionID == 'startLeaveSessionRole') { // START CONFIRMATION - Session Role Removal Confirmation
-
-                const sessionData = allSessionsData[sessionID]
-                if(!sessionData) {return console.log(`{!} Cannot find session data for role removal confirmation!`)}
-
-                const usersRoleName = function() { // Get Role String from Session Data
-                    // Session Host:
-                    if (sessionData['host'] === collectorInteraction.user.id) {
-                        return 'Session Host'
-                    }
-                    // Training Crew:
-                    if (sessionData['trainers'].includes(collectorInteraction.user.id)) {
-                        return 'Training Crew'
-                    }
-                    // Unknown:
-                    return 'Unknown'
-                }
+            // START CONFIRMATION:
+            if(interactionID == 'startLeaveSessionRole') { // Session Role Removal Confirmation
+            
+                const [interactionID, sessionID, roleString] = collectorInteraction.customId.split(':');
+                const sessionDate = guildRetrieval.data['upcomingSessions']?.[sessionID]?.['date']?.['discordTimestamp'] || 'Unknown Date'
 
                 // Ask for Confirmation:
                 const confirmContainer = new ContainerBuilder()
@@ -180,7 +211,7 @@ async function execute(interaction) {
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
                 confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('Are you sure you would like to ***unassign*** yourself from this role?')) 
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
-                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⏰:  <t:${sessionData['date']}:F>` + '\n\n### 💼:  **`'+ usersRoleName() +'`** \n '))
+                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⏰:  <t:${sessionDate}:F>` + '\n\n### 💼:  **`'+ roleString +'`** \n '))
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
                 confirmContainer.addActionRowComponents(
                     new ActionRowBuilder()
@@ -199,19 +230,20 @@ async function execute(interaction) {
                             .setDisabled(false)
                     )
                 )
-
                 await interaction.editReply({
                     components:[confirmContainer]
                 })
+
             }
 
+            // CONFIRMED REMOVAL:
             if(interactionID == 'confirmSessionRemoval') { // CONFIRMED - Session Role Removal Confirmation String()
                 // Attempt Removal:
-                const updateData = await sessionManager.removeUserFromSessionRole(String(collectorInteraction.guildId), String(sessionID), String(collectorInteraction.user.id)) //.removePlayerFromSessionById(sessionID, collectorInteraction.user.id)
+                const removalAttempt = await guildManager.guildSessions(String(interaction.guild.id)).removeUserSessionRole(sessionID, String(interaction.user.id)) //sessionManager.removeUserFromSessionRole(String(collectorInteraction.guildId), String(sessionID), String(collectorInteraction.user.id)) //.removePlayerFromSessionById(sessionID, collectorInteraction.user.id)
 
                 // Build Message Response:
                 const removalResponseContainer = new ContainerBuilder()
-                if (updateData[0]) { // Role Removal Success:
+                if (removalAttempt.success) { // Role Removal Success:
                     removalResponseContainer.setAccentColor(0x6dc441)
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - Success ✅'))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
@@ -226,7 +258,6 @@ async function execute(interaction) {
                                 .setLabel(' -  My Sessions')
                                 .setEmoji('📋')
                                 .setStyle(ButtonStyle.Primary)
-                                .setDisabled(false)
                         )
                     )
 
@@ -245,7 +276,6 @@ async function execute(interaction) {
                                 .setLabel(' -  My Sessions')
                                 .setEmoji('📋')
                                 .setStyle(ButtonStyle.Primary)
-                                .setDisabled(false)
                         )
                     )
 
@@ -257,21 +287,27 @@ async function execute(interaction) {
                 })
             }
 
-            if(interactionID == 'cancelSessionRemoval') { // REJECTED - Session Role Removal Confirmation 
-                // Edit Message w/ Response:
-                allSessionsData = await sessionManager.getSessions(collectorInteraction.guildId)
-                const sessionListContainer = await responseMethods.getUpdatedSessionsList(collectorInteraction, allSessionsData)
-                await interaction.editReply({
-                    components: [sessionListContainer]
-                })
+            // REJECTED/CANCELD:
+            if(interactionID == 'cancelSessionRemoval') { // Session Role Removal Confirmation 
+                // Send Session List:
+                const guildRetrieval = await guildManager.readGuildDoc(interaction.guild.id)
+                if(guildRetrieval.success){ // Retrieval Success:
+                    if(global.outputDebug_InDepth) { console.log('Retrieval Success:'); console.log(guildRetrieval); }
+                    await respond(interaction).userSessionsList(guildRetrieval.data)
+                }else{ // Retrieval Error:
+                    if(global.outputDebug_InDepth) { console.log('Retrieval Error:'); console.log(guildRetrieval); }
+                    await respond(interaction).commandError(guildRetrieval.data)
+                }
             }
 
         })
 
-        
-    } catch (error) { // Error Occured:
-        console.log('[!] An Error Occured - /my-sessions');
-        console.log(error);
+    } catch (e) {
+        // Send Error Response:
+        respond(interaction).commandError('This command failed execution, please try again in a little while. If this issue persists please contact an administrator')
+        // Log Error:
+        console.log(`{!} [/${interaction.commandName}] An error occured:`)
+        console.log(e)
     }
 }
 

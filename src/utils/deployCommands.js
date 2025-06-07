@@ -16,6 +16,7 @@ const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
 	// Grab all the command files from the commands directory you created earlier
+	if (folder === 'disabled') continue;
 	const commandsPath = path.join(foldersPath, folder);
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment

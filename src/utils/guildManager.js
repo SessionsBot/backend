@@ -261,6 +261,9 @@ const guildSessions = (guildId) => { return {
         const updateSuccess = await updateGuildDocField(guildId, `upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!'};
 
+        // Update Guilds Signup Message:
+		await guildSessions(guildId).updateSessionSignup()
+
         return {success: true, data: 'Successfully added user to role!', sessionData: sessionData, guildData: guildData};
     },
 
@@ -289,11 +292,14 @@ const guildSessions = (guildId) => { return {
         const updateSuccess = await updateGuildDocField(guildId, `upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!'};
 
+        // Update Guilds Signup Message:
+		await guildSessions(guildId).updateSessionSignup()
+
         return {success: true, data: 'Successfully removed user from role!', sessionData: sessionData, guildData: guildData};
     },
 
 
-    // Get Session Signup Embded Contents - Edits Msg if Id Provided:
+    // Get Session Signup Embded Contents - Sends/Edits Msg if (not) Id Provided:
     updateSessionSignup: async () => {
         // 1. Get Guild Data:
         const guildDataRetrvial = await readGuildDoc(guildId);
@@ -416,13 +422,14 @@ const guildSessions = (guildId) => { return {
         }
 
         // 3. Get Existing Signup Message:
-        const exisitingSignupMsgId = guildData['sessionSignup']['signupMessageId']
-        if(exisitingSignupMsgId) {
+        let exisitingSignupMsgId = guildData['sessionSignup']['signupMessageId']
+        if(exisitingSignupMsgId) { // Existing Signup Message - Edit/Replace:
             try{
-                // Existing Signup Message - Edit/Replace:
                 const signupChannelId = guildData['sessionSignup']['signupChannelId']
                 const signupChannel = await global.client.channels.fetch(signupChannelId);
+                if(!signupChannel) throw new Error(`Can't fetch signup channel for edit...`);
                 const message = await signupChannel.messages.fetch(exisitingSignupMsgId);
+                if(!message) throw new Error(`Can't fetch message to edit...`);
                 const messageContainer = await messageContent() 
         
                 // Edit Original Message:
@@ -439,18 +446,19 @@ const guildSessions = (guildId) => { return {
                 return {success: true, data: `Successfully edited signup message.`};
 
             }catch(e){
+                exisitingSignupMsgId = null;
                 console.warn('[!] An error occured when trying to update an exisiting signup message:', e);
-                // Return Result:
-                return {success: false, data: `Failed to edit signup message.`};
             }
 
-        }else{
-            // No Existing Signup Message - Send New:
+        }
+        
+        if(!exisitingSignupMsgId) { // No Existing Signup Message - Send New:
+            console.log(`SENDING NEW SIGNUP PANEL! |  GUILD ID: ${guildId}`)
             try{
                 // Fetch Destination/Contents:
                 const signupChannelId = guildData['sessionSignup']['signupChannelId']
                 const signupChannel = await global.client.channels.fetch(signupChannelId);
-                const messageContainer = await messageContent() 
+                const messageContainer = await messageContent()
         
                 // Send Message:
                 const newSignupMsg = await signupChannel.send({
