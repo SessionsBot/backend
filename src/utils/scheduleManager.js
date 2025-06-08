@@ -1,4 +1,3 @@
-
 // -------------------------- [ Imports/Variables ] -------------------------- \\
 const cron = require('node-cron');
 const global = require('./global.js') // Import Global Variables
@@ -20,7 +19,7 @@ const inDepthDebug = (c) => {if(global.outputDebug_InDepth) console.log(c)}
 async function botInitialize() {
     // Runs Daily @12AM - Loads and schedules all other 'Guild Schedules':
     const dailyInitializeShd = cron.schedule('0 59 11 * * *', async (ctx) => {
-            generalDebug(`[⏰] Daily Initialzie Ran - ${ctx.triggeredAt.toISOString()}`);
+            generalDebug(`[⏰] Daily Initialzie Ran - ${ ctx.triggeredAt.toLocaleString('en-US', {timeZone: 'America/Chicago'}) } `);
             await dailyInitializeFn();
         },
         { // schedule options
@@ -66,7 +65,7 @@ async function dailyInitializeFn() {
                 // Create guild sessions for the day:
                 const creationResult = await guildManager.guildSessions(String(doc.id)).createAllUpcomingSessions(guildSchedules);
                 if(creationResult.success){
-                    generalDebug(`[i] Guild Daily Data Loaded - ${ctx.triggeredAt.toISOString()}`);
+                    generalDebug(`[i] Guild Daily Data Loaded - ${ ctx.triggeredAt.toLocaleString('en-US', {timeZone: 'America/Chicago'}) }`);
                 }else{
                     generalDebug(`{!} FAILED: Guild(${doc.id}) Schedule - Firebase Errors?`);
                 }

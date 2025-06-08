@@ -21,7 +21,7 @@ const getContents = (interaction) => {return {
     signupFollowUp: async (guildData, signupChannelId, signupMessageId) => {
         // Guild Data:
         const accentColor = Number(guildData?.['accentColor'] || 0xfc9d03);
-        const markdownLink = `[Signup Panel](https://discord.com/channels/${interaction.guild.id}/${sessionSignupChannelId}/${sessionSignupMessageId})`;
+        const markdownLink = `[Signup Panel](https://discord.com/channels/${interaction.guild.id}/${signupChannelId}/${signupMessageId})`;
 
         // Build Response Container:
         const msgContainer = new ContainerBuilder()
@@ -124,7 +124,7 @@ const respond = (interaction) => {return {
                 components: [userSessionsContainer]
             })
         } else { 
-            signUpContainer = await getContents(interaction).signupFollowUp(guildData, sessionSignupChannelId, sessionSignupMessageId) 
+            let signUpContainer = await getContents(interaction).signupFollowUp(guildData, sessionSignupChannelId, sessionSignupMessageId) 
             // Send Response:
             await interaction.editReply({
                 flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
