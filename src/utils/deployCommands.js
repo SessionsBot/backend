@@ -2,7 +2,6 @@
 require('dotenv').config();
 const botToken = process.env['BOT_TOKEN']
 const clientId = process.env['CLIENT_ID']
-const guildId = process.env['GUILD_ID']
 
 // Imports:
 const { REST, Routes } = require('discord.js');

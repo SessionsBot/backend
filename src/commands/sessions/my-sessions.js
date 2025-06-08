@@ -18,18 +18,10 @@ const global = require('../../utils/global.js'); // Import Global Variables
 // Bot Responses - Get Contents:
 const getContents = (interaction) => {return {
     
-    signupFollowUp: async (guildData) => {
+    signupFollowUp: async (guildData, signupChannelId, signupMessageId) => {
         // Guild Data:
         const accentColor = Number(guildData?.['accentColor'] || 0xfc9d03);
-        const sessionSignupChannelId = guildData?.['sessionSignup']['signupChannelId'];
-        const sessionSignupMessageId = guildData?.['sessionSignup']['signupMessageId'];
         const markdownLink = `[Signup Panel](https://discord.com/channels/${interaction.guild.id}/${sessionSignupChannelId}/${sessionSignupMessageId})`;
-
-        // No Signup Msg Saved - Abort:
-        if(!sessionSignupMessageId || !sessionSignupChannelId) {
-            console.log(`{!} [${interaction.commandName}]: Couldn't send singup follow up message, no saved signup message found?`); 
-            return null;
-        } 
 
         // Build Response Container:
         const msgContainer = new ContainerBuilder()
@@ -124,14 +116,21 @@ const respond = (interaction) => {return {
             userSessionsContainer.addSeparatorComponents(separator)
         }
         
-        // Get Signup Follow Up Embed:
-        const signUpContainer = await getContents(interaction).signupFollowUp(guildData)
-
-        // Send Response:
-        await interaction.editReply({
-            flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
-            components: [userSessionsContainer, signUpContainer]
-        })
+        // Get Signup Follow Up Embed - if MsgId:
+        if(!sessionSignupMessageId || !sessionSignupChannelId) {
+            // Send Without:
+            await interaction.editReply({
+                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+                components: [userSessionsContainer]
+            })
+        } else { 
+            signUpContainer = await getContents(interaction).signupFollowUp(guildData, sessionSignupChannelId, sessionSignupMessageId) 
+            // Send Response:
+            await interaction.editReply({
+                flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+                components: [userSessionsContainer, signUpContainer]
+            })
+        }
     },
 
     commandError: async (detailString) => {
@@ -307,7 +306,24 @@ async function execute(interaction) {
 
     } catch (e) {
         // Send Error Response:
-        respond(interaction).commandError('This command failed execution, please try again in a little while. If this issue persists please contact an administrator')
+        const msgContainer = new ContainerBuilder()
+        const separator = new SeparatorBuilder()
+        // Title
+        msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Command Error:'))
+        msgContainer.setAccentColor(0xfc9d03)
+        // Spacer
+        msgContainer.addSeparatorComponents(separator) 
+        // Info
+        msgContainer.addTextDisplayComponents(new TextDisplayBuilder()
+            .setContent(`*This command failed execution, please try again in a little while. If this issue persists please contact an administrator*.`)
+        )
+
+        // Send Response:
+        await interaction.reply({
+            flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
+            components: [msgContainer]
+        })
+
         // Log Error:
         console.log(`{!} [/${interaction.commandName}] An error occured:`)
         console.log(e)
