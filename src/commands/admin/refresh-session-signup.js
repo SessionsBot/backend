@@ -30,7 +30,8 @@ async function execute(interaction) {
         });
 
         // Update Signup Message using Guild Manager:
-        guildManager.guildSessions(interaction.guild.id).updateSessionSignup()
+        const signupUpdateAttempt = await guildManager.guildSessions(interaction.guild.id).updateSessionSignup()
+        if(!signupUpdateAttempt.success){throw new Error('Attempting to update session signup from guild manager:', signupUpdateAttempt.data)}
 
         // Send Success Response:
         await interaction.editReply({

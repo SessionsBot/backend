@@ -63,9 +63,10 @@ async function dailyInitializeFn() {
 
             const guildPostSchedule = cron.schedule(`${minuets} ${hours} * * *`, async (ctx) => {
                 
+                // Create guild sessions for the day:
                 const creationResult = await guildManager.guildSessions(String(doc.id)).createAllUpcomingSessions(guildSchedules);
                 if(creationResult.success){
-                    generalDebug(`[i] Created Guild(${doc.id}) Schedule - ${ctx.triggeredAt.toISOString()}`);
+                    generalDebug(`[i] Guild Daily Data Loaded - ${ctx.triggeredAt.toISOString()}`);
                 }else{
                     generalDebug(`{!} FAILED: Guild(${doc.id}) Schedule - Firebase Errors?`);
                 }
@@ -77,11 +78,26 @@ async function dailyInitializeFn() {
             }
             );
 
-            // Add Schedule to List:
-            currentDailySchedules.push(guildPostSchedule)
+            //! DELETE LATER:
+            //: If 'Munch' Guild: 
+            if(doc.id === '593097033368338435'){
+                console.log('[*] Making Exception for Guild:')
+                console.log('--------------------------------')
+                guildPostSchedule.execute()
+                console.log(`[*] Schedule Ran! (593097033368338435)`)
+            }else{
+                // Add Schedule to List:
+                currentDailySchedules.push(guildPostSchedule)
+            }
         }
 
     });
+
+    // Debug all scheduled guilds (for the day):
+    if(global.outputDebug_InDepth){
+        console.log('[⏰] Daily Schedules Initialized:')
+        console.log(currentDailySchedules)
+    }
 
 }
 
