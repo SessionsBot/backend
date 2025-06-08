@@ -319,7 +319,7 @@ async function execute(interaction) {
         )
 
         // Send Response:
-        await interaction.reply({
+        await interaction.editReply({
             flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
             components: [msgContainer]
         })
