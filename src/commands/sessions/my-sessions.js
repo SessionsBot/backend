@@ -26,7 +26,7 @@ const getContents = (interaction) => {return {
         const markdownLink = `[Signup Panel](https://discord.com/channels/${interaction.guild.id}/${sessionSignupChannelId}/${sessionSignupMessageId})`;
 
         // No Signup Msg Saved - Abort:
-        if(!sessionSignupMessageId || !sessionSignupChannelId) return console.log(`{!} [${interaction.commandName}]: Couldn't send singup follow up message, no saved signup message found?`)
+        if(!sessionSignupMessageId || !sessionSignupChannelId) {console.log(`{!} [${interaction.commandName}]: Couldn't send singup follow up message, no saved signup message found?`); return null;}
 
         // Build Response Container:
         const msgContainer = new ContainerBuilder()
