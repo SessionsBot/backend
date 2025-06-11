@@ -635,7 +635,7 @@ const guildSessions = (guildId) => {return {
 
 
     // Create Todays Sessions from Schedules:
-    createDailySessions: async (fullSchedulesObject) => { try{
+    createDailySessions: async (fullSchedulesObject, timeZone) => { try{
 
         const upcomingSessions = {};
 
@@ -652,7 +652,7 @@ const guildSessions = (guildId) => {return {
 
             // Create Discord Timestamp from sessionDateDaily object
             const createDiscordTimestamp = (sessionDateDaily) => {
-                const { hours, minutes, timeZone } = sessionDateDaily;
+                const { hours, minutes } = sessionDateDaily;
 
                 // Create a DateTime in the specified time zone
                 const dateTime = DateTime.fromObject(

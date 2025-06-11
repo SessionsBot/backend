@@ -63,7 +63,7 @@ async function dailyInitializeFn() {
             const guildPostSchedule = cron.schedule(`${minuets} ${hours} * * *`, async (ctx) => {
                 
                 // Create guild sessions for the day:
-                const sessionCreationResult = await guildManager.guildSessions(String(doc.id)).createDailySessions(guildSchedules)
+                const sessionCreationResult = await guildManager.guildSessions(String(doc.id)).createDailySessions(guildSchedules, timeZone)
                 if(!sessionCreationResult.success) return generalDebug(`{!} FAILED: Guild(${doc.id}) Schedule: ${sessionCreationResult.data}`);
 
                 // Create/Update guild panel for the day:
