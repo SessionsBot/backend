@@ -19,7 +19,7 @@ const inDepthDebug = (c) => {if(global.outputDebug_InDepth) console.log(c)}
 // Bot Initialization Fn:
 async function botInitialize() {
     // Runs Daily @11:59 PM - Loads and schedules all other 'Guild Schedules':
-    const dailyInitializeShd = cron.schedule('0 59 11 * * *', async (ctx) => {
+    const dailyInitializeShd = cron.schedule('0 59 23 * * *', async (ctx) => {
             generalDebug(`[⏰] Loading All Guild Schedules - ${ ctx.triggeredAt.toLocaleString('en-US', {timeZone: 'America/Chicago'}) } `);
             await dailyInitializeFn();
         },
@@ -84,20 +84,20 @@ async function dailyInitializeFn() {
 
             // ! DELETE LATER:
             // If 'Development' Guild:
-            const testingGuilds = [
-                '593097033368338435'
-            ]
-            if(testingGuilds.includes(doc.id)){
-                // Run Schedule early for Guild:
-                console.log('--------------------------------')
-                console.log('[*] Making Exception for Guild:')
-                guildPostSchedule.execute()
-                console.log(`[*] Schedule Ran! (${doc.id})`)
-                console.log('--------------------------------')
-            }else{
-                // Add Schedule to Storage List (currently no purpose):
-                currentDailySchedules.push(guildPostSchedule)
-            }
+            // const testingGuilds = [
+            //     '593097033368338435'
+            // ]
+            // if(testingGuilds.includes(doc.id)){
+            //     // Run Schedule early for Guild:
+            //     console.log('--------------------------------')
+            //     console.log('[*] Making Exception for Guild:')
+            //     guildPostSchedule.execute()
+            //     console.log(`[*] Schedule Ran! (${doc.id})`)
+            //     console.log('--------------------------------')
+            // }else{
+            //     // Add Schedule to Storage List (currently no purpose):
+            //     currentDailySchedules.push(guildPostSchedule)
+            // }
         }
     });
 
