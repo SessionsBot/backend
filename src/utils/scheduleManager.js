@@ -16,10 +16,11 @@ const inDepthDebug = (c) => {if(global.outputDebug_InDepth) console.log(c)}
 // the Initializer function will read all guilds/session schedules for SIGNUP POST TIME and schedule them with cron accordingly
 
 
+// Bot Initialization Fn:
 async function botInitialize() {
-    // Runs Daily @12AM - Loads and schedules all other 'Guild Schedules':
+    // Runs Daily @11:59 PM - Loads and schedules all other 'Guild Schedules':
     const dailyInitializeShd = cron.schedule('0 59 11 * * *', async (ctx) => {
-            generalDebug(`[⏰] Daily Initialzie Ran - ${ ctx.triggeredAt.toLocaleString('en-US', {timeZone: 'America/Chicago'}) } `);
+            generalDebug(`[⏰] Loading All Guild Schedules - ${ ctx.triggeredAt.toLocaleString('en-US', {timeZone: 'America/Chicago'}) } `);
             await dailyInitializeFn();
         },
         { // schedule options
@@ -53,50 +54,52 @@ async function dailyInitializeFn() {
             generalDebug(`{!} Guild ${doc.id} is not setup properly!`);
 
         } else { // SETUP PROPERLY:
-
-            // Create Guilds 'Daily Post' Schedule:
+            // Get Guild Schedule Data:
             const hours = Number(dailySignupPostTime?.['hours'] ?? 6)
             const minuets = Number(dailySignupPostTime?.['minutes'] ?? 0);
-            const timezone = dailySignupPostTime?.['timeZone'] || 'America/Chicago';
+            const timeZone = guildData?.['timeZone'] || 'America/Chicago';
 
-
+            // Create Guilds 'Daily Post' Schedule:
             const guildPostSchedule = cron.schedule(`${minuets} ${hours} * * *`, async (ctx) => {
                 
                 // Create guild sessions for the day:
-                const creationResult = await guildManager.guildSessions(String(doc.id)).createAllUpcomingSessions(guildSchedules);
+                const sessionCreationResult = await guildManager.guildSessions(String(doc.id)).createDailySessions(guildSchedules)
+                if(!sessionCreationResult.success) return generalDebug(`{!} FAILED: Guild(${doc.id}) Schedule: ${sessionCreationResult.data}`);
+
+                // Create/Update guild panel for the day:
+                const creationResult = await guildManager.guildPanel(String(doc.id)).createDailySessionsThreadPanel()
                 if(creationResult.success){
-                    generalDebug(`[i] Guild Daily Data Loaded - ${ ctx.triggeredAt.toLocaleString('en-US', {timeZone: 'America/Chicago'}) }`);
+                    generalDebug(`[i] Guild ${doc.id} - Schedule Ran - ${ ctx.triggeredAt.toLocaleString('en-US', {timeZone: 'America/Chicago'}) }`);
                 }else{
-                    generalDebug(`{!} FAILED: Guild(${doc.id}) Schedule - Firebase Errors?`);
+                    generalDebug(`{!} FAILED: Guild(${doc.id}) Schedule!`);
+                    console.log(creationResult)
                 }
             },
             { // schedule options
-                timezone: timezone,
+                timezone: timeZone,
                 maxExecutions: 1,
                 maxRandomDelay: 5000
             }
             );
 
-            //! DELETE LATER:
-            //: If 'Munch' Guild: 
-            if(doc.id === '593097033368338435'){
-                console.log('[*] Making Exception for Guild:')
-                console.log('--------------------------------')
-                guildPostSchedule.execute()
-                console.log(`[*] Schedule Ran! (593097033368338435)`)
-            }else{
-                // Add Schedule to List:
-                currentDailySchedules.push(guildPostSchedule)
-            }
+            // ! DELETE LATER:
+            // If 'Development' Guild:
+            // const testingGuilds = [
+            //     '1379160686629880028'
+            // ]
+            // if(testingGuilds.includes(doc.id)){
+            //     // Run Schedule early for Guild:
+            //     console.log('--------------------------------')
+            //     console.log('[*] Making Exception for Guild:')
+            //     guildPostSchedule.execute()
+            //     console.log(`[*] Schedule Ran! (${doc.id})`)
+            //     console.log('--------------------------------')
+            // }else{
+            //     // Add Schedule to Storage List (currently no purpose):
+            //     currentDailySchedules.push(guildPostSchedule)
+            // }
         }
-
     });
-
-    // Debug all scheduled guilds (for the day):
-    if(global.outputDebug_InDepth){
-        console.log('[⏰] Daily Schedules Initialized:')
-        console.log(currentDailySchedules)
-    }
 
 }
 

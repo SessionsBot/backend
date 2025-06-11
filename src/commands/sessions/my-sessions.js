@@ -18,10 +18,10 @@ const global = require('../../utils/global.js'); // Import Global Variables
 // Bot Responses - Get Contents:
 const getContents = (interaction) => {return {
     
-    signupFollowUp: async (guildData, signupChannelId, signupMessageId) => {
+    signupFollowUp: async (guildData, signupThreadId, signupMessageId) => {
         // Guild Data:
         const accentColor = Number(guildData?.['accentColor'] || 0xfc9d03);
-        const markdownLink = `[Signup Panel](https://discord.com/channels/${interaction.guild.id}/${signupChannelId}/${signupMessageId})`;
+        const markdownLink = `[Signup Panel](https://discord.com/channels/${interaction.guild.id}/${signupThreadId}/${signupMessageId})`;
 
         // Build Response Container:
         const msgContainer = new ContainerBuilder()
@@ -54,7 +54,7 @@ const respond = (interaction) => {return {
 
         // Guild Data:
         const accentColor = Number(guildData?.['accentColor'] || 0xfc9d03);
-        const sessionSignupChannelId = guildData?.['sessionSignup']['signupChannelId'];
+        const sessionsignupThreadId = guildData?.['sessionSignup']['signupThreadId'];
         const sessionSignupMessageId = guildData?.['sessionSignup']['signupMessageId'];
         
         // Get User's Sessions:
@@ -110,21 +110,23 @@ const respond = (interaction) => {return {
 
         // Session List:
         if(Object.entries(userSessions).length >= 1) { // Confirm user assigned 1+ session(s):
-            for(const [sessionId, sessionData] of Object.entries(userSessions)) { await createSessionRow(sessionId, sessionData['date']['discordTimestamp'], sessionData['roleName']) }
+            // Sort Sessions:
+            const sortedSessions = Object.entries(userSessions).sort((a, b) => a[1]['date']['discordTimestamp'] - b[1]['date']['discordTimestamp']);
+            for(const [sessionId, sessionData] of sortedSessions) { await createSessionRow(sessionId, sessionData['date']['discordTimestamp'], sessionData['roleName']) }
         } else { // User not assigned to any sessions:
             userSessionsContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`🥺 *You're not currently assigned to any sessions!*`))
             userSessionsContainer.addSeparatorComponents(separator)
         }
         
         // Get Signup Follow Up Embed - if MsgId:
-        if(!sessionSignupMessageId || !sessionSignupChannelId) {
+        if(!sessionSignupMessageId || !sessionsignupThreadId) {
             // Send Without:
             await interaction.editReply({
                 flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
                 components: [userSessionsContainer]
             })
         } else { 
-            let signUpContainer = await getContents(interaction).signupFollowUp(guildData, sessionSignupChannelId, sessionSignupMessageId) 
+            let signUpContainer = await getContents(interaction).signupFollowUp(guildData, sessionsignupThreadId, sessionSignupMessageId) 
             // Send Response:
             await interaction.editReply({
                 flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
@@ -174,7 +176,7 @@ async function execute(interaction) {
         });
 
         // Send Session List:
-        const guildRetrieval = await guildManager.readGuildDoc(interaction.guild.id)
+        const guildRetrieval = await guildManager.guilds(interaction.guild.id).readGuild()
         if(guildRetrieval.success){ // Retrieval Success:
             if(global.outputDebug_InDepth) { console.log('Retrieval Success:'); console.log(guildRetrieval); }
             await respond(interaction).userSessionsList(guildRetrieval.data)
@@ -292,7 +294,7 @@ async function execute(interaction) {
             // REJECTED/CANCELD:
             if(interactionID == 'cancelSessionRemoval') { // Session Role Removal Confirmation 
                 // Send Session List:
-                const guildRetrieval = await guildManager.readGuildDoc(interaction.guild.id)
+                const guildRetrieval = await guildManager.guilds(interaction.guild.id).readGuild()
                 if(guildRetrieval.success){ // Retrieval Success:
                     if(global.outputDebug_InDepth) { console.log('Retrieval Success:'); console.log(guildRetrieval); }
                     await respond(interaction).userSessionsList(guildRetrieval.data)

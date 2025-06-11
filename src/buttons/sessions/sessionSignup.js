@@ -8,7 +8,8 @@ const {
 } = require('discord.js');
 
 const guildManager = require('../../utils/guildManager.js');
-const global = require('../../utils/global.js')
+const global = require('../../utils/global.js');
+const { DateTime } = require('luxon');
 
 const responses = {
 
@@ -126,7 +127,40 @@ const responses = {
 				console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
 			}
 		}, 15_000);
-	}
+	},
+
+	pastSession: async (interaction, sessionId) => {
+		// Send Role Assign Success Message:
+		await interaction.update({
+			content: `<@${interaction.user.id}>`,
+			components: [],
+			embeds: [
+				new EmbedBuilder()
+					.setColor('#eb3434')
+					.setTitle('⌛️ Session Already Occured!')
+					.addFields( // Spacer
+						{ name: ' ', value: ' ' }
+					)
+					.addFields(
+						{ name: '🧾 Details:', value: '`' + 'You cannot sign up for this session, it has already taken place... Please choose a different session and try again!' + '`', inline: true }
+					)          
+					.addFields( // Spacer
+						{ name: ' ', value: ' ' }
+					)
+					.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
+			],
+			flags: MessageFlags.Ephemeral
+		});
+
+		// Schedule response message deletion:
+		setTimeout(async () => {
+			try {
+				await interaction.deleteReply();
+			} catch (err) {
+				console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
+			}
+		}, 15_000);
+	},
 
 }
 
@@ -142,7 +176,7 @@ module.exports = {
 
 		// Get Guild Data:
 		const guildId = interaction.message.guildId;
-		const guildDataRetrieval = await guildManager.readGuildDoc(guildId);
+		const guildDataRetrieval = await guildManager.guilds(guildId).readGuild();
 		if(!guildDataRetrieval.success) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occured!', 'An internal server error occured! Cannot find guild data, please contact an administrator...');
 		let guildData = guildDataRetrieval.data;
 
@@ -151,7 +185,13 @@ module.exports = {
 		let upcomingSessions = guildData?.['upcomingSessions'];
 		let requestedSessionData = upcomingSessions?.[interactionSessionId];
 		let sessionRoles = requestedSessionData?.['roles']
+		const sessionDateDiscord = requestedSessionData?.['date']?.['discordTimestamp']
+		const nowUTCSeconds = DateTime.now().toUnixInteger()
 		if(!upcomingSessions || !requestedSessionData || !sessionRoles) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occured!', 'An internal server error occured! Cannot find session data, please contact an administrator...');
+
+		// Check if Session Already Occured:
+		const pastSession = nowUTCSeconds >= sessionDateDiscord;
+		if(pastSession) return await responses.pastSession(interaction, interactionSessionId)
 
 
 		// Check if User Already Assigned:

@@ -16,6 +16,6 @@ module.exports = {
         }
 
         // Move guild to archive within database:
-        await guildManager.archiveGuildDoc(guild.id);
+        await guildManager.guilds(guild.id).archiveGuild();
     }
 }

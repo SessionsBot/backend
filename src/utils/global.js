@@ -11,4 +11,8 @@ module.exports = {
         blue: '#4287f5',
         purple: '#9b42f5',
     },
+    emojis: {
+        sessionsWText: '<:sessionsWText:1381323876176236575>',
+        sessions: '<:sessions:1381324009337258056>',
+    }
 }

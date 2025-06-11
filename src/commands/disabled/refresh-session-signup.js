@@ -47,7 +47,7 @@ async function execute(interaction) {
 
     } catch (err) {
         // Send Error Response:
-        await interaction.reply({
+        await interaction.editReply({
             flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
             components: [
                 new ContainerBuilder()

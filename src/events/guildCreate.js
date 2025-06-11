@@ -15,7 +15,7 @@ module.exports = {
 
 
         // 1. Add New Guild to Database:
-        const addGuildResult = await guildManager.createNewGuildDoc(guild.id);
+        const addGuildResult = await guildManager.guilds(guild.id).createNewGuild()
         if(!addGuildResult.success){
             // CRITICAL ERROR: Failed to add new guild to database!
             return console.warn('Failed to add new guild to database!', addGuildResult.data)

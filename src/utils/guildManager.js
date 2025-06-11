@@ -1,4 +1,5 @@
 // -------------------------- [ Imports/Variables ] -------------------------- \\
+
 const { DateTime } = require('luxon');
 const { db } = require('./firebase.js'); // Import Firebase
 const global = require('./global.js'); // Import Global Variables
@@ -9,140 +10,192 @@ const { // Discord.js:
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
-    MessageFlags
+    MessageFlags,
+    SectionBuilder,
+    ThreadAutoArchiveDuration,
+    ChannelType,
+    ThumbnailBuilder
 } = require('discord.js');
+const { json } = require('express');
 
 const inDepthDebug = (c) => { if (global.outputDebug_InDepth) { console.log(`[Guild Manager]: ${c}`) } }
 
 
 // -------------------------- [ Functions ] -------------------------- \\
 
-// Creating New Guild Doc:
-async function createNewGuildDoc(guildId) {
+
+const guilds = (guildId) => {return {
     
-    // Default data for new guilds:
-    const defaultGuildData = {
-        setupCompleted: false,
-        accentColor: '0x9b42f5',
-        adminRoleIds: [],
-        sessionSchedules: {},
-        upcomingSessions: {},
-        sessionSignup: {
-            dailySignupPostTime: null,
-            mentionRoleIds: [],
-            signupChannelId: null,
-            signupMessageId: null,
-        },
-    }
-
-    try {
-        // Save new guild to database:
-        await db.collection('guilds').doc(String(guildId)).set(defaultGuildData, { merge: true });
-
-        // Success:
-        console.log(`[+] Successfully added new guild! Id: ${guildId}`);
-        const result = { success: true, data: 'Successfully added new guild!' };
-        return result;
-    } catch (error) {
-        // Error:
-        console.warn('[!] Error adding new guild document: ', error);
-        const result = { success: false, data: `An error occured when trying to save this guild! (${guildId})` };
-        return result;
-    }
-}
-
-
-// Reading Guild Doc:
-async function readGuildDoc(guildId) {
-    try {
-        const guildRef = await db.collection('guilds').doc(String(guildId)).get();
-        const guildData = guildRef.data();
-        return { success: true, data: guildData };
-    } catch (e) {
-        console.warn('[!] Error reading guild document: ', e);
-        return { success: false, data: 'An error occurred when trying to read this guild!', rawError: e};
-    }
-}
-
-
-// Move Guild to Archive:
-async function archiveGuildDoc(guildId) {
-    const guildRef = db.collection('guilds').doc(guildId);
-    const archivedRef = db.collection('archivedGuilds').doc(guildId);
-
-    try {
-        // 1. Read original doc
-        const guildDoc = await guildRef.get();
-
-        if (!guildDoc.exists) {
-            console.warn(`Guild document ${guildId} does not exist.`);
-            return { success: false, error: `Couldn't find exisiting guild doc to archive!` };
+    // Creating New Guild Doc:
+    createNewGuild: async () => {
+        
+        // Default data for new guilds:
+        const defaultGuildData = {
+            setupCompleted: false,
+            accentColor: '0x9b42f5',
+            adminRoleIds: [],
+            sessionSchedules: {},
+            upcomingSessions: {},
+            sessionSignup: {
+                dailySignupPostTime: null,
+                mentionRoleIds: [],
+                panelChannelId: null,
+            },
         }
 
-        const guildData = guildDoc.data();
+        try {
+            // Save new guild to database:
+            await db.collection('guilds').doc(String(guildId)).set(defaultGuildData, { merge: true });
 
-        // 2. Write to archive
-        await archivedRef.set({
-            ...guildData,
-            archivedAt: new Date()
-        });
-
-        // 3. Delete original
-        await guildRef.delete();
-
-        console.log(`[-] Guild ${guildId} moved to archive successfully.`);
-        return { success: true };
-
-    } catch (e) {
-        console.error(`Failed to move guild ${guildId} to archive:`, err);
-        return { success: false, data: `Failed to move guild ${guildId} to archive:`, rawError: e };
-    }
-}
+            // Success:
+            console.log(`[+] Successfully added new guild! Id: ${guildId}`);
+            const result = { success: true, data: 'Successfully added new guild!' };
+            return result;
+        } catch (error) {
+            // Error:
+            console.warn('[!] Error adding new guild document: ', error);
+            const result = { success: false, data: `An error occured when trying to save this guild! (${guildId})` };
+            return result;
+        }
+    },
 
 
-// Updating Guild Doc's Specific Field:
-async function updateGuildDocField(guildId, fieldPath, fieldValue) {
-    
-    try {
-        // Attempt to save new guild data to database:
-        await db.collection('guilds').doc(String(guildId)).update({
-            [fieldPath]: fieldValue
-        });
+    // Reading Guild Doc:
+    readGuild: async () => {
+        try {
+            const guildRef = await db.collection('guilds').doc(String(guildId)).get();
+            const guildData = guildRef.data();
+            return { success: true, data: guildData };
+        } catch (e) {
+            console.warn('[!] Error reading guild document: ', e);
+            return { success: false, data: 'An error occurred when trying to read this guild!', rawError: e};
+        }
+    },
 
-        // Success:
-        inDepthDebug(`Successfully updated guild doc! Id: ${guildId}`);
-        const result = { success: true, data: `Successfully updated guild doc! Id: ${guildId}` };
-        return result;
-    } catch (e) {
-        // Error:
-        console.warn('[!] Error updating guild document: ', error);
-        const result = { success: false, data: 'An error occured when trying to update a guild field!', rawError: e  };
-        return result;
-    }
-}
+
+    // Move Guild to Archive:
+    archiveGuild: async () => {
+        const guildRef = db.collection('guilds').doc(guildId);
+        const archivedRef = db.collection('archivedGuilds').doc(guildId);
+
+        try {
+            // 1. Read original doc
+            const guildDoc = await guildRef.get();
+
+            if (!guildDoc.exists) {
+                console.warn(`Guild document ${guildId} does not exist.`);
+                return { success: false, error: `Couldn't find exisiting guild doc to archive!` };
+            }
+
+            const guildData = guildDoc.data();
+
+            // 2. Write to archive
+            await archivedRef.set({
+                ...guildData,
+                archivedAt: new Date()
+            });
+
+            // 3. Delete original
+            await guildRef.delete();
+
+            console.log(`[-] Guild ${guildId} moved to archive successfully.`);
+            return { success: true };
+
+        } catch (e) {
+            console.error(`Failed to move guild ${guildId} to archive:`, err);
+            return { success: false, data: `Failed to move guild ${guildId} to archive:`, rawError: e };
+        }
+    },
+
+
+    // Updating Guild Doc's Specific Field:
+    updateDocField: async (fieldPath, fieldValue) => {
+        
+        try {
+            // Attempt to save new guild data to database:
+            await db.collection('guilds').doc(String(guildId)).update({
+                [fieldPath]: fieldValue
+            });
+
+            // Success:
+            inDepthDebug(`Successfully updated guild doc! Id: ${guildId}`);
+            const result = { success: true, data: `Successfully updated guild doc! Id: ${guildId}` };
+            return result;
+        } catch (e) {
+            // Error:
+            console.warn('[!] Error updating guild document: ', e);
+            const result = { success: false, data: 'An error occured when trying to update a guild field!', rawError: e  };
+            return result;
+        }
+    },
+
+}}
 
 
 // Guild Configuration - Nested Functions:
-const guildConfiguration = (guildId) => { return {
+const guildConfiguration = (guildId) => {return {
+
+    // !!! [NEEDS COMPLETION] - {guildConfiguration}
+    //{*} Remove Specific Session Schedule:
+        // removeSessionSchedule: async (sessionId) => {},
+    //{*} Create New 'configureGuild' Function:
+        // -- Top Level Confirgure function used by frontend to setup guild data with one call!
+    // !!!
+
+    // -- Top Level Confirgure Function:
+    configureGuild : async (
+        configuration = {
+            accentColor: '0x9b42f5', 
+            timeZone: 'America/Chicago',
+            adminRoleIds: [], 
+            dailySignupPostTime: {hours:5, minutes: 30},
+            signupMentionIds: [],
+            allGuildSchedules: Array(), // <-- array of schedule objs
+            panelChannelId: Number()
+        }
+    ) => {
+        // Confirm Data:
+        if(!configuration.panelChannelId || !configuration.allGuildSchedules) return {success: false, data: 'Missing required data for guild configuration!'}
+        // Update Guild Doc:
+        try {
+            await db.collection('guilds').doc(String(guildId)).update({
+                ['accentColor']: configuration.accentColor,
+                ['adminRoleIds']: configuration.adminRoleIds,
+                ['sessionSchedules']: configuration.allGuildSchedules,
+                ['sessionSignup.panelChannelId']: configuration.panelChannelId,
+                ['sessionSignup.dailySignupPostTime']: configuration.dailySignupPostTime,
+                ['sessionSignup.mentionRoleIds']: configuration.signupMentionIds,
+                ['timeZone']: configuration.timeZone,
+                ['setupCompleted']: true
+            });
+            // Success:
+            return {success: true, data: 'Saved new guild configuration to database!'}
+
+        } catch (e) {
+            // Error:
+            console.log(`{!} Failed to save new guild configuration:`, e)
+            return {success: false, data: 'Failed to save new guild configuration to database!'}
+        }
+    },
     
     // Updating Accent Color:
     setAccentColor : async (hexNumber) => {
-        return await updateGuildDocField(guildId, 'accentColor', hexNumber)
+        return await guilds(guildId).updateDocField('accentColor', hexNumber)
     },
 
     // Updating Admin Role Ids:
     setAdminRoleIds : async (roleIdsArray) => {
-        return await updateGuildDocField(guildId, 'adminRoleIds', roleIdsArray)
+        return await guilds(guildId).updateDocField('adminRoleIds', roleIdsArray)
     },
 
     // Update Daily Session Signup Post Time:
     setDailySignupPostTime : async (dailyPostTimeObject) => {
-        return await updateGuildDocField(guildId, 'sessionSignup.dailySignupPostTime', dailyPostTimeObject)
+        return await guilds(guildId).updateDocField('sessionSignup.dailySignupPostTime', dailyPostTimeObject)
     },
 
-    // Updating Daily Signup Mention Role Ids:
+    // Update Daily Signup Mention Role Ids:
     setSignupMentionIds : async (roleIdsArray) => {
-        return await updateGuildDocField(guildId, 'sessionSignup.mentionRoleIds', roleIdsArray)
+        return await guilds(guildId).updateDocField('sessionSignup.mentionRoleIds', roleIdsArray)
     },
 
     // Add Specific Session Schedule:
@@ -150,19 +203,296 @@ const guildConfiguration = (guildId) => { return {
         // Generate Session Id:
         const scheduleId = 'shd_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
         
-        return await updateGuildDocField(guildId, `sessionSchedules.${scheduleId}`, sessionScheduleObject)
+        return await guilds(guildId).updateDocField(`sessionSchedules.${scheduleId}`, sessionScheduleObject)
     },
 
     // Adjust Guild Setup Flag:
     setSetupComplete : async (isComplete) => {
-        return await updateGuildDocField(guildId, 'setupCompleted', isComplete)
+        return await guilds(guildId).updateDocField('setupCompleted', isComplete)
+    },
+
+}}
+
+
+// Guild 'Sessions Panel' - Nested Functions:
+const guildPanel = (guildId) => {return {
+    
+    // Get Guild Session Panel Contents:
+    mainPanelMessageContents: async (optional_guildData) => { try {
+        // Check for Guild Data:
+        let guildData = null;
+        if(!optional_guildData) {
+            // Fetch Guild Data:
+            const getAttempt = await guilds(guildId).readGuild()
+            if(getAttempt.success) {
+                guildData = getAttempt.data
+            }
+        }else{
+            // Assign Passed Guild Data:
+            guildData = optional_guildData;
+        }
+        if(!guildData) return {success: false, data: `Cannot get Guild Data for Guild Signup Contents!`};
+        
+        const panelChannelId = guildData?.['sessionSignup'] ?.['panelChannelId'];
+        if(!panelChannelId) return { success: false, data: `No 'panelChannelId' provided, cannot create new panel!` };
+        const accentColor = Number(guildData['accentColor'] | 0x9b42f5);
+
+        // Create Panel Container:
+        const panelContainer = new ContainerBuilder()
+        const separator = new SeparatorBuilder()
+
+        // Accent:
+        panelContainer.setAccentColor(accentColor);
+        
+        // Heading:
+        panelContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${global.emojis.sessionsWText} Group Sessions:`))
+        panelContainer.addSeparatorComponents(separator) // Separator:
+
+
+        // My Sessions:
+        panelContainer.addSectionComponents(new SectionBuilder()
+            .addTextDisplayComponents(
+                [
+                    new TextDisplayBuilder().setContent('### 💼 My Sessions:'),
+                    new TextDisplayBuilder().setContent(`-# View your assigned group sessions and related details by using the 'My Sessions' button.`),
+                ]
+            )
+            .setButtonAccessory(new ButtonBuilder()
+                .setCustomId('view-my-sessions')
+                .setStyle(ButtonStyle.Secondary)
+                .setEmoji('👤')
+                .setLabel('My Sessions')
+                .setDisabled(true)
+            )
+        )
+        panelContainer.addSeparatorComponents(separator) // Separator:
+
+
+        // My Notifications:
+        panelContainer.addSectionComponents(new SectionBuilder()
+            .addTextDisplayComponents(
+                [
+                    new TextDisplayBuilder().setContent('### 🔔 My Notifications:'),
+                    new TextDisplayBuilder().setContent(`-# View your current session notification preferences by using the 'My Notifications' button.`),
+                ]
+            )
+            .setButtonAccessory(new ButtonBuilder()
+                .setCustomId('view-my-notifications')
+                .setStyle(ButtonStyle.Secondary)
+                .setEmoji('🔔')
+                .setLabel('My Notifications')
+                .setDisabled(true)
+            )
+        )
+        panelContainer.addSeparatorComponents(separator) // Separator:
+
+        // Return Panel Container:
+        const result = {success: true, data: panelContainer};
+        return result;
+
+    } catch (e) {
+        // Failed to Create Guild Panel - Return:
+        const result = {success: false, data: 'Error - Failed to Create Guild Panel', rawError: e};
+        console.log(result.data + ': ' + e);
+        return result;
+    }},
+
+
+    // Set/Update 'Panel Channel' Id:
+    setPannelChannelById: async (channelId) => {
+        return await guilds(guildId).updateDocField('sessionSignup.panelChannelId', channelId)
+    },
+
+
+    // Create Todays Sessions Thread/Panel:
+    createDailySessionsThreadPanel: async () => { try {
+        // Get Guild Data:
+        const guildRetrieval = await guilds(guildId).readGuild()
+        if(!guildRetrieval.success) return { success: false, data: `An error occured when fetching guild for signup panel.` };
+        const guildData = guildRetrieval.data;
+        const panelChannelId = guildData?.['sessionSignup']?.['panelChannelId'];
+        const panelMessageId = guildData?.['sessionSignup']?.['signupThreadId'];
+        const panelChannel = await global.client.channels.fetch(panelChannelId).catch((e) => {})
+        const guildTimeZone = guildData?.['timeZone'] || 'America/Chicago';
+        if(!panelChannelId || !panelChannel) return { success: false, data: `Cannot get guild's required panel channel for daily thread creation!`};
+
+        // Delete Exisiting Panel:
+        if(panelMessageId){ try{
+            const panelMessage = await panelChannel.messages.fetch(panelMessageId).catch((e) => {})
+            await panelMessage.delete().catch((e) => {})
+        }catch(e){
+            //...
+        }}
+
+        // Get Panel Contents:
+        const panelContentAttempt = await guildPanel(guildId).mainPanelMessageContents(guildData)
+        if(!panelContentAttempt.success) return { success: false, data: `Cannot get guild's panel content for daily thread creation!`};
+
+        // Send New Panel Message in Text Channel:
+        const newPanelMessage = await panelChannel.send({
+            components: [panelContentAttempt.data],
+            flags: MessageFlags.IsComponentsV2
+        }) // Dont Save this Msg Id... It's the same as the new thread id...
+
+        // Variables:
+        const threadDateString = DateTime.now().setZone(guildTimeZone).toLocaleString({month: 'numeric', day: 'numeric'})
+
+        // Create Daily Sessions Thread:
+        const thread = await newPanelMessage.startThread({
+            name: `📅 Upcoming Sessions - ${threadDateString}`,
+            autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
+            type: ChannelType.PublicThread,
+            reason: 'Todays Guild Sessions',
+        });
+
+        // After Thread Creation:
+        if(thread){
+            // Save New Signup Thread/Panel Id:
+            const saveThreadAttempt = await guilds(guildId).updateDocField('sessionSignup.signupThreadId', String(thread.id));
+            if(!saveThreadAttempt.success) return { success: false, data: `Failed to Save Daily Sessions Thread to Firebase - Possibly still created locally...` };
+
+            // Send Daily Signup Thread Contents:
+            const signupContentAttempt = await guildPanel(guildId).sendSignupThreadContents(thread, guildData)
+            if(!signupContentAttempt.success) return { success: false, data: `Failed to Send Daily Sessions Signup Contents` };
+            
+        } else return { success: false, data: `Failed to Create Daily Sessions Thread`, threadAttempt: thread };
+
+        // Return Success Result:
+        return { success: true, data: `Created Daily Sessions Thread!.`, threadId: thread.id };
+
+    } catch(e){
+        // Log Error:
+        console.log(`{!} Failed to Create Daily Sessions Thread:`, e)
+        // Return Success Result:
+        return { success: false, data: `Failed to Create Daily Sessions Thread`, rawError: e };
+    }},
+
+
+    // Send Sessions Signup Contents in Daily Thread:
+    sendSignupThreadContents: async (signupThread, optional_guildData) => {
+        // Check for Guild Data:
+        let guildData = null;
+        if(!optional_guildData) {
+            // Fetch Guild Data:
+            const getAttempt = await guilds(guildId).readGuild()
+            if(getAttempt.success) {
+                guildData = getAttempt.data
+            }
+        }else{
+            // Assign Passed Guild Data:
+            guildData = optional_guildData;
+        }
+        if(!guildData) return {success: false, data: `Cannot get Guild Data for Guild Signup Contents!`};
+        if(!signupThread) return { success: false, data: `Failed to Send Daily Thread Content | No Thread Provided!`, rawError: e };
+        const accentColor = Number(guildData['accentColor'] | 0x9b42f5);
+
+        // Variables:
+        const signupMentionRoles = guildData?.['sessionSignup']?.['mentionRoleIds'] || [];
+        
+        let allComponents = [] // Hold all message containers to be sent
+
+        // Sort Guild Sessions:
+        const unsortedSessions  = guildData?.['upcomingSessions']
+        if(!unsortedSessions || !Object.entries(unsortedSessions).length) return {success: false, data: `Guild does not have any upcoming sessions.`};
+        const upcomingSessions = Object.entries(unsortedSessions).sort((a, b) => a[1]['date']['discordTimestamp'] - b[1]['date']['discordTimestamp']);
+        
+        // Add Thread Signup Header:
+        const signupHeader = async () => {
+            // Build Heading Container:
+            const container = new ContainerBuilder()
+            container.setAccentColor(accentColor);
+            const separator = new SeparatorBuilder()
+            // Separator:
+            container.addSeparatorComponents(separator)
+            // Content:
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${global.emojis.sessionsWText} Todays Sessions:`))
+            // Separator:
+            container.addSeparatorComponents(separator)
+            // Date:
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### <t:${DateTime.now().toUnixInteger()}:D> `))
+            // Add to Components:
+            allComponents.push({type: 'header', data: container})
+        } 
+        await signupHeader()
+
+        // Add Daily Session Signup(s):
+        const sessionSignup = async () => {
+            
+            // Apend Each Upcoming Session:
+            for ([sessionId, sessionData] of upcomingSessions) {
+                const contentAttempt = await guildSessions(guildId).getSessionPanelContents(sessionId, sessionData, accentColor);
+                if(contentAttempt.success){
+                    // Add this Session to Components:
+                    allComponents.push({type: 'session', id: sessionId, data: contentAttempt.data});
+                }else{
+                    console.log('{!} Failed to get sessions panel contents for thread!');
+                    continue;
+                }
+            }
+            
+        }
+        await sessionSignup();
+
+        // Add Thread Signup Footer:
+        const signupFooter = async () => {
+            // Build Footer Container:
+            const container = new ContainerBuilder()
+            container.setAccentColor(0x354154)
+            const separator = new SeparatorBuilder()
+            // Content:
+            // Add Mention Roles:
+            if(Array.isArray(signupMentionRoles) && signupMentionRoles.length >= 1){
+                let mentionString = '🔔: '
+                for (const roleId of signupMentionRoles) {
+                    mentionString += `<@&${roleId}> `
+                }
+                container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${mentionString}`))
+            }
+            // Add Last Edited Details:
+            const nowUTCSeconds = DateTime.now().toUnixInteger()
+            const lastEditedTimestamp = `<t:${nowUTCSeconds}:R>`;
+            let lastEditedString = `*Became Available:* ${lastEditedTimestamp}`
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${lastEditedString}`))
+            // Add to Components:
+            allComponents.push({type: 'footer', data: container})
+        }
+        await signupFooter()
+
+        // Send Each Component within Thread:
+        let sentSignupMessages = {}
+        for(const componentObj of allComponents){
+            // Send Msg:
+            const msg = await signupThread.send({
+                components: [componentObj.data],
+                flags: MessageFlags.IsComponentsV2
+            })
+            // Store Msg Id for Session Signups:
+            if(componentObj.type === 'session'){
+                // Confirm Session Exisits:
+                if (!unsortedSessions[String(componentObj.id)]) {
+                    console.log(`{!} Cannot find Session ID ${sessionId} to store session signup panel msg id!`);
+                    continue; // Skip this sessionId
+                }else{
+                    // Update Session Data:
+                    unsortedSessions[String(componentObj.id)]['signupPanelMsgId'] = String(msg.id);
+                }
+                
+            }
+        }
+
+        // Save upcoming sessions with signup panel ids:
+        const signupMsgSaveAttempt = await guilds(guildId).updateDocField('upcomingSessions', unsortedSessions);
+        if(!signupMsgSaveAttempt.success) return { success: false, data: 'Failed to save sent session signup msg ids to database!' };
+
+        // Success - Result:
+        return { success: true, data: 'Daily Signup Thread Content Success', sessionMessageMap: sentSignupMessages };
     },
 
 }}
 
 
 // Guild Sessions - Nested Functions:
-const guildSessions = (guildId) => { return {
+const guildSessions = (guildId) => {return {
 
     // Get All Sessions for a Guild:
     getSessions: async () => {
@@ -181,69 +511,8 @@ const guildSessions = (guildId) => { return {
     },
 
 
-    // Create Todays Sessions from Schedules:
-    createAllUpcomingSessions: async (fullSchedulesObject) => { try{
-
-        const upcomingSessions = {};
-
-        // For Each Sechedule:
-        for(const[scheduleId, scheduleData] of Object.entries(fullSchedulesObject)) {
-            // Session Data:
-            const sessionDateDaily = scheduleData?.['sessionDateDaily'];
-            const sessionRoles = scheduleData?.['roles'];
-            const sessionTitle = scheduleData?.['sessionTitle'] ;
-            const sessionUrl = scheduleData?.['sessionUrl'];
-            
-            // Generate Session Id:
-            const sessionId = 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-
-            // Create Discord Timestamp from sessionDateDaily object
-            const createDiscordTimestamp = (sessionDateDaily) => {
-                const { hours, minutes, timeZone } = sessionDateDaily;
-
-                // Create a DateTime in the specified time zone
-                const dateTime = DateTime.fromObject(
-                    { hour: hours, minute: minutes, second: 0, millisecond: 0 },
-                    { zone: timeZone }
-                );
-
-                // Convert to UNIX timestamp (seconds, not ms)
-                const discordTimestamp = String(Math.floor(dateTime.toSeconds()));
-
-                return discordTimestamp;
-            };
-
-            // Assign Discord Timestamp:
-            sessionDateDaily.discordTimestamp = createDiscordTimestamp(sessionDateDaily);
-            
-            // Add to upcomingSessions Table:
-            upcomingSessions[sessionId] = {
-                date: sessionDateDaily,
-                roles: sessionRoles,
-                title: sessionTitle,
-                location: sessionUrl,
-            }
-        }
-
-        // Save all Session to Upcoming Sessions:
-        const saveResult = await updateGuildDocField(guildId, 'upcomingSessions', upcomingSessions);
-        if(saveResult.success){
-            // Update Signup Message:
-            return await guildSessions(guildId).updateSessionSignup()
-        }
-
-        // Creation Success:
-        const result = { success: true, data: `Successfully created guilds sessions from schedules! Id: ${guildId}` };
-        return result;
-    } catch(e){
-        // Error Occured:
-        const result = { success: false, data: `Failed to create guilds sessions from schedules! Id: ${guildId}`, rawError: e };
-        return result;
-    }},
-
-
     // Create New Upcomming Session:
-    createSession: async (sessionScheduleObject) => {
+    createSession: async (sessionScheduleObject, timeZone) => {
         const sessionDateDaily = sessionScheduleObject.sessionDateDaily;
         const sessionRoles = sessionScheduleObject.roles;
         const sessionTitle = sessionScheduleObject.sessionTitle ;
@@ -254,7 +523,7 @@ const guildSessions = (guildId) => { return {
 
         // Create Discord Timestamp from sessionDateDaily object
         const createDiscordTimestamp = (sessionDateDaily) => {
-            const { hours, minutes, timeZone } = sessionDateDaily;
+            const { hours, minutes } = sessionDateDaily;
 
             // Create a DateTime in the specified time zone
             const dateTime = DateTime.fromObject(
@@ -299,7 +568,7 @@ const guildSessions = (guildId) => { return {
     // Assing User to an Upcoming Session:
     assignUserSessionRole: async (sessionId, userId, roleName) => {
         // Confirm Guild Data:
-        const guildDataRetrvial = await readGuildDoc(guildId)
+        const guildDataRetrvial = await guilds(guildId).readGuild()
         if(!guildDataRetrvial.success) return {success: false, data: 'Could not get Guild data for session modifications!'};
         const guildData = guildDataRetrvial.data;
         
@@ -324,11 +593,11 @@ const guildSessions = (guildId) => { return {
         requestedRole.users.push(String(userId))
 
         // Save session changes to databse:
-        const updateSuccess = await updateGuildDocField(guildId, `upcomingSessions.${sessionId}`, sessionData)
+        const updateSuccess = await guilds(guildId).updateDocField(`upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!'};
 
         // Update Guilds Signup Message:
-		await guildSessions(guildId).updateSessionSignup()
+		await guildSessions(guildId).updateSessionSignup(sessionId)
 
         return {success: true, data: 'Successfully added user to role!', sessionData: sessionData, guildData: guildData};
     },
@@ -337,7 +606,7 @@ const guildSessions = (guildId) => { return {
     // Assing User to an Upcoming Session:
     removeUserSessionRole: async (sessionId, userId) => {
         // Confirm Guild Data:
-        const guildDataRetrvial = await readGuildDoc(guildId)
+        const guildDataRetrvial = await guilds(guildId).readGuild()
         if(!guildDataRetrvial.success) return {success: false, data: 'Could not get Guild data for session modifications!'};
         const guildData = guildDataRetrvial.data;
 
@@ -355,215 +624,285 @@ const guildSessions = (guildId) => { return {
         });
 
         // Save session changes to databse:
-        const updateSuccess = await updateGuildDocField(guildId, `upcomingSessions.${sessionId}`, sessionData)
+        const updateSuccess = await guilds(guildId).updateDocField(`upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!'};
 
         // Update Guilds Signup Message:
-		await guildSessions(guildId).updateSessionSignup()
+		await guildSessions(guildId).updateSessionSignup(sessionId)
 
         return {success: true, data: 'Successfully removed user from role!', sessionData: sessionData, guildData: guildData};
     },
 
 
-    // Get Session Signup Embded Contents - Sends/Edits Msg if (not) Id Provided:
-    updateSessionSignup: async () => {
-        // 1. Get Guild Data:
-        const guildDataRetrvial = await readGuildDoc(guildId);
-        if(!guildDataRetrvial.success) return {success: false, data: `Couldn't find guild(${guildId}) to embed signup message.`};
-        const guildData = guildDataRetrvial.data;
+    // Create Todays Sessions from Schedules:
+    createDailySessions: async (fullSchedulesObject) => { try{
 
-        const unsortedSessions  = guildData?.['upcomingSessions']
-        if(!unsortedSessions || !Object.entries(unsortedSessions).length) return {success: false, data: `Guild does not have any upcoming sessions.`};
-        const upcomingSessions = Object.entries(unsortedSessions).sort((a, b) => a[1].date - b[1].date);
+        const upcomingSessions = {};
 
-        const signupMentionRoles = guildData['sessionSignup']['mentionRoleIds'];
+        // For Each Sechedule:
+        for(const[scheduleId, scheduleData] of Object.entries(fullSchedulesObject)) {
+            // Session Data:
+            const sessionDateDaily = scheduleData?.['sessionDateDaily'];
+            const sessionRoles = scheduleData?.['roles'];
+            const sessionTitle = scheduleData?.['sessionTitle'] ;
+            const sessionUrl = scheduleData?.['sessionUrl'];
+            
+            // Generate Session Id:
+            const sessionId = 'e_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
-        
-        // 2. Create Embed Contents:
-        const messageContent = async () => {
+            // Create Discord Timestamp from sessionDateDaily object
+            const createDiscordTimestamp = (sessionDateDaily) => {
+                const { hours, minutes, timeZone } = sessionDateDaily;
 
-            const signupContainer = new ContainerBuilder();
-            const seperator = new SeparatorBuilder();
-            signupContainer.setAccentColor(0x9b42f5)
+                // Create a DateTime in the specified time zone
+                const dateTime = DateTime.fromObject(
+                    { hour: hours, minute: minutes, second: 0, millisecond: 0 },
+                    { zone: timeZone }
+                );
 
-            // Title & Desc:
-            signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('# 📅  __Session Signup__  📅 \n-# Upcoming group sessions are listed below:'))
-            // Spacer:
-            signupContainer.addSeparatorComponents(seperator) 
+                // Convert to UNIX timestamp (seconds, not ms)
+                const discordTimestamp = String(Math.floor(dateTime.toSeconds()));
 
-            // Apend each session to msg:
-            for ([sessionId, sessionData] of upcomingSessions) {
-                // Get Session Data:
-                const sessionRoles = sessionData['roles'] || [];
-                const sessionFull = () => {
-                    // Returns true if every role is full
-                    return sessionRoles.every(role => role['users'].length >= role['roleCapacity']);
-                }
+                return discordTimestamp;
+            };
 
-                let sessionButtons = async () => {
-                    if(sessionFull()) { // Session Full - Hide Signup:
-                        return new ActionRowBuilder().addComponents(	
-                            new ButtonBuilder()
-                                .setCustomId(`sessionSignup:${sessionId}`)
-                                .setLabel('⛔️ Session Full')
-                                .setStyle(ButtonStyle.Primary)
-                                .setDisabled(true),
-                            
-                            new ButtonBuilder()
-                                .setLabel('🎯 Game Link')
-                                .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
-                                .setStyle(ButtonStyle.Link)
-                        );
-                    } else { // Session NOT Full - Show Signup:
-                        return new ActionRowBuilder().addComponents(
-                            new ButtonBuilder()
-                                .setCustomId(`sessionSignup:${sessionId}`)
-                                .setLabel('📝 Sign Up')
-                                .setStyle(ButtonStyle.Success),
-                            
-                            new ButtonBuilder()
-                                .setLabel('🎯 Game Link')
-                                .setURL(sessionData['location'] || 'https://roblox.com') // fallback if null
-                                .setStyle(ButtonStyle.Link)
-                        );
-                    }
-                }
+            // Assign Discord Timestamp:
+            sessionDateDaily.discordTimestamp = createDiscordTimestamp(sessionDateDaily);
+            
+            // Add to upcomingSessions Table:
+            upcomingSessions[sessionId] = {
+                date: sessionDateDaily,
+                roles: sessionRoles,
+                title: sessionTitle,
+                location: sessionUrl,
+            }
+        }
 
-                // Get Session Text Content:
-                let sessionTextContent = '';
-                // Session Date:
-                sessionTextContent += `### **[ ⏰ ] <t:${sessionData['date']['discordTimestamp']}:F>** \n > <t:${sessionData['date']['discordTimestamp']}:R> \n` 
-                // Session Role(s):
-                sessionRoles.forEach(role => {
-                    const roleName = role['roleName'];
-                    const roleEmoji = role['roleEmoji'];
-                    const roleUsers = Array.isArray(role['users']) ? role['users'] : [];
-                    const roleCapcity = role['roleCapacity'];
-                    const roleFull = (roleUsers.length >= roleCapcity)
-                    let roleString;
+        // Save all Session to Upcoming Sessions:
+        const saveResult = await guilds(guildId).updateDocField('upcomingSessions', upcomingSessions);
+        if(saveResult.success){
+            // ...
+        }
 
-                    // No Users Assigned:
-                    if(roleUsers.length === 0) {
-                        roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(0/${roleCapcity})* \n` + ` > *@AVAILABLE*  \n`
-                        return sessionTextContent += roleString
-                    }
+        // Creation Success:
+        const result = { success: true, data: `Successfully created guilds sessions from schedules! Id: ${guildId}` };
+        return result;
+    } catch(e){
+        // Error Occured:
+        const result = { success: false, data: `Failed to create guilds sessions from schedules! Id: ${guildId}`, rawError: e };
+        return result;
+    }},
+
+
+    // Get Session Panel Contents by Session Id:
+    getSessionPanelContents: async (sessionId, sessionData, accentColor) => {
+        // Confirm Data:
+        if(!sessionId || !sessionData) return {success: false, data: 'Missing sessionId or sessionData for session panel contents!'}
+        // Build Sessions Signup Container:
+        const container = new ContainerBuilder()
+        container.setAccentColor(accentColor)
+        const separator = new SeparatorBuilder()
+
+        // Session Data/Variables:
+        const sessionRoles = sessionData?.['roles'] || [];
+        const sessionDateDiscord = sessionData?.['date']?.['discordTimestamp'];
+        const sessionTitle = sessionData?.['title'] || 'Group Session';
+        const sessionLocation = String(sessionData?.['location'] || 'https://www.roblox.com')
+        const sessionFull = () => {
+            // Returns true if every role is full
+            return sessionRoles.every(role => role['users'].length >= role['roleCapacity']);
+        }
+        const pastSession = () => {
+            const nowUTCSeconds = DateTime.now().toUnixInteger()
+            return nowUTCSeconds >= sessionDateDiscord
+        }
+        let sessionButtons = async () => {
+            if(sessionFull()) { // Session Full - Hide Signup:
+                return new ActionRowBuilder().addComponents(	
+                    new ButtonBuilder()
+                        .setCustomId(`sessionSignup:${sessionId}`)
+                        .setLabel('⛔️ Session Full')
+                        .setStyle(ButtonStyle.Primary)
+                        .setDisabled(true),
                     
-                    // Role at Max Capcity
-                    if(roleFull){
-                        roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`UNAVAILABLE ⛔️\`***` +  ` *(${roleCapcity}/3)* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
-                        return sessionTextContent += roleString;
-                    }else {
-                    // Role Availale:
-                        roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(${roleUsers.length}/3)* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
-                        return sessionTextContent += roleString;
-                    }
-                })
-
-                // Append All Text to Container:
-                signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(sessionTextContent));
-
-
-                // Invisible Spacer:
-                signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) )
-                // Session Buttons:
-                signupContainer.addActionRowComponents(await sessionButtons())
-                // Invisible Spacer:
-                signupContainer.addSeparatorComponents( new SeparatorBuilder().setDivider(false) )
-                // Seperator:
-                signupContainer.addSeparatorComponents(seperator)
-
+                    new ButtonBuilder()
+                        .setLabel('🎯 Game Link')
+                        .setURL(sessionLocation)
+                        .setStyle(ButtonStyle.Link)
+                );
+            } else if(pastSession()) { // Past Session - Hide Signup:
+                return new ActionRowBuilder().addComponents(	
+                    new ButtonBuilder()
+                        .setCustomId(`sessionSignup:${sessionId}`)
+                        .setLabel('⌛️ Past Session')
+                        .setStyle(ButtonStyle.Primary)
+                        .setDisabled(true),
+                    
+                    new ButtonBuilder()
+                        .setLabel('🎯 Game Link')
+                        .setURL(sessionLocation) 
+                        .setStyle(ButtonStyle.Link)
+                );
+            } else { // Session NOT Full - Show Signup:
+                return new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setCustomId(`sessionSignup:${sessionId}`)
+                        .setLabel('📝 Sign Up')
+                        .setStyle(ButtonStyle.Success),
+                    
+                    new ButtonBuilder()
+                        .setLabel('🎯 Game Link')
+                        .setURL(sessionLocation)
+                        .setStyle(ButtonStyle.Link)
+                );
             }
+        }
 
-            // Add signup mention role tag:
-            if(Array.isArray(signupMentionRoles) && signupMentionRoles.length >= 1) {
-                let mentionString = '🔔: '
-                for (const roleId of signupMentionRoles) {
-                    mentionString += `<@&${roleId}> `
+        // Session Content:
+        // Separator:
+        container.addSeparatorComponents(separator)
+        // Title:
+        container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`## 📌  ${sessionTitle}`))
+        // Separator:
+        container.addSeparatorComponents(separator)
+        // Get Session Text Content:
+        let sessionTextContent = '';
+        // Session Date:
+        sessionTextContent += `### **[ ⏰ ] <t:${sessionData['date']['discordTimestamp']}:F>** \n > <t:${sessionData['date']['discordTimestamp']}:R> \n` 
+        // Session Role(s):
+        sessionRoles.forEach(role => {
+            const roleName = role['roleName'];
+            const roleEmoji = role['roleEmoji'];
+            const roleUsers = Array.isArray(role['users']) ? role['users'] : [];
+            const roleCapcity = role['roleCapacity'];
+            const roleFull = (roleUsers.length >= roleCapcity)
+            let roleString;
+
+            const roleUsersMapString = () => {
+                // Past Session & Empty:
+                if(pastSession() && !roleUsers.length){
+                    return `> *Session Concluded*`
+                }   
+                // Not Empty but Available:
+                if(roleUsers.length >= 1){
+                    // Users in Role:
+                    return roleUsers.map(id => `> <@${id}>`).join('\n')
                 }
-                signupContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${mentionString}`))
+                
             }
 
-            return signupContainer // Return signupContainer message contents
-
-        }
-
-        // 3. Get Existing Signup Message:
-        let exisitingSignupMsgId = guildData['sessionSignup']['signupMessageId']
-        if(exisitingSignupMsgId) { // Existing Signup Message - Edit/Replace:
-            try{
-                const signupChannelId = guildData['sessionSignup']['signupChannelId']
-                const signupChannel = await global.client.channels.fetch(signupChannelId);
-                if(!signupChannel) throw new Error(`Can't fetch signup channel for edit...`);
-                const message = await signupChannel.messages.fetch(exisitingSignupMsgId);
-                if(!message) throw new Error(`Can't fetch message to edit...`);
-                const messageContainer = await messageContent() 
-        
-                // Edit Original Message:
-                await message.edit({
-                    flags: MessageFlags.IsComponentsV2,
-                    components : [messageContainer],
-                }).catch((err) => {
-                    console.log('{!} Failed to Update Session Embed:');
-                    console.log(err);
-        
-                });
-
-                // Return Result:
-                return {success: true, data: `Successfully edited signup message.`};
-
-            }catch(e){
-                exisitingSignupMsgId = null;
-                console.warn('[!] An error occured when trying to update an exisiting signup message:', e);
+            // No Users Assigned:
+            if(roleUsers.length === 0 && !pastSession()) {
+                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(0/${roleCapcity})* \n` + ` > *Available*  \n`
+                return sessionTextContent += roleString
             }
-
-        }
-        
-        if(!exisitingSignupMsgId) { // No Existing Signup Message - Send New:
-            console.log(`SENDING NEW SIGNUP PANEL! |  GUILD ID: ${guildId}`)
-            try{
-                // Fetch Destination/Contents:
-                const signupChannelId = guildData['sessionSignup']['signupChannelId']
-                const signupChannel = await global.client.channels.fetch(signupChannelId);
-                const messageContainer = await messageContent()
-        
-                // Send Message:
-                const newSignupMsg = await signupChannel.send({
-                    flags: MessageFlags.IsComponentsV2,
-                    components : [messageContainer],
-                }).catch((err) => {
-                    console.log('{!} Failed to Send Session Embed:');
-                    console.log(err);
-        
-                });
-
-                // Save new msg id:
-                if(newSignupMsg){
-                    const newSignupMsgId = newSignupMsg.id
-                    updateGuildDocField(guildId, 'sessionSignup.signupMessageId', newSignupMsgId)
-                }
-
-                // Return Result:
-                return {success: true, data: `Successfully sent new signup message.`};
-
-            }catch(e){
-                console.warn('[!] An error occured when trying to send a new signup message:', e);
-                // Return Result:
-                return {success: false, data: `Failed to send new signup message.`};
+            
+            // Role at Max Capcity or Past Session:
+            if(roleFull || pastSession()){
+                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`UNAVAILABLE ⛔️\`***` +  ` *(${roleUsers.length}/${roleCapcity})* \n` + roleUsersMapString() + '\n';
+                return sessionTextContent += roleString;
+            }else {
+            // Role Availale:
+                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(${roleUsers.length}/${roleCapcity})* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
+                return sessionTextContent += roleString;
             }
-        }
-        
+        })
+
+        // Append All Text to Container:
+        container.addTextDisplayComponents(new TextDisplayBuilder().setContent(sessionTextContent));
+
+        // Invisible Spacer:
+        container.addSeparatorComponents(separator)
+        // Session Buttons:
+        container.addActionRowComponents(await sessionButtons())
+        // Seperator:
+        container.addSeparatorComponents(separator)
+
+        // Add Session Id Subheading:
+        container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ID:  ${String(sessionId).toUpperCase()}`))
+
+        // Return Full Container:
+        return {success: true, data: container}
     },
 
+    
+    // Refresh Daily Session Signup Panel by Session Id:
+    updateSessionSignup: async (sessionId, optional_guildData) => {
+        // Check for Guild Data:
+        let guildData = null;
+        if(!optional_guildData) {
+            // Fetch Guild Data:
+            const getAttempt = await guilds(guildId).readGuild()
+            if(getAttempt.success) {
+                guildData = getAttempt.data
+            }
+        }else{
+            // Assign Passed Guild Data:
+            guildData = optional_guildData;
+        }
+        if(!guildData) return {success: false, data: `Cannot get Guild Data for Session Signup Update!`};
+        const accentColor = Number(guildData['accentColor'] | 0x9b42f5);
+
+        // Get Session Data:
+        const sessionData = guildData?.['upcomingSessions']?.[String(sessionId)]
+        if(!sessionData) return {success: false, data: `Cannot get Session Data for Session Signup Update!`};
+        const sessionSignupMsgId = sessionData?.['signupPanelMsgId'];
+        if(!sessionSignupMsgId) return {success: false, data: `Cannot get 'sessionSignupMsgId' for Session Signup Update!`};
+        const signupThreadId = guildData?.['sessionSignup']?.['signupThreadId']
+        if(!signupThreadId) return {success: false, data: `Cannot get 'signupThreadId' for Session Signup Update!`};
+        const signupThread = await global.client.channels.fetch(signupThreadId)
+        if(!signupThread) return {success: false, data: `Failed to fetch Thread for Session Signup Panel Update!`};
+        const sessionPanelMessage = await signupThread.messages.fetch(sessionSignupMsgId)
+        if(!sessionPanelMessage) return {success: false, data: `Failed to fetch Panel Message for Session Signup Panel Update!`};
+        
+        
+        // Get Updated Session Panel:
+        const contentAttempt = await guildSessions(guildId).getSessionPanelContents(sessionId, sessionData, accentColor)
+        if(!contentAttempt.success) return {success: false, data: `Failed to fetch Updated Session Signup Panel Contents!`};
+
+
+        // Edit Message:
+        sessionPanelMessage.edit({
+            components: [contentAttempt.data],
+            flags: MessageFlags.IsComponentsV2
+        })
+    },  
+
 }}
+
+
+const example_guildSchedule = {
+    sessionTitle: 'Training Session',
+    sessionUrl: 'https://www.roblox.com',
+    sessionDateDaily: {
+        hours: 12,
+        minutes: 30,
+    },
+    roles: [
+        {
+            roleName: 'Event Host', 
+            roleDescription: 'This is main speaker/cordinator of the session.',
+            roleEmoji: '🎙️',
+            roleCapacity: 1,
+            users: []
+        },
+        {
+            roleName: 'Trainers', 
+            roleDescription: 'This is crew responsible for training new employees.',
+            roleEmoji: '🤝',
+            roleCapacity: 5,
+            users: []
+        },
+    ]
+}
 
 
 // -------------------------- [ Exports ] -------------------------- \\
 
 module.exports = {
-    createNewGuildDoc,
-    readGuildDoc,
-    archiveGuildDoc,
-    updateGuildDocField,
+    guilds,
     guildConfiguration,
-    guildSessions
+    guildPanel,
+    guildSessions,
+    example_guildSchedule
 }
