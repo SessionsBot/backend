@@ -5,6 +5,9 @@ const {
 	StringSelectMenuOptionBuilder,
 	ComponentType,
 	EmbedBuilder,
+	ContainerBuilder,
+	SeparatorBuilder,
+	TextDisplayBuilder,
 } = require('discord.js');
 
 const guildManager = require('../../utils/guildManager.js');
@@ -14,16 +17,22 @@ const { DateTime } = require('luxon');
 const responses = {
 
 	databaseFailure: async (interaction, sessionId, responseTitle, responseString) => {
+		// Build Response:
+		const container = new ContainerBuilder();
+		const separator = new SeparatorBuilder();
+
+		container.setAccentColor(0xd43f37);
+		
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ${responseTitle}`))
+		container.addSeparatorComponents(separator);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`*${responseTitle}* `))
+		container.addSeparatorComponents(separator);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
+
 		// Send alert:
 		await interaction.reply({
-			embeds: [
-				new EmbedBuilder()
-				.setColor(global.colors.error)
-				.setTitle(responseTitle)
-				.setDescription(responseString)
-				.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
-			],
-			flags: MessageFlags.Ephemeral
+			components: [container],
+			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
 		})
 
 		// Schedule deletion:
@@ -38,17 +47,23 @@ const responses = {
 	},
 
 	alreadyAssignedRole: async (interaction, sessionId, existingRoleAssigned) => {
+		// Build Response:
+		const container = new ContainerBuilder();
+		const separator = new SeparatorBuilder();
+
+		container.setAccentColor(0xd43f37);
+		
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ❗️ - Already Assigned Session!`))
+		container.addSeparatorComponents(separator);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**💼 Current Role:** \`${existingRoleAssigned}\` `))
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent('*Could not sign up again for this session! To edit your position within this session please use the `/my-sessions` command!* '))
+		container.addSeparatorComponents(separator);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
+		
 		// Send alert:
 		await interaction.reply({
-			embeds: [
-				new EmbedBuilder()
-				.setColor(global.colors.error)
-				.setTitle('❗️ - Already Assigned Session!')
-				.setDescription('Could not sign up again for this session! To edit your position within this session please use the `/my-sessions` command!')
-				.addFields({name: '💼 Current Role', value: '`' + existingRoleAssigned + '`'})
-				.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
-			],
-			flags: MessageFlags.Ephemeral
+			components: [container],
+			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
 		})
 
 		// Schedule deletion:
@@ -62,27 +77,51 @@ const responses = {
 
 	},
 
-	roleAssignSuccess: async (interaction, sessionId, selectedRole, sessionData) => {
+	pastSession: async (interaction, sessionId) => {
+		// Build Response:
+		const container = new ContainerBuilder();
+		const separator = new SeparatorBuilder();
+
+		container.setAccentColor(0xd43f37);
+		
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⌛️ Session Already Occured!`))
+		container.addSeparatorComponents(separator);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🧾 Details:** \n *You cannot sign up for this session, it has already taken place... Please choose a different session and try again!* `))
+		container.addSeparatorComponents(separator);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
+		
 		// Send Role Assign Success Message:
-		await interaction.update({
-			content: `<@${interaction.user.id}>`,
-			components: [],
-			embeds: [
-				new EmbedBuilder()
-					.setColor('#eb9234')
-					.setTitle('✅ Position Assigned!')
-					.addFields( // Spacer
-						{ name: ' ', value: ' ' }
-					)
-					.addFields(
-						{ name: '💼 Role:', value: '`' + selectedRole + '`', inline: true },
-						{ name: '📆 Date:', value: `<t:${sessionData['date']['discordTimestamp']}:F>\n(<t:${sessionData['date']['discordTimestamp']}:R>)`, inline: true }
-					)          
-					.addFields( // Spacer
-						{ name: ' ', value: ' ' }
-					)
-					.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
-			],
+		await interaction.reply({
+			components: [container],
+			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
+		});
+
+		// Schedule response message deletion:
+		setTimeout(async () => {
+			try {
+				await interaction.deleteReply();
+			} catch (err) {
+				console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
+			}
+		}, 15_000);
+	},
+
+	roleAssignSuccess: async (interaction, sessionId, selectedRole, sessionData) => {
+		// Build Response:
+		const container = new ContainerBuilder();
+		const separator = new SeparatorBuilder();
+
+		container.setAccentColor(0x6dc441);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ✅ Position Assigned!`))
+		container.addSeparatorComponents(separator);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**💼 Role:** \`${selectedRole}\` `))
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**📆 Date:** <t:${sessionData['date']['discordTimestamp']}:F>\n(<t:${sessionData['date']['discordTimestamp']}:R>) `))
+		container.addSeparatorComponents(separator);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
+		
+		// Send Role Assign Success Message:
+		await interaction.editReply({
+			components: [container],
 			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
 		});
 
@@ -97,57 +136,21 @@ const responses = {
 	},
 
 	roleAssignError: async (interaction, sessionId, responseString) => {
-		// Send Role Assign Success Message:
-		await interaction.update({
-			content: `<@${interaction.user.id}>`,
-			components: [],
-			embeds: [
-				new EmbedBuilder()
-					.setColor('#eb3434')
-					.setTitle('⚠️ Position Not Assigned!')
-					.addFields( // Spacer
-						{ name: ' ', value: ' ' }
-					)
-					.addFields(
-						{ name: '🧾 Details:', value: '`' + responseString + '`', inline: true }
-					)          
-					.addFields( // Spacer
-						{ name: ' ', value: ' ' }
-					)
-					.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
-			],
-			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
-		});
+		// Build Response:
+		const container = new ContainerBuilder();
+		const separator = new SeparatorBuilder();
 
-		// Schedule response message deletion:
-		setTimeout(async () => {
-			try {
-				await interaction.deleteReply();
-			} catch (err) {
-				console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
-			}
-		}, 15_000);
-	},
-
-	pastSession: async (interaction, sessionId) => {
+		container.setAccentColor(0xd43f37);
+		
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⚠️ Position Not Assigned!`))
+		container.addSeparatorComponents(separator);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🧾 Details:** \n *${responseString}* `))
+		container.addSeparatorComponents(separator);
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
+		
 		// Send Role Assign Success Message:
-		await interaction.update({
-			content: `<@${interaction.user.id}>`,
-			embeds: [
-				new EmbedBuilder()
-					.setColor('#eb3434')
-					.setTitle('⌛️ Session Already Occured!')
-					.addFields( // Spacer
-						{ name: ' ', value: ' ' }
-					)
-					.addFields(
-						{ name: '🧾 Details:', value: '`' + 'You cannot sign up for this session, it has already taken place... Please choose a different session and try again!' + '`', inline: true }
-					)          
-					.addFields( // Spacer
-						{ name: ' ', value: ' ' }
-					)
-					.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
-			],
+		await interaction.editReply({
+			components: [container],
 			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
 		});
 
@@ -217,6 +220,17 @@ module.exports = {
 		if(!availableRoles.length) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Session at Capacity!', 'This session currently has no available role positions. Please select a different session and try again.');
 
 
+		// Create Role Select Container:
+		let selectRoleContainer = new ContainerBuilder()
+		let separator = new SeparatorBuilder()
+
+		// Title
+		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('### 💼 Please select a role for this session:'))
+		selectRoleContainer.addSeparatorComponents(separator) // Separator
+		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`> **Date:** <t:${sessionDateDiscord}:F>`))
+		selectRoleContainer.addSeparatorComponents(separator) // Separator
+
+
 		// Create Role Select Menu:
 		let selectMenuOptions = [];
 		availableRoles.forEach(role => {
@@ -228,16 +242,20 @@ module.exports = {
 		})
 		const selectRoleMenu = new StringSelectMenuBuilder()
 			.setCustomId(`selectSessionRole:${interactionSessionId}`)
-			.setPlaceholder('Choose a role!')
+			.setPlaceholder('Choose a role...')
 			.addOptions(selectMenuOptions);
 		const row_selectSessionRole = new ActionRowBuilder().addComponents(selectRoleMenu);
+		
+		// Complete Container:
+		selectRoleContainer.addActionRowComponents(row_selectSessionRole)
+		selectRoleContainer.addSeparatorComponents(separator)
+		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Didn't mean to signup? Feel free to just ignore this message.`))
 
 
 		// Send the Select Role Message:
 		await interaction.reply({
-			content: 'Select your role for this session:',
-			components: [row_selectSessionRole],
-			flags: MessageFlags.Ephemeral
+			components: [selectRoleContainer],
+			flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
 		});
 
 
@@ -263,13 +281,13 @@ module.exports = {
 			// Assign Success:
 			if(userAssignAttempt.success){
 				// Send Success Message:
-				responses.roleAssignSuccess(selectInteraction, interactionSessionId, selectedRole, userAssignAttempt.sessionData)
+				responses.roleAssignSuccess(interaction, interactionSessionId, selectedRole, userAssignAttempt.sessionData)
 			}
 
 			// Assign Error:
 			if(!userAssignAttempt.success){
 				// Send Error Message:
-				responses.roleAssignError(selectInteraction, interactionSessionId, userAssignAttempt.data)
+				responses.roleAssignError(interaction, interactionSessionId, userAssignAttempt.data)
 			}
 
 		})

@@ -11,10 +11,6 @@ let currentDailySchedules = []; // <-- Store node schedules to be replaced each 
 const generalDebug = (c) => {if(global.outputDebug_General) console.log(c)}
 const inDepthDebug = (c) => {if(global.outputDebug_InDepth) console.log(c)}
 
-// [TO-DO]  
-// Create the 'Initializer' scheudle/function that loads all 'session post schedules' once daily
-// the Initializer function will read all guilds/session schedules for SIGNUP POST TIME and schedule them with cron accordingly
-
 
 // Bot Initialization Fn:
 async function botInitialize() {
@@ -79,13 +75,13 @@ async function dailyInitializeFn() {
                 timezone: timeZone,
                 maxExecutions: 1,
                 maxRandomDelay: 5000
-            }
-            );
+            });
+
 
             // ! DELETE LATER:
             // If 'Development' Guild:
             // const testingGuilds = [
-            //     '593097033368338435'
+            //     '1379160686629880028'
             // ]
             // if(testingGuilds.includes(doc.id)){
             //     // Run Schedule early for Guild:
