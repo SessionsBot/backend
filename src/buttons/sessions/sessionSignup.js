@@ -83,7 +83,7 @@ const responses = {
 					)
 					.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
 			],
-			flags: MessageFlags.Ephemeral
+			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
 		});
 
 		// Schedule response message deletion:
@@ -116,7 +116,7 @@ const responses = {
 					)
 					.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
 			],
-			flags: MessageFlags.Ephemeral
+			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
 		});
 
 		// Schedule response message deletion:
@@ -133,7 +133,6 @@ const responses = {
 		// Send Role Assign Success Message:
 		await interaction.update({
 			content: `<@${interaction.user.id}>`,
-			components: [],
 			embeds: [
 				new EmbedBuilder()
 					.setColor('#eb3434')
@@ -149,7 +148,7 @@ const responses = {
 					)
 					.setFooter({ text: `This message will be deleted in 15 seconds.`, iconURL: interaction.client.user.displayAvatarURL() })
 			],
-			flags: MessageFlags.Ephemeral
+			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
 		});
 
 		// Schedule response message deletion:
@@ -191,7 +190,10 @@ module.exports = {
 
 		// Check if Session Already Occured:
 		const pastSession = nowUTCSeconds >= sessionDateDiscord;
-		if(pastSession) return await responses.pastSession(interaction, interactionSessionId)
+		if (pastSession){
+			await guildManager.guildSessions(interaction.message.guildId).updateSessionSignup(String(interactionSessionId), guildData)
+			return await responses.pastSession(interaction, interactionSessionId)
+		} 
 
 
 		// Check if User Already Assigned:

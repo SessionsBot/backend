@@ -413,7 +413,7 @@ const guildPanel = (guildId) => {return {
             // Add to Components:
             allComponents.push({type: 'header', data: container})
         } 
-        await signupHeader()
+        // await signupHeader()
 
         // Add Daily Session Signup(s):
         const sessionSignup = async () => {
