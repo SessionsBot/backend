@@ -16,7 +16,7 @@ const inDepthDebug = (c) => {if(global.outputDebug_InDepth) console.log(c)}
 async function botInitialize() {
     // Runs Daily @11:59 PM - Loads and schedules all other 'Guild Schedules':
     const dailyInitializeShd = cron.schedule('0 59 23 * * *', async (ctx) => {
-            generalDebug(`[⏰] Loading All Guild Schedules - ${ ctx.triggeredAt.toLocaleString('en-US', {timeZone: 'America/Chicago'}) } `);
+            generalDebug(`[⏳] Loading All Guild Schedules - ${ ctx.triggeredAt.toLocaleString('en-US', {timeZone: 'America/Chicago'}) } `);
             await dailyInitializeFn();
         },
         { // schedule options

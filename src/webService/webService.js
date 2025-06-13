@@ -29,8 +29,8 @@ app.use(cors({
 
 
 // Root/Status Requests:
-app.get('/', (req, res) => res.status(200).json({ response: 'Root Directory: ALIVE', code: 200 }));
-app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is operational!', code: 200 }));
+app.get('/', (req, res) => res.status(200).json({ status: 'ONLINE', message: 'Our Discord/Web-App Backend is currently operational!' }));
+app.get('/status', (req, res) => res.status(200).json({ status: 'ONLINE', message: 'Our Discord/Web-App Backend is currently operational!' }));
 
 // Discord Auth Requests:
 const discordAuthRouter = require('./discordAuth.js');

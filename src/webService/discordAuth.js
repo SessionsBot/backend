@@ -75,6 +75,7 @@ router.get('/login/discord-redirect', async (req, res) => {
             }
         });
         const userData = userResponse.data;
+        const userDiscordId = userData?.id
         // console.log('User Info:', userData);
         console.log(`[ i ] User Authenticated: ${userData?.username}`);
 
@@ -101,7 +102,7 @@ router.get('/login/discord-redirect', async (req, res) => {
         }));
 
         // Step 5. Create Firebase Auth Token for User:
-        const firebaseToken = await admin.auth().createCustomToken(discordUserId)
+        const firebaseToken = await admin.auth().createCustomToken(userDiscordId)
         console.log(`A Discord auth token has been created: ${firebaseToken}`)
 
         // Step 6. Prepair Data for Sending to Frontend
