@@ -1,16 +1,12 @@
-// Imports:
+// App/Imports:
 const express = require('express');
-const axios = require('axios');
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
-
 const app = express();
 app.use(express.static('webService'));
 app.use(express.json());
+require('dotenv').config();
 
 // Security - Middleware:
 const cors = require('cors');
-
 const allowedOrigins = [
   'https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app',
   'https://sessionsbot.fyi',

@@ -11,6 +11,29 @@ const CLIENT_SECRET = process.env['CLIENT_SECRET']
 const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
 const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app/api/login/discord-redirect'; // Must match registered Discord redirect
 
+
+// ----------------------------------[ Verifying Tokens: ]---------------------------------- \\
+
+function verifyToken(req, res, next) {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+
+    try {
+        const decoded = jwt.verify(token, process.env.JSON_WEBTOKEN_SECRET);
+        req.user = decoded; // Attach user to request
+        next(); // Allow request
+    } catch (err) {
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).json({ error: 'TokenExpired' });
+        }
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(422).json({ error: 'InvalidToken' });
+        }
+        return res.status(500).json({ error: 'Unknown token error' });
+    }
+};
+
+
 // ----------------------------------[ App Routes: ]---------------------------------- \\
 
 // [Begin/Login Auth] - Discord Redirect:
@@ -56,7 +79,6 @@ router.get('/login/discord-redirect', async (req, res) => {
         const userData = userResponse.data;
         // console.log('User Info:', userData);
         console.log(`[ i ] User Authenticated: ${userData?.username}`);
-        
 
         // Step 3: Fetch user guilds
         const ADMINISTRATOR = 0x00000008;
@@ -67,8 +89,6 @@ router.get('/login/discord-redirect', async (req, res) => {
             }
         });
         const guilds = guildsResponse.data;
-        // console.log('Guilds:', guilds);
-
 
         // Step 4. Filter guilds where user has manage or admin permissions
         const manageableGuilds = guilds.filter(guild => {
@@ -82,11 +102,19 @@ router.get('/login/discord-redirect', async (req, res) => {
             permissions: g.permissions
         }));
 
-        // Step 5. Prepair Data for Sending to Frontend
+        // Step 5. Create Firebase Auth Token for User:
+        const firebaseToken = await admin.auth().createCustomToken(discordUserId)
+        console.log(`A Discord auth token has been created: ${firebaseToken}`)
+
+        // Step 6. Prepair Data for Sending to Frontend
         const userToSend = {
-            ...userData,
-            avatar_url: `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`,
-            manageable_guilds: manageableGuildsInfo
+            id: userData?.id,
+            username: userData?.username,
+            displayName: userData?.global_name,
+            accentColor: userData?.accent_color,
+            avatar: userData?.avatar ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` : null,
+            banner: userData?.banner ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.banner}.png` : null,
+            manageableGuilds: manageableGuildsInfo
         };
 
         // Step 7. Create Secure JSON Token:
@@ -108,28 +136,6 @@ router.get('/login/discord-redirect', async (req, res) => {
 });
 
 
-// middleware/verifyToken.js
-function verifyToken(req, res, next) {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
-
-    try {
-        const decoded = jwt.verify(token, process.env.JSON_WEBTOKEN_SECRET);
-        req.user = decoded; // Attach user to request
-        next(); // Allow request
-    } catch (err) {
-        if (err.name === 'TokenExpiredError') {
-            return res.status(401).json({ error: 'TokenExpired' });
-        }
-        if (err.name === 'JsonWebTokenError') {
-            return res.status(403).json({ error: 'InvalidToken' });
-        }
-        return res.status(500).json({ error: 'Unknown token error' });
-    }
-};
-
-
-
 // [Verify/Confirm Auth] - Secure Access:
 router.post('/secure-action', verifyToken, (req, res) => {
     const user = req.user;
@@ -141,12 +147,11 @@ router.post('/secure-action', verifyToken, (req, res) => {
     }
 
     // Unknown Action:
-    return res.status(409).json({error: `Unknown action provided in request body`})
+    return res.status(422).json({error: `Unknown action provided in request body`})
 });
 
 
-
-// [Discord API] - Get Guild Info:
+// [Discord API/Info] - Get Guild Info:
 router.get('/discord/guild', async (req, res) => {
     const botToken = process.env['BOT_TOKEN'];
     const guildId = req.query.guildId;
@@ -179,4 +184,35 @@ router.get('/discord/guild', async (req, res) => {
 
 });
 
+// ----------------------------------[ Exports: ]---------------------------------- \\
+module.exports = router;
 
+
+async function testSecureAction(token) {
+    console.log(`[+] Attempting to send backend API Request...`)
+
+    try {
+        const response = await axios.post(
+            'http://localhost:3000/api/secure-action',
+            {
+                actionType: 'DELETE_EVENT',
+                data: { /* your test data here */ }
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+        console.log('Test /api/secure-action response:', response.data);
+    } catch (err) {
+        console.error('Test /api/secure-action error:', err.response?.data || err.message);
+    }
+}
+
+const testing_TOKEN =
+    '';
+// Small Delay - Test Secure Action:
+setTimeout(() => {
+    // testSecureAction(testing_TOKEN);
+}, 5_000);
