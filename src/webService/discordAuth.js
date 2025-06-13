@@ -88,13 +88,16 @@ router.get('/login/discord-redirect', async (req, res) => {
             }
         });
         const guilds = guildsResponse.data;
+        const allGuildsIds = guilds.map(g => (g.id));
 
         // Step 4. Filter guilds where user has manage or admin permissions
         const manageableGuilds = guilds.filter(guild => {
-        const permissions = BigInt(guild.permissions_new ?? guild.permissions); 
-        return (permissions & BigInt(ADMINISTRATOR)) !== 0n || (permissions & BigInt(MANAGE_GUILD)) !== 0n;
+            const permissions = BigInt(guild.permissions_new ?? guild.permissions); 
+            return (permissions & BigInt(ADMINISTRATOR)) !== 0n || (permissions & BigInt(MANAGE_GUILD)) !== 0n;
         });
-        const manageableGuildsInfo = manageableGuilds.map(g => ({
+        // Get all managable guilds data as array:
+        const manageableGuildsIds = manageableGuilds.map(g => (g.id));
+        const manageableGuildsData = manageableGuilds.map(g => ({
             id: g.id,
             name: g.name,
             icon: g.icon ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png` : null,
@@ -102,8 +105,10 @@ router.get('/login/discord-redirect', async (req, res) => {
         }));
 
         // Step 5. Create Firebase Auth Token for User:
-        const firebaseToken = await admin.auth().createCustomToken(userDiscordId)
-        console.log(`A Discord auth token has been created: ${firebaseToken}`)
+        const firebaseToken = await admin.auth().createCustomToken(userDiscordId, {
+            allGuilds: allGuildsIds,
+            manageableGuilds: manageableGuildsIds 
+        });
 
         // Step 6. Prepair Data for Sending to Frontend
         const userToSend = {
@@ -113,14 +118,14 @@ router.get('/login/discord-redirect', async (req, res) => {
             accentColor: userData?.accent_color,
             avatar: userData?.avatar ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` : null,
             banner: userData?.banner ? `https://cdn.discordapp.com/banners/${userData.id}/${userData.banner}.png` : null,
-            manageableGuilds: manageableGuildsInfo
+            manageableGuilds: manageableGuildsData
         };
 
         // Step 7. Create Secure JSON Token:
         const token = jwt.sign(userToSend, JSON_SECRET, { expiresIn: '7d' }); // expires in 7 days
 
         // Step 8. Redirect User back to Frontend w/ token:
-        res.redirect(`${global.frontend_Url}/api/login-redirect?token=${token}`);
+        res.redirect(`${global.frontend_Url}/api/login-redirect?token=${token}&firebaseToken=${firebaseToken}`);
 
     } catch (err) {
         // Error Occured - OAuth2 process:
