@@ -1,7 +1,6 @@
 // App/Imports:
 const express = require('express');
 const app = express();
-app.use(express.static('webService'));
 app.use(express.json());
 require('dotenv').config();
 

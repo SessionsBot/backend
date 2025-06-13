@@ -1,9 +1,12 @@
 // ----------------------------------[ Imports ]---------------------------------- \\
+
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const global = require('../utils/global.js')
+const {admin} = require('../utils/firebase')
+
 // Secure Variables:
 require('dotenv').config();
 const CLIENT_ID = process.env['CLIENT_ID']
@@ -33,7 +36,6 @@ function verifyToken(req, res, next) {
     }
 };
 
-
 // ----------------------------------[ App Routes: ]---------------------------------- \\
 
 // [Begin/Login Auth] - Discord Redirect:
@@ -44,12 +46,8 @@ router.get('/login/discord-redirect', async (req, res) => {
     // If error provided from Discord redirect:
     if (error || !code) {
         console.error('Error during redirect process:', error, 'Code provided:', code);
-        // Redirect to Homepage after Delay:
-        setTimeout(() => {
-            window.location.href = global.frontend_Url;
-        }, 4500);
-        // Return HTML Response:
-        return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
+        // Redirect to Homepage:
+        return res.redirect(global.frontend_Url)
     }
 
     // Attempt retrieval of Discord user credentials using code:
@@ -113,7 +111,7 @@ router.get('/login/discord-redirect', async (req, res) => {
             displayName: userData?.global_name,
             accentColor: userData?.accent_color,
             avatar: userData?.avatar ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` : null,
-            banner: userData?.banner ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.banner}.png` : null,
+            banner: userData?.banner ? `https://cdn.discordapp.com/banners/${userData.id}/${userData.banner}.png` : null,
             manageableGuilds: manageableGuildsInfo
         };
 
@@ -126,12 +124,8 @@ router.get('/login/discord-redirect', async (req, res) => {
     } catch (err) {
         // Error Occured - OAuth2 process:
         console.error('Error during OAuth2 process:', err.response?.data || err.message);
-        // Redirect to Homepage after Delay:
-        setTimeout(() => {
-            window.location.href = global.frontend_Url;
-        }, 4500);
-        // Return HTML Response:
-        return res.sendFile(__dirname + '/html/errorLinkingAccount.html');
+        // Redirect to Homepage:
+        return res.redirect(global.frontend_Url)
     }
 });
 
