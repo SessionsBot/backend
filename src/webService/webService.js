@@ -6,6 +6,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.static('webService'));
+app.use(express.json());
 
 // Security - Middleware:
 const cors = require('cors');
@@ -37,7 +38,8 @@ app.get('/', (req, res) => res.status(200).json({ response: 'Root Directory: ALI
 app.get('/status', (req, res) => res.status(200).json({ response: 'Bot is operational!', code: 200 }));
 
 // Discord Auth Requests:
-require('./discordAuth.js')(app, axios, jwt);
+const discordAuthRouter = require('./discordAuth.js');
+app.use('/api', discordAuthRouter); // or just app.use(discordAuthRouter);
 
 // Initialize Port:
 const PORT = process.env.PORT || 3000;
