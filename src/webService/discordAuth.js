@@ -186,33 +186,3 @@ router.get('/discord/guild', async (req, res) => {
 
 // ----------------------------------[ Exports: ]---------------------------------- \\
 module.exports = router;
-
-
-async function testSecureAction(token) {
-    console.log(`[+] Attempting to send backend API Request...`)
-
-    try {
-        const response = await axios.post(
-            'http://localhost:3000/api/secure-action',
-            {
-                actionType: 'DELETE_EVENT',
-                data: { /* your test data here */ }
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
-        console.log('Test /api/secure-action response:', response.data);
-    } catch (err) {
-        console.error('Test /api/secure-action error:', err.response?.data || err.message);
-    }
-}
-
-const testing_TOKEN =
-    '';
-// Small Delay - Test Secure Action:
-setTimeout(() => {
-    // testSecureAction(testing_TOKEN);
-}, 5_000);
