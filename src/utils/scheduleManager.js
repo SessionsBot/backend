@@ -89,20 +89,22 @@ async function dailyInitializeFn() {
 
             // ! DELETE LATER:
             // If 'Development' Guild:
-            const testingGuilds = [
-                // '1379160686629880028'
-            ]
-            if(testingGuilds.includes(doc.id)){
-                // Run Schedule early for Guild:
-                console.log('--------------------------------')
-                console.log('[*] Making Exception for Guild:')
-                guildPostSchedule.execute()
-                console.log(`[*] Schedule Ran! (${doc.id})`)
-                console.log('--------------------------------')
-            }else{
-                // Add Schedule to Storage List (currently no purpose):
-                currentDailySchedules.push(guildPostSchedule)
-            }
+            // const testingGuilds = [
+            //     // '1379160686629880028'
+            // ]
+            // if(testingGuilds.includes(doc.id)){
+            //     // Run Schedule early for Guild:
+            //     console.log('--------------------------------')
+            //     console.log('[*] Making Exception for Guild:')
+            //     guildPostSchedule.execute()
+            //     console.log(`[*] Schedule Ran! (${doc.id})`)
+            //     console.log('--------------------------------')
+            // }else{
+            //     // Add Schedule to Storage List (currently no purpose):
+            //     currentDailySchedules.push(guildPostSchedule)
+            // }
+
+            
         }
     });
 
