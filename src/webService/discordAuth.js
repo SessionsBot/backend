@@ -138,9 +138,22 @@ router.get('/login/discord-redirect', async (req, res) => {
 
 // [Verify/Confirm Auth] - Secure Access:
 router.post('/secure-action', verifyToken, (req, res) => {
-    const user = req.user;
-    const { actionType, data } = req.body; // 👈 extract frontend-sent info
+    const userData = req.user;
+    const username = userData?.username;
+    const userId = userData?.id
+    const displayName = userData?.displayName;
+    const { actionType, data } = req.body; // extract frontend request data
 
+    // ! Debugging: (Switch to In Depth Later...)
+    if(global.outputDebug_General){
+        console.log(`--------------[!Secure Action!]-----------------`);
+        console.log(`Username: ${username}`)
+        console.log(`Action: ${actionType}`)
+        console.log(`Request Body: ${req.body}`)
+        console.log(`------------------------------------------------`);
+    }
+
+    // Deleting Events:
     if (actionType === 'DELETE_EVENT') {
         // do some secure deletion logic
         return res.status(204).json({ message: `Deleted event for user ${user.username}` });
