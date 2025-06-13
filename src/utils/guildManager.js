@@ -262,7 +262,6 @@ const guildPanel = (guildId) => {return {
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji('👤')
                 .setLabel('My Sessions')
-                .setDisabled(true)
             )
         )
         panelContainer.addSeparatorComponents(separator) // Separator:

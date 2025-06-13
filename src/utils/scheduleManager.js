@@ -32,17 +32,26 @@ async function botInitialize() {
 // Daily Initialization Fn:
 async function dailyInitializeFn() {
 
-    // Get all guilds:
+    // Get current client guilds:
+    let currentClientGuilds = [];
+    const fetchedGuilds = await global.client.guilds.fetch();
+    fetchedGuilds.forEach(guild => {currentClientGuilds.push(guild.id)});
+
+
+    // Get all guilds in database:
     const guildsRef = db.collection('guilds')
     const guildsSnapshot = await guildsRef.get();
     
-    // For each guild:
+    // For each guild doc:
     guildsSnapshot.forEach(doc => {
        // Get Guild Data:
         const guildData = doc.data();
         const setupCompleted = guildData?.['setupCompleted'];
         const guildSchedules = guildData?.['sessionSchedules'];
         const dailySignupPostTime = guildData?.['sessionSignup']?.['dailySignupPostTime'];
+
+        // Confirm Bot is in Guild:
+        if(!currentClientGuilds.includes(doc.id)) return generalDebug(`{!} The bot is not in guild ${doc.id}, This guild will not be scheduled or excecuted!`)
 
         // Confirm Guild Setup Properly:
         if(!guildData || !setupCompleted || !guildSchedules || !dailySignupPostTime) { // NOT SETUP PROPERLY:
@@ -80,20 +89,20 @@ async function dailyInitializeFn() {
 
             // ! DELETE LATER:
             // If 'Development' Guild:
-            // const testingGuilds = [
-            //     '1379160686629880028'
-            // ]
-            // if(testingGuilds.includes(doc.id)){
-            //     // Run Schedule early for Guild:
-            //     console.log('--------------------------------')
-            //     console.log('[*] Making Exception for Guild:')
-            //     guildPostSchedule.execute()
-            //     console.log(`[*] Schedule Ran! (${doc.id})`)
-            //     console.log('--------------------------------')
-            // }else{
-            //     // Add Schedule to Storage List (currently no purpose):
-            //     currentDailySchedules.push(guildPostSchedule)
-            // }
+            const testingGuilds = [
+                // '1379160686629880028'
+            ]
+            if(testingGuilds.includes(doc.id)){
+                // Run Schedule early for Guild:
+                console.log('--------------------------------')
+                console.log('[*] Making Exception for Guild:')
+                guildPostSchedule.execute()
+                console.log(`[*] Schedule Ran! (${doc.id})`)
+                console.log('--------------------------------')
+            }else{
+                // Add Schedule to Storage List (currently no purpose):
+                currentDailySchedules.push(guildPostSchedule)
+            }
         }
     });
 

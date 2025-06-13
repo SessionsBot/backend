@@ -25,7 +25,7 @@ const responses = {
 		
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ${responseTitle}`))
 		container.addSeparatorComponents(separator);
-		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`*${responseTitle}* `))
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`*${responseString}* `))
 		container.addSeparatorComponents(separator);
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
 
