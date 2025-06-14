@@ -105,7 +105,7 @@ router.get('/login/discord-redirect', async (req, res) => {
         }));
 
         // Step 5. Create Firebase Auth Token for User:
-        const firebaseToken = await admin.auth().createCustomToken(userDiscordId, {
+        const generatedFirebaseToken = await admin.auth().createCustomToken(userDiscordId, {
             allGuilds: allGuildsIds,
             manageableGuilds: manageableGuildsIds 
         });
@@ -118,14 +118,15 @@ router.get('/login/discord-redirect', async (req, res) => {
             accentColor: userData?.accent_color,
             avatar: userData?.avatar ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` : null,
             banner: userData?.banner ? `https://cdn.discordapp.com/banners/${userData.id}/${userData.banner}.png` : null,
-            manageableGuilds: manageableGuildsData
+            manageableGuilds: manageableGuildsData,
+            firebaseToken: generatedFirebaseToken
         };
 
         // Step 7. Create Secure JSON Token:
         const token = jwt.sign(userToSend, JSON_SECRET, { expiresIn: '7d' }); // expires in 7 days
 
         // Step 8. Redirect User back to Frontend w/ token:
-        res.redirect(`${global.frontend_Url}/api/login-redirect?token=${token}&firebaseToken=${firebaseToken}`);
+        res.redirect(`${global.frontend_Url}/api/login-redirect?token=${token}`);
 
     } catch (err) {
         // Error Occured - OAuth2 process:
