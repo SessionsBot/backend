@@ -126,7 +126,7 @@ router.get('/login/discord-redirect', async (req, res) => {
         const token = jwt.sign(userToSend, JSON_SECRET, { expiresIn: '7d' }); // expires in 7 days
 
         // Step 8. Redirect User back to Frontend w/ token:
-        res.redirect(`${global.frontend_Url}/api/login-redirect?token=${token}`);
+        res.redirect(`${global.frontend_Url}/api/sign-in/discord-redirect?token=${token}`);
 
     } catch (err) {
         // Error Occured - OAuth2 process:
