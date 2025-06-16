@@ -38,6 +38,34 @@ function verifyToken(req, res, next) {
 
 // ----------------------------------[ App Routes: ]---------------------------------- \\
 
+// [Verify/Confirm Auth] - Secure Access:
+router.post('/secure-action', verifyToken, (req, res) => {
+    const userData = req?.user;
+    const username = userData?.username;
+    const userId = userData?.id
+    const displayName = userData?.displayName;
+    const { actionType, data } = req.body; // extract frontend request data
+
+    // ! Debugging: (Switch to In Depth Later...)
+    if(global.outputDebug_General){
+        console.log(`--------------[!Secure Action!]-----------------`);
+        console.log(`Username: ${username}`)
+        console.log(`Action: ${actionType}`)
+        console.log(`Request Body: ${req.body}`)
+        console.log(`------------------------------------------------`);
+    }
+
+    // Deleting Events:
+    if (actionType === 'DELETE_EVENT') {
+        // do some secure deletion logic
+        return res.status(204).json({ message: `Deleted event for user ${user.username}` });
+    }
+
+    // Unknown Action:
+    return res.status(422).json({error: `Unknown action provided in request body`})
+});
+
+
 // [Begin/Login Auth] - Discord Redirect:
 router.get('/login/discord-redirect', async (req, res) => {
     const code = req.query.code;
@@ -134,34 +162,6 @@ router.get('/login/discord-redirect', async (req, res) => {
         // Redirect to Homepage:
         return res.redirect(global.frontend_Url)
     }
-});
-
-
-// [Verify/Confirm Auth] - Secure Access:
-router.post('/secure-action', verifyToken, (req, res) => {
-    const userData = req.user;
-    const username = userData?.username;
-    const userId = userData?.id
-    const displayName = userData?.displayName;
-    const { actionType, data } = req.body; // extract frontend request data
-
-    // ! Debugging: (Switch to In Depth Later...)
-    if(global.outputDebug_General){
-        console.log(`--------------[!Secure Action!]-----------------`);
-        console.log(`Username: ${username}`)
-        console.log(`Action: ${actionType}`)
-        console.log(`Request Body: ${req.body}`)
-        console.log(`------------------------------------------------`);
-    }
-
-    // Deleting Events:
-    if (actionType === 'DELETE_EVENT') {
-        // do some secure deletion logic
-        return res.status(204).json({ message: `Deleted event for user ${user.username}` });
-    }
-
-    // Unknown Action:
-    return res.status(422).json({error: `Unknown action provided in request body`})
 });
 
 
