@@ -218,14 +218,14 @@ router.get('/discord/guild', async (req, res) => {
     
     // 4. Return Data to Frontend:
     const responseData = {
-        guildData,
+        guildGeneral: guildData,
         guildChannels,
         guildIcon: guildData.icon ? `https://cdn.discordapp.com/icons/${guildId}/${guildData.icon}.png` : null,
         guildBanner: guildData.banner ? `https://cdn.discordapp.com/banners/${guildId}/${guildData.banner}.png` : null
     }
     sendSuccess(res, responseData, 200);
 
-    
+
 });
 
 // ----------------------------------[ Exports: ]---------------------------------- \\
