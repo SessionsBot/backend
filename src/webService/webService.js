@@ -1,5 +1,6 @@
 // App/Imports:
 const express = require('express');
+const global = require('../utils/global.js')
 const app = express();
 app.use(express.json());
 require('dotenv').config();
@@ -31,6 +32,7 @@ app.use(cors({
 // Root/Status Requests:
 app.get('/', (req, res) => res.status(200).json({ status: 'ONLINE', message: 'Our Discord/Web-App Backend is currently operational!' }));
 app.get('/status', (req, res) => res.status(200).json({ status: 'ONLINE', message: 'Our Discord/Web-App Backend is currently operational!' }));
+app.get('/version', (req, res) => res.status(200).json({ version: global.botVersion}));
 
 // Discord Auth Requests:
 const discordAuthRouter = require('./discordAuth.js');

@@ -15,6 +15,28 @@ const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
 const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app/api/login/discord-redirect'; // Must match registered Discord redirect
 
 
+// ----------------------------------[ Response Helpers: ]---------------------------------- \\
+
+function sendSuccess(res, data = {}, status = 200){
+    return res.status(status).json({
+        success: true,
+        data,
+        error: null
+    });
+}
+
+function sendError(res, message, status = 400) {
+    return res.status(status).json({
+        success: false,
+        data: null,
+        error: { 
+            code: status,
+            message
+         }
+    });
+}
+
+
 // ----------------------------------[ Verifying Tokens: ]---------------------------------- \\
 
 function verifyToken(req, res, next) {
@@ -27,12 +49,12 @@ function verifyToken(req, res, next) {
         next(); // Allow request
     } catch (err) {
         if (err.name === 'TokenExpiredError') {
-            return res.status(401).json({ error: 'TokenExpired' });
+            return sendError(res, 'Token is Expired!', 401)
         }
         if (err.name === 'JsonWebTokenError') {
-            return res.status(422).json({ error: 'InvalidToken' });
+            return sendError(res, 'Token is INVALID?', 422)
         }
-        return res.status(500).json({ error: 'Unknown token error' });
+        return sendError(res, 'Unknown token error?', 500)
     }
 };
 
@@ -45,24 +67,25 @@ router.post('/secure-action', verifyToken, (req, res) => {
     const userId = userData?.id
     const displayName = userData?.displayName;
     const { actionType, data } = req.body; // extract frontend request data
+    const reqBodyString = JSON.stringify(req.body, '', 1) || 'No stringified body?'
 
     // ! Debugging: (Switch to In Depth Later...)
     if(global.outputDebug_General){
         console.log(`--------------[!Secure Action!]-----------------`);
         console.log(`Username: ${username}`)
         console.log(`Action: ${actionType}`)
-        console.log(`Request Body: ${req.body}`)
+        console.log(`Request Body: ${reqBodyString}`)
         console.log(`------------------------------------------------`);
     }
 
-    // Deleting Events:
-    if (actionType === 'DELETE_EVENT') {
-        // do some secure deletion logic
-        return res.status(204).json({ message: `Deleted event for user ${user.username}` });
+    // Perform requested action:
+    if (actionType === 'DELETE_EVENT') { // Deleting Sessions:
+        return sendSuccess(res, {message: `Deleted event for user ${username}`}, 202)
+    } 
+    else { // Unknown Action:
+        return sendSuccess(res, {message: `No action completed, request allowed!`}, 200)
     }
 
-    // Unknown Action:
-    return res.status(422).json({error: `Unknown action provided in request body`})
 });
 
 
@@ -146,7 +169,6 @@ router.get('/login/discord-redirect', async (req, res) => {
             accentColor: userData?.accent_color,
             avatar: userData?.avatar ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` : null,
             banner: userData?.banner ? `https://cdn.discordapp.com/banners/${userData.id}/${userData.banner}.png` : null,
-            manageableGuilds: manageableGuildsData,
             firebaseToken: generatedFirebaseToken
         };
 
@@ -160,7 +182,7 @@ router.get('/login/discord-redirect', async (req, res) => {
         // Error Occured - OAuth2 process:
         console.error('Error during OAuth2 process:', err.response?.data || err.message);
         // Redirect to Homepage:
-        return res.redirect(global.frontend_Url)
+        return res.redirect(`${global.frontend_Url}/api/sign-in/discord-redirect?failed=true`)
     }
 });
 
@@ -169,33 +191,41 @@ router.get('/login/discord-redirect', async (req, res) => {
 router.get('/discord/guild', async (req, res) => {
     const botToken = process.env['BOT_TOKEN'];
     const guildId = req.query.guildId;
-    // Confirm Guild Id:
-    if (!guildId) {
-        return res.status(400).json({ error: 'Guild ID is required' });
-    }
+
+    // 1. Confirm Guild Id:
+    if (!guildId) return sendError(res, 'Missing guildId to retrieve Guild data!', 400)
+
     
-    // Make Discord API Request:
+    // 2. Get General Guild Data:
     const discordReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, {
         headers: {
             Authorization: `Bot ${botToken}`,
         },
     });
-
-    // Check for Errors:
-    if (!discordReq.ok) {
-        console.error('Failed to fetch guild data:', guildData);
-        return res.status(discordReq.status).json({ error: guildData.message || 'Failed to fetch guild data' });
-    }
-
+    if (!discordReq.ok) sendError(res, 'Failed to fetch guild data from Discord!', discordReq.status)
     const guildData = await discordReq.json();
 
-    // Return Guild Data:
-    res.json({ 
-        data: guildData, // <-- Full JSON response from Discord API
+
+    // 3. Get Guild Channels Data:
+    const channelsReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
+        headers: {
+            Authorization: `Bot ${botToken}`,
+        },
+    });
+    if (!channelsReq.ok) sendError(res, 'Failed to fetch guild data from Discord!', channelsReq.status)
+    const guildChannels = await channelsReq.json();
+
+    
+    // 4. Return Data to Frontend:
+    const responseData = {
+        guildData,
+        guildChannels,
         guildIcon: guildData.icon ? `https://cdn.discordapp.com/icons/${guildId}/${guildData.icon}.png` : null,
         guildBanner: guildData.banner ? `https://cdn.discordapp.com/banners/${guildId}/${guildData.banner}.png` : null
-    });
+    }
+    sendSuccess(res, responseData, 200);
 
+    
 });
 
 // ----------------------------------[ Exports: ]---------------------------------- \\
