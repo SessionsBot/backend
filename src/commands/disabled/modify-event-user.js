@@ -9,7 +9,7 @@ const {
     PermissionFlagsBits,
 } = require('discord.js'); // Import Discord.js
 
-const sessionManager = require('../../utils/sessions/sessionManager'); // Import Session Manager
+const sessionManager = require('../../utils/guildManager'); // Import Session Manager
 const global = require('../../global'); // Import Global Variables
 
 // Register Command:
