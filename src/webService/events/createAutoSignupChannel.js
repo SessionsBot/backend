@@ -2,9 +2,6 @@ const { ChannelType, PermissionFlagsBits } = require('discord.js');
 const global = require('../../utils/global.js')
 const botToken = process.env['BOT_TOKEN'];
 
-
-const global = require('../../utils/global.js'); // Assuming your client is stored here
-
 const createAutoSignupChannel = async (guildId) => {
     try {
         const guild = await global.client.guilds.fetch(String(guildId));
@@ -33,7 +30,26 @@ const createAutoSignupChannel = async (guildId) => {
             permissionOverwrites : [
                 {
                     id: guild.roles.everyone,
-                    deny: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages]
+                    deny: [
+                        PermissionFlagsBits.ViewChannel, 
+                        PermissionFlagsBits.SendMessages,
+                        PermissionFlagsBits.SendMessagesInThreads,
+                        PermissionFlagsBits.CreatePrivateThreads,
+                        PermissionFlagsBits.EmbedLinks,
+                        PermissionFlagsBits.AttachFiles,
+                        PermissionFlagsBits.AddReactions,
+                        PermissionFlagsBits.UseExternalEmojis,
+                        PermissionFlagsBits.UseExternalStickers,
+                        PermissionFlagsBits.MentionEveryone,
+                        PermissionFlagsBits.ManageMessages,
+                        PermissionFlagsBits.ManageThreads,
+                        PermissionFlagsBits.SendTTSMessages,
+                        PermissionFlagsBits.SendVoiceMessages,
+                        PermissionFlagsBits.SendPolls,
+                        PermissionFlagsBits.UseApplicationCommands,
+                        PermissionFlagsBits.UseEmbeddedActivities,
+                        PermissionFlagsBits.UseExternalApps,
+                    ]
                 }
             ]
         });
