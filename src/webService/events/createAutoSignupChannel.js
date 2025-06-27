@@ -15,12 +15,20 @@ export const createAutoSignupChannel = async (guildId) => { try {
         },
         body: JSON.stringify({
             name: 'My Category Name',
-            type: 4 // 4 = GUILD_CATEGORY
+            type: 4
         })
     });
     
     // Check for HTTP Error:
-    if(!categoryRes.ok) return{success: false, data: {message: 'Discord Request Error', rawReq: categoryRes}}
+    if(!categoryRes.ok){
+        console.log('DISCORD CREATION ERROR!')
+
+        console.log('statusCode',categoryRes.status)
+        console.log('statusText',categoryRes.statusText)
+        console.log('body', JSON.stringify(categoryRes?.body))
+
+        return{success: false, data: {message: 'Discord Request Error', rawReq: categoryRes.json()}}
+    } 
 
     const categoryData = await categoryRes.json();
     const categoryId = categoryData.id;
