@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const global = require('../utils/global.js')
 const {admin} = require('../utils/firebase')
 
+const { createAutoSignupChannel } = require('./events/createAutoSignupChannel.js')
+
 // Secure Variables:
 require('dotenv').config();
 const CLIENT_ID = process.env['CLIENT_ID']
@@ -61,7 +63,7 @@ function verifyToken(req, res, next) {
 // ----------------------------------[ App Routes: ]---------------------------------- \\
 
 // [Verify/Confirm Auth] - Secure Access:
-router.post('/secure-action', verifyToken, (req, res) => {
+router.post('/secure-action', verifyToken, async (req, res) => {
     const userData = req?.user;
     const username = userData?.username;
     const userId = userData?.id
@@ -82,8 +84,24 @@ router.post('/secure-action', verifyToken, (req, res) => {
     if (actionType === 'DELETE_EVENT') { // Deleting Sessions:
         return sendSuccess(res, {message: `Deleted event for user ${username}`}, 202)
     } 
+    else if (actionType === 'CREATE_AUTO-SIGNUP-CHANNEL') { // Deleting Sessions:
+        // Get GuildId:
+        const guildId = data?.guildId
+        if(!guildId) return sendError(res, {message: 'GuildId not provided for channel creation!'}, 400)
+
+        // Attempt Creation:
+        const creationResult = await createAutoSignupChannel()
+        if(!creationResult?.success){
+            // Error:
+            return sendError(res, {message: `Couldn't create default signup channels!`}, 422)
+        }else{
+            // Success:
+            return sendSuccess(res, {message: `Request recieved to create signup channel!`}, 202)
+        }
+        
+    } 
     else { // Unknown Action:
-        return sendSuccess(res, {message: `No action completed, request allowed!`}, 200)
+        return sendError(res, {message: `Unknow action type, request allowed!`}, 422)
     }
 
 });
