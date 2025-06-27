@@ -14,7 +14,11 @@ const createAutoSignupChannel = async (guildId) => {
             permissionOverwrites : [
                 {
                     id: guild.roles.everyone,
-                    deny: PermissionFlagsBits.ViewChannel
+                    deny: [
+                        PermissionFlagsBits.ViewChannel,
+                        PermissionFlagsBits.ManageChannels,
+                        PermissionFlagsBits.ManageWebhooks,
+                    ]
                 }
             ]
         });
@@ -24,11 +28,14 @@ const createAutoSignupChannel = async (guildId) => {
             name: 'session-signup',
             type: ChannelType.GuildAnnouncement,
             reason: `Used for 'Daily Session Signup' postings!`,
+            parent: sessionsCategory,
             permissionOverwrites : [
                 {
                     id: guild.roles.everyone,
                     deny: [
                         PermissionFlagsBits.ViewChannel, 
+                        PermissionFlagsBits.ManageWebhooks,
+                        PermissionFlagsBits.CreateInstantInvite,
                         PermissionFlagsBits.SendMessages,
                         PermissionFlagsBits.SendMessagesInThreads,
                         PermissionFlagsBits.CreatePrivateThreads,
