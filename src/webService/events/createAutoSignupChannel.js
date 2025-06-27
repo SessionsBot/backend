@@ -1,47 +1,66 @@
+const { ChannelType, PermissionFlagsBits } = require('discord.js');
+const global = require('../../utils/global.js')
 const botToken = process.env['BOT_TOKEN'];
 
 
-export const createAutoSignupChannel = async (guildId) => { try {
-        
-    // ! Debug:
-    console.log('Attempting Channel Creation....')
+const global = require('../../utils/global.js'); // Assuming your client is stored here
 
-    // Create default 'Sessions' Category:
-    const categoryRes = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bot ${botToken}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: 'My Category Name',
-            type: 4
-        })
-    });
-    
-    // Check for HTTP Error:
-    if(!categoryRes.ok){
-        console.log('DISCORD CREATION ERROR!')
+const createAutoSignupChannel = async (guildId) => {
+    try {
+        const guild = await global.client.guilds.fetch(String(guildId));
+        if (!guild) throw new Error('Guild not found / not joined');
 
-        console.log('statusCode',categoryRes.status)
-        console.log('statusText',categoryRes.statusText)
-        console.log('body', JSON.stringify(categoryRes?.body))
+        // Create 'Sessions' category:
+        const sessionsCategory = await guild.channels.create({
+            name: 'Sessions',
+            type: ChannelType.GuildCategory,
+            topic: 'This is the topic!',
+            reason: 'This is the reason!',
+            permissionOverwrites : [
+                {
+                    id: guild.roles.everyone,
+                    deny: PermissionFlagsBits.ViewChannel
+                }
+            ]
+        });
 
-        return{success: false, data: {message: 'Discord Request Error', rawReq: categoryRes.json()}}
-    } 
+        // Create 'Session Signup' channel:
+        const signupChannel = await guild.channels.create({
+            name: '📋 Session Signup',
+            type: ChannelType.GuildAnnouncement,
+            topic: 'This is the topic!',
+            reason: 'This is the reason!',
+            permissionOverwrites : [
+                {
+                    id: guild.roles.everyone,
+                    deny: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages]
+                }
+            ]
+        });
 
-    const categoryData = await categoryRes.json();
-    const categoryId = categoryData.id;
+        // Return Success:
+        const result = {
+            success: true,
+            data: { 
+                sessionsCategory: { 
+                    categoryId: sessionsCategory.id, 
+                    sessionsCategory 
+                },
+                signupChannel: { 
+                    channelId: signupChannel.id, 
+                    signupChannel
+                } 
+            } 
+        };
 
-    // ! DEBUG:
-    const result = {success: true, data: {categoryData}}
-    console.log('{Creation Result:}', JSON.stringify(result))
+        return result;
 
-    return result
+    } catch (e) {
+        // Return Error:
+        const result = { success: false, data: `{!} Couldn't create default signup channels`, error: e.message };
+        console.log('{!}', result);
+        return result;
+    }
+};
 
-} catch (e) { 
-    // Error Occured:
-    const result = {success: false, data: `{!} Couldn't create default signup channels`}
-    console.log('{!}', JSON.stringify(result))
-    return result
-}}
+module.exports = { createAutoSignupChannel };

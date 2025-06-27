@@ -93,10 +93,10 @@ router.post('/secure-action', verifyToken, async (req, res) => {
         const creationResult = await createAutoSignupChannel()
         if(!creationResult?.success){
             // Error:
-            return sendError(res, {message: `Couldn't create default signup channels!`, result: creationResult}, 422)
+            return sendError(res, {creationResult}, 422)
         }else{
             // Success:
-            return sendSuccess(res, {message: `Request recieved to create signup channel!`, result: creationResult}, 202)
+            return sendSuccess(res, {creationResult}, 202)
         }
         
     } 
