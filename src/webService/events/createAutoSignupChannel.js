@@ -4,7 +4,7 @@ const botToken = process.env['BOT_TOKEN'];
 
 const createAutoSignupChannel = async (guildId) => {
     try {
-        const guild = await global.client.guilds.fetch(String(guildId));
+        const guild = await global.client.guilds.fetch(guildId);
         if (!guild) throw new Error('Guild not found / not joined');
 
         // Create 'Sessions' category:

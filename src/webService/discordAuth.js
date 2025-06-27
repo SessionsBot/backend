@@ -86,11 +86,11 @@ router.post('/secure-action', verifyToken, async (req, res) => {
     } 
     else if (actionType === 'CREATE_AUTO-SIGNUP-CHANNEL') { // Deleting Sessions:
         // Get GuildId:
-        const guildId = data?.guildId
+        const guildId = String(data?.guildId)
         if(!guildId) return sendError(res, {message: 'GuildId not provided for channel creation!'}, 400)
 
         // Attempt Creation:
-        const creationResult = await createAutoSignupChannel()
+        const creationResult = await createAutoSignupChannel(guildId)
         if(!creationResult?.success){
             // Error:
             return sendError(res, {creationResult}, 422)

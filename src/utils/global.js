@@ -1,5 +1,5 @@
 module.exports = {
-    botVersion: '1.1.3c',
+    botVersion: '1.1.3d',
     frontend_Url: 'https://sessionsbot.fyi',
     outputDebug_General: true,
     outputDebug_InDepth: false,
