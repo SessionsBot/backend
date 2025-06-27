@@ -12,7 +12,7 @@ const createAutoSignupChannel = async (guildId) => {
 
         // Create 'Sessions' category:
         const sessionsCategory = await guild.channels.create({
-            name: 'Sessions',
+            name: '📋 - Sessions',
             type: ChannelType.GuildCategory,
             topic: 'This is the topic!',
             reason: 'This is the reason!',
@@ -26,7 +26,7 @@ const createAutoSignupChannel = async (guildId) => {
 
         // Create 'Session Signup' channel:
         const signupChannel = await guild.channels.create({
-            name: '📋 Session Signup',
+            name: 'session-signup',
             type: ChannelType.GuildAnnouncement,
             topic: 'This is the topic!',
             reason: 'This is the reason!',
