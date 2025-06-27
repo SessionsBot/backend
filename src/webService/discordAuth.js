@@ -64,14 +64,15 @@ function verifyToken(req, res, next) {
 
 // [Verify/Confirm Auth] - Secure Access:
 router.post('/secure-action', verifyToken, async (req, res) => {
+    
+    // Variables/Request Data:
     const userData = req?.user;
-    const username = userData?.username;
-    const userId = userData?.id
-    const displayName = userData?.displayName;
-    const { actionType, data } = req.body; // extract frontend request data
-    const reqBodyString = JSON.stringify(req.body, '', 1) || 'No stringified body?'
+    const { username, userId, displayName } = userData || {} // extracted: token verification/decode
+    const { actionType, data } = req.body; // extracted: frontend request
 
+    
     // ! Debugging: (Switch to In Depth Later...)
+    const reqBodyString = JSON.stringify(req.body, '', 1) || 'No stringified body?'
     if(global.outputDebug_General){
         console.log(`--------------[!Secure Action!]-----------------`);
         console.log(`Username: ${username}`)
@@ -80,7 +81,7 @@ router.post('/secure-action', verifyToken, async (req, res) => {
         console.log(`------------------------------------------------`);
     }
 
-    // Perform requested action:
+    // Get/perform requested action:
     if (actionType === 'DELETE_EVENT') { // Deleting Sessions:
         return sendSuccess(res, {message: `Deleted event for user ${username}`}, 202)
     } 

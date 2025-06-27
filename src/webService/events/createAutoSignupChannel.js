@@ -11,8 +11,6 @@ const createAutoSignupChannel = async (guildId) => {
         const sessionsCategory = await guild.channels.create({
             name: '📋 - Sessions',
             type: ChannelType.GuildCategory,
-            topic: 'This is the topic!',
-            reason: 'This is the reason!',
             permissionOverwrites : [
                 {
                     id: guild.roles.everyone,
@@ -25,8 +23,7 @@ const createAutoSignupChannel = async (guildId) => {
         const signupChannel = await guild.channels.create({
             name: 'session-signup',
             type: ChannelType.GuildAnnouncement,
-            topic: 'This is the topic!',
-            reason: 'This is the reason!',
+            reason: `Used for 'Daily Session Signup' postings!`,
             permissionOverwrites : [
                 {
                     id: guild.roles.everyone,
