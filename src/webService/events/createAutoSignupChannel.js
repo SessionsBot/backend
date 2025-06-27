@@ -1,8 +1,8 @@
-const { ChannelType, PermissionFlagsBits } = require('discord.js');
+const { ChannelType, PermissionFlagsBits, ContainerBuilder, TextDisplayBuilder, MessageFlags } = require('discord.js');
 const global = require('../../utils/global.js')
 const botToken = process.env['BOT_TOKEN'];
 
-const createAutoSignupChannel = async (guildId) => {
+const createAutoSignupChannel = async (guildId, adminId) => {
     try {
         const guild = await global.client.guilds.fetch(guildId);
         if (!guild) throw new Error('Guild not found / not joined');
@@ -57,6 +57,16 @@ const createAutoSignupChannel = async (guildId) => {
                 }
             ]
         });
+
+        // Send 'Creation Success' Message:
+        await signupChannel.send({
+            components: [
+                new ContainerBuilder()
+                .addTextDisplayComponents(new TextDisplayBuilder().setContent('## Welcome to your new Session Signup Channel!'))
+                .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# <@${adminId}>`))
+            ],
+            flags: MessageFlags.IsComponentsV2
+        })
 
         // Return Success:
         const result = {
