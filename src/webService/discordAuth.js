@@ -222,7 +222,7 @@ router.get('/discord/guild', async (req, res) => {
             Authorization: `Bot ${botToken}`,
         },
     });
-    if (!discordReq.ok) sendError(res, 'Failed to fetch guild data from Discord!', discordReq.status)
+    if (!discordReq.ok) return sendError(res, 'Failed to fetch guild data from Discord!', discordReq.status)
     const guildData = await discordReq.json();
 
 
@@ -232,18 +232,25 @@ router.get('/discord/guild', async (req, res) => {
             Authorization: `Bot ${botToken}`,
         },
     });
-    if (!channelsReq.ok) sendError(res, 'Failed to fetch guild data from Discord!', channelsReq.status)
+    if (!channelsReq.ok) return sendError(res, 'Failed to fetch guild data from Discord!', channelsReq.status)
     const guildChannels = await channelsReq.json();
 
+
+    // 4. Check if Bot is in Guild:
+    const guildsCollection = await global.client.guilds.fetch(); // Collection of [guildId, guild]
+	const clientGuildIds = Array.from(guildsCollection.keys()); // Array of guild IDs
+	const sessionsBotInGuild = clientGuildIds.includes(String(guildId));
+
     
-    // 4. Return Data to Frontend:
+    // 5. Return Data to Frontend:
     const responseData = {
         guildGeneral: guildData,
         guildChannels,
         guildIcon: guildData.icon ? `https://cdn.discordapp.com/icons/${guildId}/${guildData.icon}.png` : null,
-        guildBanner: guildData.banner ? `https://cdn.discordapp.com/banners/${guildId}/${guildData.banner}.png` : null
+        guildBanner: guildData.banner ? `https://cdn.discordapp.com/banners/${guildId}/${guildData.banner}.png` : null,
+        sessionsBotInGuild
     }
-    sendSuccess(res, responseData, 200);
+    return sendSuccess(res, responseData, 200);
 
 
 });
