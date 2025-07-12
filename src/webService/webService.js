@@ -30,7 +30,7 @@ app.use(cors({
 
 
 // Root/Status Requests:
-app.get('/', (req, res) => res.status(200).json({ status: 'ONLINE', message: 'Our Discord/Web-App Backend is currently operational!' }));
+app.get('/', (req, res) => res.status(200).json({ status: 'ONLINE', version: global.botVersion, message: 'Our Discord/Web-App Backend is currently operational!', }));
 app.get('/status', (req, res) => res.status(200).json({ status: 'ONLINE', message: 'Our Discord/Web-App Backend is currently operational!' }));
 app.get('/version', (req, res) => res.status(200).json({ version: global.botVersion}));
 

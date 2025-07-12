@@ -77,6 +77,7 @@ router.post('/secure-action', verifyToken, async (req, res) => {
     if(global.outputDebug_General){
         console.log(`--------------[!Secure Action!]-----------------`);
         console.log(`Username: ${username}`)
+        console.log(`UID: ${uid}`)
         console.log(`Action: ${actionType}`)
         console.log(`Request Body: ${reqBodyString}`)
         console.log(`------------------------------------------------`);
@@ -88,7 +89,7 @@ router.post('/secure-action', verifyToken, async (req, res) => {
         if(!guildId) return sendError(res, {message: 'GuildId not provided for channel creation!'}, 400)
 
         // Attempt Creation:
-        const creationResult = await createAutoSignupChannel(guildId, uid)
+        const creationResult = await createAutoSignupChannel(guildId, String(uid))
         if(!creationResult?.success){
             // Error:
             return sendError(res, {creationResult}, 422)
