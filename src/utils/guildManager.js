@@ -173,8 +173,9 @@ const guildConfiguration = (guildId) => {return {
 
         } catch (e) {
             // Error:
-            console.log(`{!} Failed to save new guild configuration:`, e)
-            return {success: false, data: 'Failed to save new guild configuration to database!'}
+            console.log(`{!} Failed to save new guild configuration:`)
+            console.log(e)
+            return {success: false, data: 'Failed to save new guild configuration to database!', rawError: e}
         }
     },
     

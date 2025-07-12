@@ -121,9 +121,11 @@ router.post('/secure-action', verifyToken, async (req, res) => {
         // Debug Results:
         if(configureResult.success){
             console.log('[✔︎] Guild Configured!', String(guildId))
+            sendSuccess(res, {message: 'Guild has been successfully configured!', guildId, adminId: id}, 200)
         } else {
             console.log('[⚠︎] Guild Configuration Failed!', String(guildId))
             console.log(configureResult?.data)
+            sendError(res, {message: 'Guild configuration save attempt failed!', rawError: configureResult?.rawError}, 500)
         }
         
     } 
