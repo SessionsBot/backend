@@ -101,7 +101,7 @@ router.post('/secure-action', verifyToken, async (req, res) => {
         }
         
     }
-    else if (actionType === 'GUILD-SETUP') { // Configure/Finalize New Guilds from Web-App:
+    else if (actionType === 'SETUP-GUILD') { // Configure/Finalize New Guilds from Web-App:
 
         if(!guildId) return sendError(res, {message: 'Guild id not provided for configuration save!'}, 400)
 
@@ -132,6 +132,7 @@ router.post('/secure-action', verifyToken, async (req, res) => {
         
     } 
     else { // Unknown Action:
+        console.log('[WEB]: Unknown secure action passed, request allowed!')
         return sendError(res, {message: `Unknow action type, request allowed!`, requestedAction: actionType}, 422)
     }
 
