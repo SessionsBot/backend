@@ -143,17 +143,7 @@ const guildConfiguration = (guildId) => {return {
     // !!!
 
     // -- Top Level Confirgure Function:
-    configureGuild : async (
-        configuration = {
-            accentColor: '0x9b42f5', 
-            timeZone: 'America/Chicago',
-            adminRoleIds: [], 
-            panelChannelId: String(),
-            dailySignupPostTime: {hours:5, minutes: 30},
-            signupMentionIds: [],
-            allGuildSchedules: Array(), // <-- array of schedule objs
-        }
-    ) => {
+    configureGuild : async (configuration) => {
         // Confirm Data:
         if(!configuration.panelChannelId || !configuration.allGuildSchedules) return {success: false, data: 'Missing required data for guild configuration!', rawError: {invalid_Config: configuration}}
         // Update Guild Doc:

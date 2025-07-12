@@ -107,18 +107,10 @@ router.post('/secure-action', verifyToken, async (req, res) => {
 
         // Get configuration setup:
         const configurationSetup = data?.configuration
-        if(!guildId) return sendError(res, {message: 'Configuration setup data not provided for configuration save!'}, 400)
+        if(!configurationSetup) return sendError(res, {message: 'Configuration setup data not provided for configuration save!'}, 400)
 
         // Attempt Save:
-        const configureResult = await guildManager.guildConfiguration(guildId).configureGuild({
-            accentColor: configurationSetup?.accentColor,
-            timeZone: configurationSetup?.timeZone,
-            adminRoleIds: configurationSetup?.adminIds,
-            panelChannelId: configurationSetup?.panelChannel,
-            dailySignupPostTime: configurationSetup?.postTime , // {hours: 0, minutes: 0},
-            signupMentionIds: configurationSetup?.mentionRoles,
-            allGuildSchedules: configurationSetup?.sessionSchedules
-        })
+        const configureResult = await guildManager.guildConfiguration(guildId).configureGuild(configurationSetup)
 
         // Debug Results:
         if(configureResult.success){
