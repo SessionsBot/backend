@@ -68,7 +68,7 @@ router.post('/secure-action', verifyToken, async (req, res) => {
     
     // Variables/Request Data:
     const userData = req?.user
-    const { username, uid, displayName } = userData || {} // extracted: token verification/decode
+    const { username, uid, Pinia, Firebase, id, displayName } = userData || {} // extracted: token verification/decode
     const { actionType, data, guildId } = req.body; // extracted: frontend request
 
     
@@ -77,7 +77,10 @@ router.post('/secure-action', verifyToken, async (req, res) => {
     if(global.outputDebug_General){
         console.log(`--------------[!Secure Action!]-----------------`);
         console.log(`Username: ${username}`)
+        console.log(`Id: ${id}`)
         console.log(`UID: ${uid}`)
+        console.log(`Pinia: ${Pinia}`)
+        console.log(`Firebase: ${Firebase}`)
         console.log(`Action: ${actionType}`)
         console.log(`Request Body: ${reqBodyString}`)
         console.log(`------------------------------------------------`);
