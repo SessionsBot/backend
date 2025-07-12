@@ -68,7 +68,7 @@ router.post('/secure-action', verifyToken, async (req, res) => {
     
     // Variables/Request Data:
     const userData = req?.user
-    const { username, uid, Pinia, Firebase, id, displayName } = userData || {} // extracted: token verification/decode
+    const { username, id, displayName } = userData || {} // extracted: token verification/decode
     const { actionType, data, guildId } = req.body; // extracted: frontend request
 
     
@@ -78,9 +78,6 @@ router.post('/secure-action', verifyToken, async (req, res) => {
         console.log(`--------------[!Secure Action!]-----------------`);
         console.log(`Username: ${username}`)
         console.log(`Id: ${id}`)
-        console.log(`UID: ${uid}`)
-        console.log(`Pinia: ${Pinia}`)
-        console.log(`Firebase: ${Firebase}`)
         console.log(`Action: ${actionType}`)
         console.log(`Request Body: ${reqBodyString}`)
         console.log(`------------------------------------------------`);
@@ -92,7 +89,7 @@ router.post('/secure-action', verifyToken, async (req, res) => {
         if(!guildId) return sendError(res, {message: 'GuildId not provided for channel creation!'}, 400)
 
         // Attempt Creation:
-        const creationResult = await createAutoSignupChannel(guildId, String(uid))
+        const creationResult = await createAutoSignupChannel(guildId, String(id))
         if(!creationResult?.success){
             // Error:
             return sendError(res, {creationResult}, 422)
