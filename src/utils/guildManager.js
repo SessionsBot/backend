@@ -155,7 +155,7 @@ const guildConfiguration = (guildId) => {return {
         }
     ) => {
         // Confirm Data:
-        if(!configuration.panelChannelId || !configuration.allGuildSchedules) return {success: false, data: 'Missing required data for guild configuration!'}
+        if(!configuration.panelChannelId || !configuration.allGuildSchedules) return {success: false, data: 'Missing required data for guild configuration!', rawError: {invalid_Config: configuration}}
         // Update Guild Doc:
         try {
             await db.collection('guilds').doc(String(guildId)).update({
