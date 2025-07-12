@@ -5,6 +5,7 @@ const router = express.Router();
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const global = require('../utils/global.js')
+const guildManager = require('../utils/guildManager.js')
 const {admin} = require('../utils/firebase')
 
 const { createAutoSignupChannel } = require('./events/createAutoSignupChannel.js')
@@ -51,12 +52,12 @@ function verifyToken(req, res, next) {
         next(); // Allow request
     } catch (err) {
         if (err.name === 'TokenExpiredError') {
-            return sendError(res, 'Token is Expired!', 401)
+            return sendError(res, 'Token Expired!', 401)
         }
         if (err.name === 'JsonWebTokenError') {
-            return sendError(res, 'Token is INVALID?', 422)
+            return sendError(res, 'Token INVALID!', 422)
         }
-        return sendError(res, 'Unknown token error?', 500)
+        return sendError(res, 'UNKNOWN - Token Error!', 500)
     }
 };
 
@@ -68,7 +69,7 @@ router.post('/secure-action', verifyToken, async (req, res) => {
     // Variables/Request Data:
     const userData = req?.user;
     const { username, userId, displayName } = userData || {} // extracted: token verification/decode
-    const { actionType, data } = req.body; // extracted: frontend request
+    const { actionType, data, guildId } = req.body; // extracted: frontend request
 
     
     // ! Debugging: (Switch to In Depth Later...)
@@ -82,23 +83,46 @@ router.post('/secure-action', verifyToken, async (req, res) => {
     }
 
     // Get/perform requested action:
-    if (actionType === 'DELETE_EVENT') { // Deleting Sessions:
-        return sendSuccess(res, {message: `Deleted event for user ${username}`}, 202)
-    } 
-    else if (actionType === 'CREATE_AUTO-SIGNUP-CHANNEL') { // Deleting Sessions:
-        // Get GuildId:
-        const guildId = String(data?.guildId)
-        const adminId = String(data?.adminId)
+    if (actionType === 'CREATE_AUTO-SIGNUP-CHANNEL') { // Deleting Sessions:
+        // Confirm Guild
         if(!guildId) return sendError(res, {message: 'GuildId not provided for channel creation!'}, 400)
 
         // Attempt Creation:
-        const creationResult = await createAutoSignupChannel(guildId, adminId)
+        const creationResult = await createAutoSignupChannel(guildId, userId)
         if(!creationResult?.success){
             // Error:
             return sendError(res, {creationResult}, 422)
         }else{
             // Success:
             return sendSuccess(res, {creationResult}, 202)
+        }
+        
+    }
+    else if (actionType === 'GUILD-SETUP') { // Configure/Finalize New Guilds from Web-App:
+
+        if(!guildId) return sendError(res, {message: 'Guild id not provided for configuration save!'}, 400)
+
+        // Get configuration setup:
+        const configurationSetup = data?.configuration
+        if(!guildId) return sendError(res, {message: 'Configuration setup data not provided for configuration save!'}, 400)
+
+        // Attempt Save:
+        const configureResult = await guildManager.guildConfiguration(guildId).configureGuild({
+            accentColor: configurationSetup?.accentColor,
+            timeZone: configurationSetup?.timeZone,
+            adminRoleIds: configurationSetup?.adminIds,
+            panelChannelId: configurationSetup?.panelChannel,
+            dailySignupPostTime: configurationSetup?.postTime , // {hours: 0, minutes: 0},
+            signupMentionIds: configurationSetup?.mentionRoles,
+            allGuildSchedules: configurationSetup?.sessionSchedules
+        })
+
+        // Debug Results:
+        if(configureResult.success){
+            console.log('[✔︎] Guild Configured!', String(guildId))
+        } else {
+            console.log('[⚠︎] Guild Configuration Failed!', String(guildId))
+            console.log(configureResult?.data)
         }
         
     } 

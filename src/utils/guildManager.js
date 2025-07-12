@@ -148,10 +148,10 @@ const guildConfiguration = (guildId) => {return {
             accentColor: '0x9b42f5', 
             timeZone: 'America/Chicago',
             adminRoleIds: [], 
+            panelChannelId: String(),
             dailySignupPostTime: {hours:5, minutes: 30},
             signupMentionIds: [],
             allGuildSchedules: Array(), // <-- array of schedule objs
-            panelChannelId: Number()
         }
     ) => {
         // Confirm Data:
