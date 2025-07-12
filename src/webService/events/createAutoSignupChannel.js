@@ -1,6 +1,5 @@
-const { ChannelType, PermissionFlagsBits, ContainerBuilder, TextDisplayBuilder, MessageFlags } = require('discord.js');
+const { ChannelType, PermissionFlagsBits, ContainerBuilder, TextDisplayBuilder, MessageFlags, SeparatorBuilder } = require('discord.js');
 const global = require('../../utils/global.js')
-const botToken = process.env['BOT_TOKEN'];
 
 const createAutoSignupChannel = async (guildId, adminId) => {
     try {
@@ -26,8 +25,7 @@ const createAutoSignupChannel = async (guildId, adminId) => {
         // Create 'Session Signup' channel:
         const signupChannel = await guild.channels.create({
             name: 'session-signup',
-            type: ChannelType.GuildAnnouncement,
-            reason: `Used for 'Daily Session Signup' postings!`,
+            type: ChannelType.GuildText,
             parent: sessionsCategory,
             permissionOverwrites : [
                 {
@@ -63,7 +61,10 @@ const createAutoSignupChannel = async (guildId, adminId) => {
             components: [
                 new ContainerBuilder()
                 .addTextDisplayComponents(new TextDisplayBuilder().setContent('## Welcome to your new Session Signup Channel!'))
+                .addSeparatorComponents(new SeparatorBuilder())
                 .addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# <@${adminId}>`))
+                .addSeparatorComponents(new SeparatorBuilder())
+                .addTextDisplayComponents(new TextDisplayBuilder().setContent(`Each day Session's Bot will update/post your guilds daily *Signup Panels* according to your guild's configuration within this new channel.`))
             ],
             flags: MessageFlags.IsComponentsV2
         })
