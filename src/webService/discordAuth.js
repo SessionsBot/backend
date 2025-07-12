@@ -21,6 +21,7 @@ const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.ko
 // ----------------------------------[ Response Helpers: ]---------------------------------- \\
 
 function sendSuccess(res, data = {}, status = 200){
+    console.log('Sending Success', data, status);
     return res.status(status).json({
         success: true,
         data,
@@ -29,6 +30,7 @@ function sendSuccess(res, data = {}, status = 200){
 }
 
 function sendError(res, message, status = 400) {
+    console.log('Sending Success', message, status);
     return res.status(status).json({
         success: false,
         data: null,
