@@ -148,7 +148,7 @@ const guildConfiguration = (guildId) => {return {
         if(!configuration.panelChannelId || !configuration.allGuildSchedules) return {success: false, data: 'Missing required data for guild configuration!', rawError: {invalid_Config: configuration}}
         // Update Guild Doc:
         try {
-            await db.collection('guilds').doc(String(guildId)).update({
+            await db.collection('guilds').doc(String(guildId)).set({
                 ['accentColor']: configuration.accentColor,
                 ['adminRoleIds']: configuration.adminRoleIds,
                 ['sessionSchedules']: configuration.allGuildSchedules,
