@@ -138,8 +138,6 @@ const guildConfiguration = (guildId) => {return {
     // !!! [NEEDS COMPLETION] - {guildConfiguration}
     //{*} Remove Specific Session Schedule:
         // removeSessionSchedule: async (sessionId) => {},
-    //{*} Create New 'configureGuild' Function:
-        // -- Top Level Confirgure function used by frontend to setup guild data with one call!
     // !!!
 
     // -- Top Level Confirgure Function:
