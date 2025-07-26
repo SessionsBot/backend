@@ -1,26 +1,36 @@
 name: Deploy to Koyeb
 
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Set up Koyeb CLI
-      run: |
-        curl -fsSL https://raw.githubusercontent.com/koyeb/koyeb-cli/master/install.sh | sh
-        echo "/home/runner/.koyeb/bin" >> $GITHUB_PATH
+      - name: Set up Koyeb CLI
+        run: |
+          curl -s https://app.koyeb.com/cli | bash
+          echo "$HOME/.koyeb/bin" >> $GITHUB_PATH
 
-    - name: Login to Koyeb CLI
-      run: koyeb login --token ${{ secrets.KOYEB_API_KEY }}
+      - name: Deploy to Koyeb
+        env:
+          KOYEB_API_KEY: ${{ secrets.KOYEB_API_KEY }}
+        run: |
+          koyeb service redeploy brilliant-austina/sessions-bot
 
-    - name: Deploy to Koyeb
-      run: koyeb service redeploy brilliant-austina/sessions-bot
+    
+    
+    
+    
+    
+    
+
+
+
+
+
