@@ -83,8 +83,7 @@ jobs:
               per_page: 100
             });
 
-            const deploymentIdsForDeletion = allDeploys.data.map(deployment => deployment.original_environment == 'production')
+            const deploymentIdsForDeletion = allDeploys.data.map(deployment => {if(deployment.original_environment == 'production') return deployment.id})
 
-            console.log(allDeploys);
-
-            console.log('AllDeploymentIds', deploymentIdsForDeletion)
+            console.log('allDeploys:', allDeploys);
+            console.log('deploymentIdsForDeletion:', deploymentIdsForDeletion);
