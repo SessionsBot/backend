@@ -61,6 +61,7 @@ jobs:
               repo: context.repo.repo,
               deployment_id: deploymentId,
               state: status,
-              environment: "production",
+              environment: "Discord Bot - Backend",
+              description: "Backend | API | Discord Bot: https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app/"
               log_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             });
