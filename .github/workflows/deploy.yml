@@ -17,7 +17,7 @@ jobs:
     - name: Set up Koyeb CLI
       run: |
         curl -fsSL https://raw.githubusercontent.com/koyeb/koyeb-cli/master/install.sh | sh
-        export PATH=$PATH:/home/runner/.koyeb/bin
+        echo "/home/runner/.koyeb/bin" >> $GITHUB_PATH
 
     - name: Login to Koyeb CLI
       run: koyeb login --api-key ${{ secrets.KOYEB_API_KEY }}
