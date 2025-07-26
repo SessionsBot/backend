@@ -12,25 +12,13 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Set up Koyeb CLI
+      - name: Download and install Koyeb CLI
         run: |
-          curl -s https://app.koyeb.com/cli | bash
-          echo "$HOME/.koyeb/bin" >> $GITHUB_PATH
+          curl -fsSL https://raw.githubusercontent.com/koyeb/koyeb-cli/master/install.sh | sh
+          echo "/home/runner/.koyeb/bin" >> $GITHUB_PATH
 
       - name: Deploy to Koyeb
         env:
           KOYEB_API_KEY: ${{ secrets.KOYEB_API_KEY }}
         run: |
           koyeb service redeploy brilliant-austina/sessions-bot
-
-    
-    
-    
-    
-    
-    
-
-
-
-
-
