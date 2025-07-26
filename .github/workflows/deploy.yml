@@ -79,7 +79,8 @@ jobs:
             // Get all previous/current deployments:
             const allDeploys = await github.rest.repos.listDeployments({
               owner: context.repo.owner,
-              repo: context.repo.repo
+              repo: context.repo.repo,
+              per_page: 100
             });
 
             console.log(allDeploys);
