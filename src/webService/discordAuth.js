@@ -263,11 +263,21 @@ router.get('/discord/guild', async (req, res) => {
 	const clientGuildIds = Array.from(guildsCollection.keys()); // Array of guild IDs
 	const sessionsBotInGuild = clientGuildIds.includes(String(guildId));
 
+    // 5. Get Guild Data from Databse:
+    let guildDatabaseData;
+    const guildDataRetrvial = await guildManager.guilds(String(guildId)).readGuild()
+    if (!guildDataRetrvial.success) {
+        guildDatabaseData = 'null'
+    } else {
+        guildDatabaseData = guildDataRetrvial.data
+    }
+
     
     // 5. Return Data to Frontend:
     const responseData = {
         guildGeneral: guildData,
         guildChannels,
+        guildDatabaseData,
         guildIcon: guildData.icon ? `https://cdn.discordapp.com/icons/${guildId}/${guildData.icon}.png` : null,
         guildBanner: guildData.banner ? `https://cdn.discordapp.com/banners/${guildId}/${guildData.banner}.png` : null,
         sessionsBotInGuild
