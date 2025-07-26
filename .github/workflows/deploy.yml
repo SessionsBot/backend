@@ -20,7 +20,7 @@ jobs:
         echo "/home/runner/.koyeb/bin" >> $GITHUB_PATH
 
     - name: Login to Koyeb CLI
-      run: koyeb login --api-key ${{ secrets.KOYEB_API_KEY }}
+      run: koyeb login --token ${{ secrets.KOYEB_API_KEY }}
 
     - name: Deploy to Koyeb
       run: koyeb service redeploy brilliant-austina/sessions-bot
