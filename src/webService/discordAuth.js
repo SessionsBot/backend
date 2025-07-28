@@ -31,7 +31,7 @@ function sendSuccess(res, data = {}, status = 200){
     });
 }
 
-/** @type {APIErrorData} */
+/** @type {import('backendApi.types').APIErrorData} */
 function sendError(res, message, status = 400) {
     console.log('[WEB]: Sending Error', message, status);
     return res.status(status).json({

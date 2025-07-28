@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "@discordjs/builders": "^1.11.2",
-    "@sessionsbot/api-types": "github:sessionsbot/api-types",
     "axios": "^1.9.0",
     "chalk": "^5.4.1",
     "cors": "^2.8.5",
@@ -19,5 +18,8 @@
     "dev": "nodemon index.js --ignore data/",
     "deploy-cmds": "node src/utils/deployCommands.js"
   },
-  "main": "index.js"
+  "main": "index.js",
+  "devDependencies": {
+    "@sessionsbot/api-types": "^1.0.3"
+  }
 }
