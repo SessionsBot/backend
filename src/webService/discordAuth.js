@@ -125,7 +125,7 @@ router.post('/secure-action', verifyToken, async (req, res) => {
     } 
     else { // Unknown Action:
         console.log('[WEB]: Unknown secure action passed, request allowed!')
-        return sendError(res, {message: `Unknow action type, request allowed!`, requestedAction: actionType}, 422)
+        return sendError(res, {message: `Unknown action type, request allowed!`, requestedAction: actionType}, 422)
     }
 
 });
@@ -188,7 +188,7 @@ router.get('/login/discord-redirect', async (req, res) => {
             const permissions = BigInt(guild.permissions_new ?? guild.permissions); 
             return (permissions & BigInt(ADMINISTRATOR)) !== 0n || (permissions & BigInt(MANAGE_GUILD)) !== 0n;
         });
-        // Get all managable guilds data as array:
+        // Get all manageable guilds data as array:
         const manageableGuildsIds = manageableGuilds.map(g => (g.id));
         const manageableGuildsData = manageableGuilds.map(g => ({
             id: g.id,
@@ -203,7 +203,7 @@ router.get('/login/discord-redirect', async (req, res) => {
             manageableGuilds: manageableGuildsIds 
         });
 
-        // Step 6. Prepair Data for Sending to Frontend
+        // Step 6. Prepare Data for Sending to Frontend
         const userToSend = {
             id: userData?.id,
             username: userData?.username,
@@ -221,7 +221,7 @@ router.get('/login/discord-redirect', async (req, res) => {
         res.redirect(`${global.frontend_Url}/api/sign-in/discord-redirect?token=${token}`);
 
     } catch (err) {
-        // Error Occured - OAuth2 process:
+        // Error Occurred - OAuth2 process:
         console.error('Error during OAuth2 process:', err.response?.data || err.message);
         // Redirect to Homepage:
         return res.redirect(`${global.frontend_Url}/api/sign-in/discord-redirect?failed=true`)
@@ -263,13 +263,13 @@ router.get('/discord/guild', async (req, res) => {
 	const clientGuildIds = Array.from(guildsCollection.keys()); // Array of guild IDs
 	const sessionsBotInGuild = clientGuildIds.includes(String(guildId));
 
-    // 5. Get Guild Data from Databse:
+    // 5. Get Guild Data from Database:
     let guildDatabaseData;
-    const guildDataRetrvial = await guildManager.guilds(String(guildId)).readGuild()
-    if (!guildDataRetrvial.success) {
+    const guildDataRetrieval = await guildManager.guilds(String(guildId)).readGuild()
+    if (!guildDataRetrieval.success) {
         guildDatabaseData = 'null'
     } else {
-        guildDatabaseData = guildDataRetrvial.data
+        guildDatabaseData = guildDataRetrieval.data
     }
 
     
