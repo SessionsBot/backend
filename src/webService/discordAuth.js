@@ -6,7 +6,9 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const global = require('../utils/global.js')
 const guildManager = require('../utils/guildManager.js')
-const {admin} = require('../utils/firebase')
+const {admin} = require('../utils/firebase.js')
+
+
 
 const { createAutoSignupChannel } = require('./events/createAutoSignupChannel.js')
 
@@ -29,6 +31,7 @@ function sendSuccess(res, data = {}, status = 200){
     });
 }
 
+/** @type {APIErrorData} */
 function sendError(res, message, status = 400) {
     console.log('[WEB]: Sending Error', message, status);
     return res.status(status).json({
