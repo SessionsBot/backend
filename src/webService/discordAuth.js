@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken');
 const global = require('../utils/global.js')
 const guildManager = require('../utils/guildManager.js')
 const {admin} = require('../utils/firebase.js')
-const { APIErrorData  } = require('@sessionsbot/api-types')
 
 
 
@@ -23,6 +22,7 @@ const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.ko
 
 // ----------------------------------[ Response Helpers: ]---------------------------------- \\
 
+/** @returns {import('@sessionsbot/api-types').APIResponse} */
 function sendSuccess(res, data = {}, status = 200){
     // console.log('[WEB]: Sending Success', status);
     return res.status(status).json({
@@ -32,7 +32,7 @@ function sendSuccess(res, data = {}, status = 200){
     });
 }
 
-/** @returns {APIErrorData} */
+/** @returns {import('@sessionsbot/api-types').APIResponse} */
 function sendError(res, message, status = 400) {
     console.log('[WEB]: Sending Error', message, status);
     return res.status(status).json({
