@@ -49,7 +49,7 @@ function sendError(res, message, status = 400) {
 
 function verifyToken(req, res, next) {
     const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'No token provided' });
+    if (!token) return sendError(res, 'Missing required authentication token!');
 
     try {
         const decoded = jwt.verify(token, process.env.JSON_WEBTOKEN_SECRET);
@@ -57,12 +57,12 @@ function verifyToken(req, res, next) {
         next(); // Allow request
     } catch (err) {
         if (err.name === 'TokenExpiredError') {
-            return sendError(res, 'Token Expired!', 401)
+            return sendError(res, 'Authentication token is EXPIRED!', 401)
         }
         if (err.name === 'JsonWebTokenError') {
-            return sendError(res, 'Token INVALID!', 422)
+            return sendError(res, 'Authentication token is INVALID!', 422)
         }
-        return sendError(res, 'UNKNOWN - Token Error!', 500)
+        return sendError(res, 'unknown - Authentication Token Error!', 500)
     }
 };
 
@@ -143,7 +143,7 @@ router.get('/login/discord-redirect', async (req, res) => {
     if (error || !code) {
         console.error('Error during redirect process:', error, 'Code provided:', code);
         // Redirect to Homepage:
-        return res.redirect(global.frontend_Url)
+        return res.redirect(`${global.frontend_Url}/api/sign-in/discord-redirect?failed=true`)
     }
 
     // Attempt retrieval of Discord user credentials using code:
