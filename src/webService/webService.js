@@ -38,6 +38,10 @@ app.get('/version', (req, res) => res.status(200).json({ version: global.botVers
 const discordAuthRouter = require('./discordAuth.js');
 app.use('/api', discordAuthRouter); // or just app.use(discordAuthRouter);
 
+// Router - API V2:
+const apiV2 = require('./api/V2')
+app.use('/api/v2', apiV2)
+
 // Initialize Port:
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
