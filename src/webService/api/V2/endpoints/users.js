@@ -50,7 +50,7 @@ router.get('/auth/discord', async (req, res) => {
         * @param {Response} res Response object from initial API call.
         * @param {JsonWebKey} token Generated auth token to assign user within app.
         */
-        redirectAuthSuccess: (res, token) => {res.redirect(`${frontend_Url}/api/sign-in/discord-redirect?token=${token}`)}
+        redirectAuthSuccess: (res, authToken, firebaseToken) => {res.redirect(`${frontend_Url}/api/sign-in/discord-redirect?authToken=${authToken}?firebaseToken=${firebaseToken}`)}
     }
 
     // Check for errors/access code provided from Discord:
@@ -109,7 +109,7 @@ router.get('/auth/discord', async (req, res) => {
         const manageableGuildsIds = manageableGuilds.map(g => (g.id));
         
         // Step 5. Create Firebase Auth Token for User:
-        const generatedFirebaseToken = await admin.auth().createCustomToken(userDiscordId, {
+        const firebaseToken = await admin.auth().createCustomToken(userDiscordId, {
             allGuilds: allGuildsIds,
             manageableGuilds: manageableGuildsIds 
         });
@@ -122,14 +122,14 @@ router.get('/auth/discord', async (req, res) => {
             accentColor: userData?.accent_color,
             avatar: userData?.avatar ? `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png` : null,
             banner: userData?.banner ? `https://cdn.discordapp.com/banners/${userData.id}/${userData.banner}.png` : null,
-            firebaseToken: generatedFirebaseToken
+            guilds: {all: allGuildsIds, manageable: manageableGuildsIds}
         };
 
         // Step 7. Create Secure JSON Token:
-        const token = jwt.sign(userToSend, JSON_SECRET, { expiresIn: '7d' }); // expires in 7 days
+        const authToken = jwt.sign(userToSend, JSON_SECRET, { expiresIn: '7d' }); // expires in 7 days
 
-        // Step 8. Redirect User back to Frontend w/ token:
-        return redirects.redirectAuthSuccess(res, token);
+        // Step 8. Redirect User back to Frontend w/ token(s):
+        return redirects.redirectAuthSuccess(res, authToken, firebaseToken);
 
     } catch (err) {
         // Error Occurred - OAuth2 process:
