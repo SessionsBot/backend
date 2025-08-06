@@ -13,7 +13,7 @@ const {admin} = require('../utils/firebase.js')
 const { createAutoSignupChannel } = require('./events/createAutoSignupChannel.js')
 
 // Secure Variables:
-require('dotenv').config();
+
 const CLIENT_ID = process.env['CLIENT_ID']
 const CLIENT_SECRET = process.env['CLIENT_SECRET']
 const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
@@ -191,15 +191,9 @@ router.get('/login/discord-redirect', async (req, res) => {
             const permissions = BigInt(guild.permissions_new ?? guild.permissions); 
             return (permissions & BigInt(ADMINISTRATOR)) !== 0n || (permissions & BigInt(MANAGE_GUILD)) !== 0n;
         });
-        // Get all manageable guilds data as array:
+        // Get all manageable guild ids as array:
         const manageableGuildsIds = manageableGuilds.map(g => (g.id));
-        const manageableGuildsData = manageableGuilds.map(g => ({
-            id: g.id,
-            name: g.name,
-            icon: g.icon ? `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png` : null,
-            permissions: g.permissions
-        }));
-
+        
         // Step 5. Create Firebase Auth Token for User:
         const generatedFirebaseToken = await admin.auth().createCustomToken(userDiscordId, {
             allGuilds: allGuildsIds,

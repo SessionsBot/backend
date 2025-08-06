@@ -3,7 +3,7 @@ const express = require('express');
 const global = require('../utils/global.js')
 const app = express();
 app.use(express.json());
-require('dotenv').config();
+
 
 // Security - Middleware:
 const cors = require('cors');
@@ -25,7 +25,6 @@ app.use(cors({
     }
   },
   credentials: true,
-  // methods: ['GET', 'POST', 'OPTIONS'] -- Allow all?
 }));
 
 
@@ -36,7 +35,7 @@ app.get('/version', (req, res) => res.status(200).json({ version: global.botVers
 
 // Discord Auth Requests:
 const discordAuthRouter = require('./discordAuth.js');
-app.use('/api', discordAuthRouter); // or just app.use(discordAuthRouter);
+// app.use('/api', discordAuthRouter); // or just app.use(discordAuthRouter);
 
 // Router - API V2:
 const apiV2 = require('./api/V2/index.js')
