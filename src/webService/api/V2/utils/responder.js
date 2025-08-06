@@ -7,7 +7,7 @@ const responder = {
     /** On success, respond to the API request.
      * @param {Response} res The initial response object from the API request.
      * @param {unknown} data Any data/information to include within API response.
-     * @param {number} status The HTTP status code number to include with the response.
+     * @param {HttpStatusCode} status The HTTP status code number to include with the response.
      * @returns {import('@sessionsbot/api-types').APIResponse} */
     succeeded: (res, data = {}, status = 200) => {
         return res.status(status).json({
@@ -20,7 +20,7 @@ const responder = {
     /** On error, respond to the API request. 
      * @param {Response} res The initial response object from the API request.
      * @param {unknown} message Any data/information to include within API response.
-     * @param {number} status The HTTP status code number to include with the response.
+     * @param {HttpStatusCode} status The HTTP status code number to include with the response.
      * @returns {import('@sessionsbot/api-types').APIResponse} */
     errored: (res, message, status = 500) => {
         return res.status(status).json({

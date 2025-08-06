@@ -19,7 +19,7 @@ router.use('/sessions', sessions)
 
 // Root Call:
 router.get('/', (req, res) => {
-    return res.status(204).send('Sessions Bot - API - v2')
+    return responder.errored(res, 'Please provide a valid endpoint', HttpStatusCode.BadRequest)
 })
 
 // Router:

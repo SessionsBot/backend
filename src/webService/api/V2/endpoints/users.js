@@ -1,14 +1,21 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
 const express = require('express');
-const router = express.Router()
+const jwt = require('jsonwebtoken');
+const router = express.Router();
 const responder = require('../utils/responder');
 const { frontend_Url } = require('../../../../utils/global');
-const { Response } = require('express')
+const { Response } = require('express');
+const { default: axios, HttpStatusCode } = require('axios');
+const verifyToken = require('../utils/verifyToken');
+const { admin } = require('../../../../utils/firebase');
+const { FirebaseAuthError } = require('firebase-admin/auth');
+const auth = admin.auth()
 
 
 // Secure Variables:
-const CLIENT_ID = process.env['CLIENT_ID']
-const CLIENT_SECRET = process.env['CLIENT_SECRET']
+const CLIENT_ID = process.env['CLIENT_ID'];
+const BOT_TOKEN = process.env['BOT_TOKEN'];
+const CLIENT_SECRET = process.env['CLIENT_SECRET'];
 const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
 const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app/api/v2/users/auth/discord'; // Must match registered Discord redirect
 
@@ -16,7 +23,7 @@ const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.ko
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
 // Root Call:
 router.get('/', (req, res) => {
-    return res.status(204).send('Sessions Bot - API(v2) - Users')
+    return responder.errored(res, 'Please provide a valid user id or endpoint', HttpStatusCode.BadRequest);
 })
 
 // Discord oAuth2 - /api/v2/users/auth/discord
@@ -135,16 +142,39 @@ router.get('/auth/discord', async (req, res) => {
 
 // GET User - /api/v2/users/[userId]
 router.get('/:userId', async (req, res) => {
+    // Get requested user id:
     const fetchId = req.params.userId
-    if(!fetchId) return responder.errored(res, `invalid "userId" provided`)
-    else return responder.succeeded(res, `[GET] Request send for user ${fetchId}`)
+    if(!fetchId) return responder.errored(res, `Invalid "userId" provided!`);
+
+    // Get discord user data:
+    const discordUserReq = await axios.get(`https://discord.com/api/v10/users/${fetchId}`, {
+        headers: {
+            Authorization: `Bot ${BOT_TOKEN}`
+        }
+    });
+    let discordUserData = discordUserReq?.data;
+    if(!discordUserData) return responder.errored(res, `Failed to fetch Discord user data!`);
+
+    // Return data:
+    return responder.succeeded(res, discordUserData);
+
+
 })
 
 // DELETE User - /api/v2/users/[userId]
-router.delete('/:userId', async (req, res) => {
-    const fetchId = req.params.userId
-    if(!fetchId) return responder.errored(res, `invalid "userId" provided`)
-    else return responder.succeeded(res, `[DELETE] Request send for user ${fetchId}`)
+router.delete('/:userId', verifyToken, async (req, res) => {
+    const deleteId = req.params.userId
+    if(!deleteId) return responder.errored(res, `invalid "userId" provided`)
+
+    // Confirm deleting own account:
+    if(req.user.id != deleteId) return responder.errored(res, `Invalid Permissions - You can only delete your own account!`, 403)
+
+    // Delete user from Firebase Auth:
+    await auth.deleteUser(deleteId).catch((e) => {return responder.errored(res, e?.message | 'Unknown Firebase deletion error!', 500) })
+
+    // Return Success:
+    return responder.succeeded(res, `[DELETE] User ${deleteId} has been successfully deleted!`)
+
 })
 
 //-------------------------------------[ Export Endpoints ]-------------------------------------\\
