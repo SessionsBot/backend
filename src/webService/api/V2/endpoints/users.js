@@ -1,15 +1,13 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+const { default: axios, HttpStatusCode } = require('axios');
 const responder = require('../utils/responder');
 const { frontend_Url } = require('../../../../utils/global');
-const { Response } = require('express');
-const { default: axios, HttpStatusCode } = require('axios');
 const verifyToken = require('../utils/verifyToken');
-const { admin } = require('../../../../utils/firebase');
-const { FirebaseAuthError } = require('firebase-admin/auth');
-const auth = admin.auth()
+const { admin, auth } = require('../../../../utils/firebase');
+const { Response } = require('express');
 
 
 // Secure Variables:
@@ -76,7 +74,7 @@ router.get('/auth/discord', async (req, res) => {
             }
         });
         const accessToken = tokenResponse?.data?.access_token;
-        if(!accessToken) return redirects.redirectAuthError(res)
+        if(!accessToken) throw new Error({message: "An access token was not provided from Discord, Auth attempt failed!"});
 
         // Step 2: Fetch user info
         const userResponse = await axios.get('https://discord.com/api/users/@me', {
@@ -133,7 +131,7 @@ router.get('/auth/discord', async (req, res) => {
 
     } catch (err) {
         // Error Occurred - OAuth2 process:
-        console.error('Error during OAuth2 process:', err.response?.data || err.message);
+        console.error('OAuth2 Error occurred:', err.response?.data || err.message);
         // Redirect to Homepage:
         return redirects.redirectAuthError(res);
     }

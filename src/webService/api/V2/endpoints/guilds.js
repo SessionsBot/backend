@@ -4,8 +4,7 @@ const router = express.Router()
 const responder = require('../utils/responder')
 const { default: axios, HttpStatusCode } = require('axios');
 const verifyToken = require('../utils/verifyToken');
-const { admin } = require('../../../../utils/firebase');
-const auth = admin.auth();
+const { admin, auth } = require('../../../../utils/firebase');
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
