@@ -1,7 +1,7 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
 const express = require('express');
 const router = express.Router({mergeParams: true})
-const responder = require('../utils/responder')
+const responder = require('../../utils/responder')
 
 
 

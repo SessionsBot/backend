@@ -5,9 +5,9 @@ const responder = require('./utils/responder.js');
 const { HttpStatusCode } = require('axios');
 
 // Nested Endpoints:
-const users = require('./endpoints/users.js');
-const guilds = require('./endpoints/guilds.js')
-const sessions = require('./endpoints/sessions.js');
+const users = require('./endpoints/users');
+const guilds = require('./endpoints/guilds')
+const sessions = require('./endpoints/guilds/sessions');
 
 
 

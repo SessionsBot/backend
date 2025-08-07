@@ -1,10 +1,10 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
 const express = require('express');
 const router = express.Router()
-const responder = require('../utils/responder')
+const responder = require('../../utils/responder')
 const { default: axios, HttpStatusCode } = require('axios');
-const verifyToken = require('../utils/verifyToken');
-const { admin, auth } = require('../../../../utils/firebase');
+const verifyToken = require('../../utils/verifyToken');
+const { admin, auth } = require('../../../../../utils/firebase');
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\

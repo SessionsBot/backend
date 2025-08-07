@@ -3,10 +3,10 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { default: axios, HttpStatusCode } = require('axios');
-const responder = require('../utils/responder');
-const { frontend_Url } = require('../../../../utils/global');
-const verifyToken = require('../utils/verifyToken');
-const { admin, auth } = require('../../../../utils/firebase');
+const responder = require('../../utils/responder');
+const { frontend_Url } = require('../../../../../utils/global');
+const verifyToken = require('../../utils/verifyToken');
+const { admin, auth } = require('../../../../../utils/firebase');
 const { Response } = require('express');
 
 
