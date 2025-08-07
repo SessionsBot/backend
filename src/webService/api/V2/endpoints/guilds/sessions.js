@@ -6,6 +6,14 @@ const { HttpStatusCode } = require('axios');
 const guildManager = require('../../../../../utils/guildManager');
 
 
+// !! DECISION / NOTES !!
+/* 
+Either:
+ /- Make endpoints like /:sessionId/roles/add/:userId, etc.
+ or
+ /- Make root endpoints like /:sessionId and trust/handle body validation on frontend?
+*/
+
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
 // GET/FETCH Session:
@@ -46,16 +54,12 @@ router.patch('/:sessionId', async (req, res) => { try {
     if(!sessionId) throw {message: `Invalid Input - Missing 'sessionId'`, code: 400};
     if(!newSessionData) throw {message: `Invalid Input - Missing 'sessionData' inside body of request.`, code: 400};
     if(!guildId) throw {message: `Invalid Input - Missing 'guildId'`, code: 400};
-    
-    // 3. Get/Read Session:
-    const readAllResults = await guildManager.guildSessions(guildId).getSessions()
-    if(!readAllResults.success) throw {message: `Internal Error - Failed to fetch guild sessions for guild(${guildId}).`, code: 500};
-    const allSessions = readAllResults.data;
-    const reqSession = allSessions[sessionId];
-    if(!reqSession) throw {message: `Not Found - Cannot find session(${sessionId}) in guild(${guildId}).`, code: 404};
+    // 3. Validate Body:
+
+
     
     // 4. Return results:
-    return responder.succeeded(res, {oldData: reqSession, newData: newSessionData})
+    return responder.succeeded(res, 'Request allowed - No data to share')
     
 } catch (err) {
 
