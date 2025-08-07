@@ -17,6 +17,7 @@ const { // Discord.js:
     ThumbnailBuilder
 } = require('discord.js');
 const { json } = require('express');
+const dbTypes = require('@sessionsbot/api-types/dist/firestoreData.types')
 
 const inDepthDebug = (c) => { if (global.outputDebug_InDepth) { console.log(`[Guild Manager]: ${c}`) } }
 
@@ -64,6 +65,7 @@ const guilds = (guildId) => {return {
     readGuild: async () => {
         try {
             const guildRef = await db.collection('guilds').doc(String(guildId)).get();
+            /** @type {dbTypes.FirebaseGuildDoc} */
             const guildData = guildRef.data();
             return { success: true, data: guildData };
         } catch (e) {
@@ -492,6 +494,7 @@ const guildSessions = (guildId) => {return {
         }
 
         const guildData = guildDoc.data() || null;
+        /** @type { {[key: string]: dbTypes.UpcomingSession } } }  */
         const upcomingSessions = guildData.upcomingSessions || {};
 
         const result = { success: true, data: upcomingSessions };
@@ -564,6 +567,7 @@ const guildSessions = (guildId) => {return {
         if(!Object.keys(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to assign user.`};
 
         // Confirm User's not already in Session:
+        /** @type {dbTypes.UpcomingSession} */
         let sessionData = guildData['upcomingSessions'][sessionId];
         let sessionRoles = sessionData['roles'] || []
 
@@ -600,7 +604,8 @@ const guildSessions = (guildId) => {return {
 
         // Confirm Session Exists:
         if(!Object.keys(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to remove user.`};
-
+        
+        /** @type {dbTypes.UpcomingSession} */
         let sessionData = guildData['upcomingSessions'][sessionId];
         let sessionRoles = sessionData['roles'] || []
 
@@ -859,31 +864,6 @@ const guildSessions = (guildId) => {return {
 }}
 
 
-const example_guildSchedule = {
-    sessionTitle: 'Training Session',
-    sessionUrl: 'https://www.roblox.com',
-    sessionDateDaily: {
-        hours: 12,
-        minutes: 30,
-    },
-    roles: [
-        {
-            roleName: 'Event Host', 
-            roleDescription: 'This is main speaker/cordinator of the session.',
-            roleEmoji: '🎙️',
-            roleCapacity: 1,
-            users: []
-        },
-        {
-            roleName: 'Trainers', 
-            roleDescription: 'This is crew responsible for training new employees.',
-            roleEmoji: '🤝',
-            roleCapacity: 5,
-            users: []
-        },
-    ]
-}
-
 
 // -------------------------- [ Exports ] -------------------------- \\
 
@@ -891,6 +871,5 @@ module.exports = {
     guilds,
     guildConfiguration,
     guildPanel,
-    guildSessions,
-    example_guildSchedule
+    guildSessions
 }
