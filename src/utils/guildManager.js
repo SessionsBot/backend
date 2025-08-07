@@ -54,7 +54,7 @@ const guilds = (guildId) => {return {
         } catch (error) {
             // Error:
             console.warn('[!] Error adding new guild document: ', error);
-            const result = { success: false, data: `An error occured when trying to save this guild! (${guildId})` };
+            const result = { success: false, data: `An error occurred when trying to save this guild! (${guildId})` };
             return result;
         }
     },
@@ -84,7 +84,7 @@ const guilds = (guildId) => {return {
 
             if (!guildDoc.exists) {
                 console.warn(`Guild document ${guildId} does not exist.`);
-                return { success: false, error: `Couldn't find exisiting guild doc to archive!` };
+                return { success: false, error: `Couldn't find existing guild doc to archive!` };
             }
 
             const guildData = guildDoc.data();
@@ -124,7 +124,7 @@ const guilds = (guildId) => {return {
         } catch (e) {
             // Error:
             console.warn('[!] Error updating guild document: ', e);
-            const result = { success: false, data: 'An error occured when trying to update a guild field!', rawError: e  };
+            const result = { success: false, data: 'An error occurred when trying to update a guild field!', rawError: e  };
             return result;
         }
     },
@@ -140,7 +140,7 @@ const guildConfiguration = (guildId) => {return {
         // removeSessionSchedule: async (sessionId) => {},
     // !!!
 
-    // -- Top Level Confirgure Function:
+    // -- Top Level Configure Function:
     configureGuild : async (configuration) => {
         // Confirm Data:
         if(!configuration.panelChannelId || !configuration.allGuildSchedules) return {success: false, data: 'Missing required data for guild configuration!', rawError: {invalid_Config: configuration}}
@@ -296,7 +296,7 @@ const guildPanel = (guildId) => {return {
     createDailySessionsThreadPanel: async () => { try {
         // Get Guild Data:
         const guildRetrieval = await guilds(guildId).readGuild()
-        if(!guildRetrieval.success) return { success: false, data: `An error occured when fetching guild for signup panel.` };
+        if(!guildRetrieval.success) return { success: false, data: `An error occurred when fetching guild for signup panel.` };
         const guildData = guildRetrieval.data;
         const panelChannelId = guildData?.['sessionSignup']?.['panelChannelId'];
         const panelMessageId = guildData?.['sessionSignup']?.['signupThreadId'];
@@ -304,7 +304,7 @@ const guildPanel = (guildId) => {return {
         const guildTimeZone = guildData?.['timeZone'] || 'America/Chicago';
         if(!panelChannelId || !panelChannel) return { success: false, data: `Cannot get guild's required panel channel for daily thread creation!`};
 
-        // Delete Exisiting Panel:
+        // Delete Existing Panel:
         if(panelMessageId){ try{
             const panelMessage = await panelChannel.messages.fetch(panelMessageId).catch((e) => {})
             await panelMessage.delete().catch((e) => {})
@@ -320,7 +320,7 @@ const guildPanel = (guildId) => {return {
         const newPanelMessage = await panelChannel.send({
             components: [panelContentAttempt.data],
             flags: MessageFlags.IsComponentsV2
-        }) // Dont Save this Msg Id... It's the same as the new thread id...
+        }) // Don't Save this Msg Id... It's the same as the new thread id...
 
         // Variables:
         const threadDateString = DateTime.now().setZone(guildTimeZone).toLocaleString({month: 'numeric', day: 'numeric'})
@@ -406,7 +406,7 @@ const guildPanel = (guildId) => {return {
         // Add Daily Session Signup(s):
         const sessionSignup = async () => {
             
-            // Apend Each Upcoming Session:
+            // Append Each Upcoming Session:
             for ([sessionId, sessionData] of upcomingSessions) {
                 const contentAttempt = await guildSessions(guildId).getSessionPanelContents(sessionId, sessionData, accentColor);
                 if(contentAttempt.success){
@@ -456,7 +456,7 @@ const guildPanel = (guildId) => {return {
             })
             // Store Msg Id for Session Signups:
             if(componentObj.type === 'session'){
-                // Confirm Session Exisits:
+                // Confirm Session Exists:
                 if (!unsortedSessions[String(componentObj.id)]) {
                     console.log(`{!} Cannot find Session ID ${sessionId} to store session signup panel msg id!`);
                     continue; // Skip this sessionId
@@ -499,7 +499,7 @@ const guildSessions = (guildId) => {return {
     },
 
 
-    // Create New Upcomming Session:
+    // Create New Upcoming Session:
     createSession: async (sessionScheduleObject, timeZone) => {
         const sessionDateDaily = sessionScheduleObject.sessionDateDaily;
         const sessionRoles = sessionScheduleObject.roles;
@@ -547,18 +547,18 @@ const guildSessions = (guildId) => {return {
         } catch (error) {
             // Error:
             console.error("Error creating session: ", error);
-            const result = { success: false, data: `An error occured when adding the session ${sessionId} to database!` };
+            const result = { success: false, data: `An error occurred when adding the session ${sessionId} to database!` };
             return result;
         }
     },
 
 
-    // Assing User to an Upcoming Session:
+    // Assign User to an Upcoming Session:
     assignUserSessionRole: async (sessionId, userId, roleName) => {
         // Confirm Guild Data:
-        const guildDataRetrvial = await guilds(guildId).readGuild()
-        if(!guildDataRetrvial.success) return {success: false, data: 'Could not get Guild data for session modifications!'};
-        const guildData = guildDataRetrvial.data;
+        const guildDataRetrieval = await guilds(guildId).readGuild()
+        if(!guildDataRetrieval.success) return {success: false, data: 'Could not get Guild data for session modifications!'};
+        const guildData = guildDataRetrieval.data;
         
         // Confirm Session Exists:
         if(!Object.keys(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to assign user.`};
@@ -580,7 +580,7 @@ const guildSessions = (guildId) => {return {
         // Add user to requested role:
         requestedRole.users.push(String(userId))
 
-        // Save session changes to databse:
+        // Save session changes to database:
         const updateSuccess = await guilds(guildId).updateDocField(`upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!'};
 
@@ -591,12 +591,12 @@ const guildSessions = (guildId) => {return {
     },
 
 
-    // Assing User to an Upcoming Session:
+    // Assign User to an Upcoming Session:
     removeUserSessionRole: async (sessionId, userId) => {
         // Confirm Guild Data:
-        const guildDataRetrvial = await guilds(guildId).readGuild()
-        if(!guildDataRetrvial.success) return {success: false, data: 'Could not get Guild data for session modifications!'};
-        const guildData = guildDataRetrvial.data;
+        const guildDataRetrieval = await guilds(guildId).readGuild()
+        if(!guildDataRetrieval.success) return {success: false, data: 'Could not get Guild data for session modifications!'};
+        const guildData = guildDataRetrieval.data;
 
         // Confirm Session Exists:
         if(!Object.keys(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to remove user.`};
@@ -611,7 +611,7 @@ const guildSessions = (guildId) => {return {
             }
         });
 
-        // Save session changes to databse:
+        // Save session changes to database:
         const updateSuccess = await guilds(guildId).updateDocField(`upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!'};
 
@@ -627,7 +627,7 @@ const guildSessions = (guildId) => {return {
 
         const upcomingSessions = {};
 
-        // For Each Sechedule:
+        // For Each Schedule:
         for(const[scheduleId, scheduleData] of Object.entries(fullSchedulesObject)) {
             // Session Data:
             const sessionDateDaily = scheduleData?.['sessionDateDaily'];
@@ -676,7 +676,7 @@ const guildSessions = (guildId) => {return {
         const result = { success: true, data: `Successfully created guilds sessions from schedules! Id: ${guildId}` };
         return result;
     } catch(e){
-        // Error Occured:
+        // Error Occurred:
         const result = { success: false, data: `Failed to create guilds sessions from schedules! Id: ${guildId}`, rawError: e };
         return result;
     }},
@@ -762,8 +762,8 @@ const guildSessions = (guildId) => {return {
             const roleName = role['roleName'];
             const roleEmoji = role['roleEmoji'];
             const roleUsers = Array.isArray(role['users']) ? role['users'] : [];
-            const roleCapcity = role['roleCapacity'];
-            const roleFull = (roleUsers.length >= roleCapcity)
+            const roleCapacity = role['roleCapacity'];
+            const roleFull = (roleUsers.length >= roleCapacity)
             let roleString;
 
             const roleUsersMapString = () => {
@@ -781,17 +781,17 @@ const guildSessions = (guildId) => {return {
 
             // No Users Assigned:
             if(roleUsers.length === 0 && !pastSession()) {
-                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(0/${roleCapcity})* \n` + ` > *Available*  \n`
+                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(0/${roleCapacity})* \n` + ` > *Available*  \n`
                 return sessionTextContent += roleString
             }
             
-            // Role at Max Capcity or Past Session:
+            // Role at Max Capacity or Past Session:
             if(roleFull || pastSession()){
-                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`UNAVAILABLE ⛔️\`***` +  ` *(${roleUsers.length}/${roleCapcity})* \n` + roleUsersMapString() + '\n';
+                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`UNAVAILABLE ⛔️\`***` +  ` *(${roleUsers.length}/${roleCapacity})* \n` + roleUsersMapString() + '\n';
                 return sessionTextContent += roleString;
             }else {
-            // Role Availale:
-                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(${roleUsers.length}/${roleCapcity})* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
+            // Role Available:
+                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(${roleUsers.length}/${roleCapacity})* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
                 return sessionTextContent += roleString;
             }
         })
@@ -803,7 +803,7 @@ const guildSessions = (guildId) => {return {
         container.addSeparatorComponents(separator)
         // Session Buttons:
         container.addActionRowComponents(await sessionButtons())
-        // Seperator:
+        // Separator:
         container.addSeparatorComponents(separator)
 
         // Add Session Id Subheading:
