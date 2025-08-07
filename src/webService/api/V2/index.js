@@ -15,7 +15,7 @@ const sessions = require('./endpoints/sessions.js');
 // Endpoints:
 router.use('/users', users)
 router.use('/guilds', guilds)
-router.use('/sessions', sessions)
+router.use('/guilds/:guildId/sessions', sessions)
 
 // Root Call:
 router.get('/', (req, res) => {

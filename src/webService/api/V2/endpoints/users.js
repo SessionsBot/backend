@@ -132,7 +132,7 @@ router.get('/auth/discord', async (req, res) => {
     } catch (err) {
         // Error Occurred - OAuth2 process:
         console.error('OAuth2 Error occurred:', err.response?.data || err.message);
-        // Redirect to Homepage:
+        // Redirect to Homepage - FAILED sign in page:
         return redirects.redirectAuthError(res);
     }
 
