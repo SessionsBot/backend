@@ -136,8 +136,10 @@ router.post('/secure-action', verifyToken, async (req, res) => {
 
 // [Begin/Login Auth] - Discord Redirect:
 router.get('/login/discord-redirect', async (req, res) => {
-    const code = req.query.code;
-    const error = req.query.error;
+    const code = req.query?.code;
+    const error = req.query?.error;
+
+    return res.send({code, error});
 
     // If error provided from Discord redirect:
     if (error || !code) {
