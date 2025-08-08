@@ -150,9 +150,11 @@ const guildConfiguration = (guildId) => {return {
                 ['accentColor']: configuration.accentColor,
                 ['adminRoleIds']: configuration.adminRoleIds,
                 ['sessionSchedules']: configuration.allGuildSchedules,
-                ['sessionSignup.panelChannelId']: configuration.panelChannelId,
-                ['sessionSignup.dailySignupPostTime']: configuration.dailySignupPostTime,
-                ['sessionSignup.mentionRoleIds']: configuration.signupMentionIds,
+                ['sessionSignup']: {
+                    'panelChannelId': configuration.panelChannelId,
+                    'dailySignupPostTime': configuration.dailySignupPostTime,
+                    'mentionRoleIds': configuration.signupMentionIds,
+                },
                 ['timeZone']: configuration.timeZone,
                 ['setupCompleted']: true
             });
