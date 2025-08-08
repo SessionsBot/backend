@@ -51,7 +51,7 @@ async function dailyInitializeFn() {
         const dailySignupPostTime = guildData?.['sessionSignup']?.['dailySignupPostTime'];
 
         // Confirm Bot is in Guild:
-        if(!currentClientGuilds.includes(doc.id)) return generalDebug(`{!} The bot is not in guild ${doc.id}, This guild will not be scheduled or excecuted!`)
+        if(!currentClientGuilds.includes(doc.id)) return generalDebug(`{!} The bot is not in guild ${doc.id}, This guild will not be scheduled or executed!`)
 
         // Confirm Guild Setup Properly:
         if(!guildData || !setupCompleted || !guildSchedules || !dailySignupPostTime) { // NOT SETUP PROPERLY:
