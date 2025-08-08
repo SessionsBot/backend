@@ -4,15 +4,8 @@ const router = express.Router({mergeParams: true})
 const responder = require('../../utils/responder');
 const { HttpStatusCode } = require('axios');
 const guildManager = require('../../../../../utils/guildManager');
-
-
-// !! DECISION / NOTES !!
-/* 
-Either:
- /- Make endpoints like /:sessionId/roles/add/:userId, etc.
- or
- /- Make root endpoints like /:sessionId and trust/handle body validation on frontend?
-*/
+const { client } = require('../../../../../utils/global');
+const { checkIfUserInGuild } = require('../../utils/checkGuildMember');
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -44,22 +37,44 @@ router.get('/:sessionId', async (req, res) => { try {
     
 }})
 
+
+// ------ { Session Roles } ------
+
+
 // PATCH/UPDATE Session:
-router.patch('/:sessionId', async (req, res) => { try {
+router.patch('/:sessionId/roles', async (req, res) => { try {
     // 1. Get parameters:
     const sessionId = req.params?.sessionId
     const guildId = req.params?.guildId
-    const newSessionData = req.body?.sessionData
+    const roleName = req.body?.roleName
+    const userId = req.body?.userId
+
     // 2. Confirm parameters:
     if(!sessionId) throw {message: `Invalid Input - Missing 'sessionId'`, code: 400};
-    if(!newSessionData) throw {message: `Invalid Input - Missing 'sessionData' inside body of request.`, code: 400};
     if(!guildId) throw {message: `Invalid Input - Missing 'guildId'`, code: 400};
+    if(!roleName) throw {message: `Invalid Input - Missing 'roleName' inside body of request.`, code: 400};
+    if(!userId) throw {message: `Invalid Input - Missing 'userId' inside body of request.`, code: 400};
+
     // 3. Validate Body:
+    const fetchAllSessions = await guildManager.guildSessions(guildId).getSessions()
+    if(!fetchAllSessions.success) throw {message: `Internal Error - Failed to fetch guild sessions for guild(${guildId}).`, code: 500};
+    /** @type {import('@sessionsbot/api-types').UpcomingSession} */
+    const reqSession = fetchAllSessions?.data?.[sessionId];
+    // Verify Session Exists:
+    if(!reqSession) throw {message: `Not Found - Cannot find session(${sessionId}) in guild(${guildId}).`, code: 404};
+    const reqRoleIndex = reqSession?.roles.findIndex((role) => role.roleName === roleName)
+    // Verify Role Exists:
+    if(reqRoleIndex == -1) throw {message: `Not Found - Cannot find role "${roleName}" in session(${sessionId}).`, code: 404};
+    // Verify User in Guild:
+    const checkMemberResults = await checkIfUserInGuild(guildId, userId)
+    if(!checkMemberResults.found) throw {message: `Bad Request - User ${userId} is not a member of guild(${guildId}).`, code: 400};
 
-
+    // 4. Attempt Role Assign:
+    const assignResults = await guildManager.guildSessions(guildId).assignUserSessionRole(sessionId, userId, roleName)
+    if(!assignResults.success) throw {message: `Internal Server Error - Failed to assign user to "${roleName}" in session(${sessionId}).`, code: 500};
     
     // 4. Return results:
-    return responder.succeeded(res, 'Request allowed - No data to share')
+    return responder.succeeded(res, ['Request Completed!', {sessionId, guildId, roleName, userId, assignResults}])
     
 } catch (err) {
 
