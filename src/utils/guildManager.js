@@ -17,7 +17,6 @@ const { // Discord.js:
     ThumbnailBuilder
 } = require('discord.js');
 const { json } = require('express');
-const dbTypes = require('@sessionsbot/api-types/dist/firestoreData.types')
 
 const inDepthDebug = (c) => { if (global.outputDebug_InDepth) { console.log(`[Guild Manager]: ${c}`) } }
 
@@ -65,7 +64,7 @@ const guilds = (guildId) => {return {
     readGuild: async () => {
         try {
             const guildRef = await db.collection('guilds').doc(String(guildId)).get();
-            /** @type {dbTypes.FirebaseGuildDoc} */
+            /** @type {import('@sessionsbot/api-types').FirebaseGuildDoc} */
             const guildData = guildRef.data();
             return { success: true, data: guildData };
         } catch (e) {
@@ -494,7 +493,7 @@ const guildSessions = (guildId) => {return {
         }
 
         const guildData = guildDoc.data() || null;
-        /** @type { {[key: string]: dbTypes.UpcomingSession } } }  */
+        /** @type { {[key: string]: import('@sessionsbot/api-types').UpcomingSession } } }  */
         const upcomingSessions = guildData.upcomingSessions || {};
 
         const result = { success: true, data: upcomingSessions };
@@ -567,7 +566,7 @@ const guildSessions = (guildId) => {return {
         if(!Object.keys(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to assign user.`};
 
         // Confirm User's not already in Session:
-        /** @type {dbTypes.UpcomingSession} */
+        /** @type {import('@sessionsbot/api-types').UpcomingSession} */
         let sessionData = guildData['upcomingSessions'][sessionId];
         let sessionRoles = sessionData['roles'] || []
 
@@ -605,7 +604,7 @@ const guildSessions = (guildId) => {return {
         // Confirm Session Exists:
         if(!Object.keys(guildData['upcomingSessions']).includes(sessionId)) return {success: false, data: `Couldn't find session(${sessionId}) to remove user.`};
         
-        /** @type {dbTypes.UpcomingSession} */
+        /** @type {import('@sessionsbot/api-types').UpcomingSession} */
         let sessionData = guildData['upcomingSessions'][sessionId];
         let sessionRoles = sessionData['roles'] || []
 
