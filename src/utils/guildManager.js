@@ -41,6 +41,7 @@ const guilds = (guildId) => {return {
                 mentionRoleIds: [],
                 panelChannelId: null,
             },
+            timeZone: 'America/Chicago'
         }
 
         try {
@@ -84,7 +85,9 @@ const guilds = (guildId) => {return {
             const guildDoc = await guildRef.get();
 
             if (!guildDoc.exists) {
-                console.warn(`Guild document ${guildId} does not exist.`);
+
+                console.warn(`Guild document ${guildId} does not exist. Failed to archive!`);
+
                 return { success: false, error: `Couldn't find existing guild doc to archive!` };
             }
 
@@ -151,9 +154,11 @@ const guildConfiguration = (guildId) => {return {
                 ['accentColor']: configuration.accentColor,
                 ['adminRoleIds']: configuration.adminRoleIds,
                 ['sessionSchedules']: configuration.allGuildSchedules,
-                ['sessionSignup.panelChannelId']: configuration.panelChannelId,
-                ['sessionSignup.dailySignupPostTime']: configuration.dailySignupPostTime,
-                ['sessionSignup.mentionRoleIds']: configuration.signupMentionIds,
+                ['sessionSignup']: {
+                    'panelChannelId': configuration.panelChannelId,
+                    'dailySignupPostTime': configuration.dailySignupPostTime,
+                    'mentionRoleIds': configuration.signupMentionIds,
+                },
                 ['timeZone']: configuration.timeZone,
                 ['setupCompleted']: true
             });
