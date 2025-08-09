@@ -44,6 +44,7 @@ const verifyGuildMember = async (req, res, next) => {
         
     } catch (err) {
         if (err.code === 10007) return responder.errored(res, `Invalid Permission - You're not a member of this guild.`)
+        if (err.code === 10004) return responder.errored(res, `Unknown Guild - Sessions Bot isn't a member of this guild.`)
         console.log('API verifyMember Error:', err)
         return responder.errored(res, `Internal Error - Couldn't verify actors(ID: ${actorUserId}) guild membership within guild ${guildId}.`, 500)
     }

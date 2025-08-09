@@ -6,11 +6,18 @@ const { HttpStatusCode } = require('axios');
 const guildManager = require('../../../../../utils/guildManager');
 const { client } = require('../../../../../utils/global');
 const { checkIfUserInGuild } = require('../../utils/checkGuildMember');
+const verifyToken = require('../../utils/verifyToken');
+const verifyGuildMember = require('../../utils/verifyMember');
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
+// Root Call:
+router.get('/', (req, res) => {
+    return responder.errored(res, 'Please provide a valid endpoint', HttpStatusCode.MultipleChoices)
+})
+
 // GET/FETCH Session:
-router.get('/:sessionId', async (req, res) => { try {
+router.get('/:sessionId', verifyToken, verifyGuildMember, async (req, res) => { try {
     // 1. Get parameters:
     const sessionId = req.params?.sessionId
     const guildId = req.params?.guildId
@@ -42,7 +49,7 @@ router.get('/:sessionId', async (req, res) => { try {
 
 
 // PATCH/UPDATE Session Role - Add User to Role:
-router.patch('/:sessionId/roles', async (req, res) => { try {
+router.patch('/:sessionId/roles', verifyToken, verifyGuildMember, async (req, res) => { try {
     // 1. Get parameters:
     const sessionId = req.params?.sessionId
     const guildId = req.params?.guildId
@@ -90,7 +97,7 @@ router.patch('/:sessionId/roles', async (req, res) => { try {
 
 
 // DELETE/REMOVE Session Role - Remove User from Role:
-router.delete('/:sessionId/roles', async (req, res) => { try {
+router.delete('/:sessionId/roles', verifyToken, verifyGuildMember, async (req, res) => { try {
     // 1. Get parameters:
     const sessionId = req.params?.sessionId
     const guildId = req.params?.guildId

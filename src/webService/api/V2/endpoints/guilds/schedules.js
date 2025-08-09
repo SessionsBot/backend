@@ -11,6 +11,10 @@ const verifyGuildMember = require('../../utils/verifyMember');
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
+// Root Call:
+router.get('/', (req, res) => {
+    return responder.errored(res, 'Please provide a valid endpoint', HttpStatusCode.MultipleChoices)
+})
 
 // GET/FETCH - Read Schedule:
 router.get('/:scheduleId', verifyToken, verifyGuildMember, async (req, res) => { try {

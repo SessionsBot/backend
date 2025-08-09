@@ -5,9 +5,15 @@ const responder = require('../../utils/responder')
 const { default: axios, HttpStatusCode } = require('axios');
 const verifyToken = require('../../utils/verifyToken');
 const { admin, auth } = require('../../../../../utils/firebase');
+const verifyGuildMember = require('../../utils/verifyMember');
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
+// Root Call:
+router.get('/', (req, res) => {
+    return responder.errored(res, 'Please provide a valid endpoint', HttpStatusCode.MultipleChoices)
+})
+
 // GET/FETCH Guild:
 router.get('/:guildId', async (req, res) => {
     const fetchId = req.params.guildId
@@ -16,7 +22,7 @@ router.get('/:guildId', async (req, res) => {
 })
 
 // GET/FETCH Guild:
-router.delete('/:guildId', verifyToken, async (req, res) => {
+router.delete('/:guildId', verifyToken, verifyGuildMember, async (req, res) => {
     const deleteId = req.params.guildId
     if(!deleteId) return responder.errored(res, `invalid "guildId" provided`)
     const actingUser = req?.user
