@@ -1,40 +1,43 @@
-import axios from "axios";
-const botToken = process.env['BOT_TOKEN'];
-
-export async function checkIfUserInGuild(guildId, userId) {
+async function checkIfUserInGuild(guildId, userId) {
+  const { client } = require("../../../../utils/global");
   try {
 
-    console.log('Checking for user', userId, 'guild', guildId);
+    if(!client) return {
+      found: false,
+      message: 'Discord bot client is not accessible.'
+    }
 
-    const response = await axios.get(
-      `https://discord.com/api/v10/guilds/${guildId}/members/${userId}`,
-      {
-        headers: {
-          Authorization: `Bot ${botToken}`,
-        },
-      }
-    );
+    // Fetch the guild from the client
+    const guild = await client.guilds.fetch(guildId);
+    if (!guild) {
+      return {
+        found: false,
+        message: `Guild (${guildId}) not found.`,
+      };
+    }
 
-    // If no error thrown, user is in the guild
-    console.log('MEMBER: TRUE')
-    console.log('------')
-    return {
-      found: true,
-      user: response.data,
-    };
+    // Fetch the member from the guild
+    const member = await guild.members.fetch(userId);
+
+    if (member) {
+      return {
+        found: true,
+        user: member,
+      };
+    } else {
+      return {
+        found: false,
+        user: `Could not find member(${userId}) within guild(${guildId})`
+      };
+    }
+  
   } catch (error) {
-    console.log('MEMBER: FALSE')
-    console.log(error?.data)
-    // console.log(error)
-    console.log('------')
-    if (error.response && error.response.status === 404) {
+    if (error.code === 10007) { // Discord.js error code for "Unknown Member"
       return {
         found: false,
         message: `User (${userId}) not in guild (${guildId})`,
       };
     } else {
-      // Other error
-      console.error('Error fetching user from guild:', error.response?.data || error);
       return {
         found: false,
         message: `Error occurred checking (${userId}) in guild (${guildId})`,
@@ -42,3 +45,5 @@ export async function checkIfUserInGuild(guildId, userId) {
     }
   }
 }
+
+module.exports = { checkIfUserInGuild };

@@ -3,8 +3,9 @@
 require('dotenv').config();
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-const botToken = process.env['BOT_TOKEN'];
 const global = require('./src/utils/global.js')
+const BOT_TOKEN = process.env['BOT_TOKEN'];
+const DEV_BOT_TOKEN = process.env['DEV_BOT_TOKEN'];
 
 const fs = require('fs');
 const path = require('node:path');
@@ -83,7 +84,8 @@ if(debugFileLoader) {
 
 // ------- [ Login (via Token): ] -------
 
-// client.login(botToken);
+// client.login(BOT_TOKEN);
+client.login(DEV_BOT_TOKEN);
 
 
 // ------- [ Web Service (prevents inactivity): ] -------
