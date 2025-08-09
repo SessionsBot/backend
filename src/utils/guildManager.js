@@ -188,14 +188,6 @@ const guildConfiguration = (guildId) => {return {
         return await guilds(guildId).updateDocField('sessionSignup.mentionRoleIds', roleIdsArray)
     },
 
-    // Add Specific Session Schedule:
-    addSessionSchedule : async (sessionScheduleObject) => {
-        // Generate Session Id:
-        const scheduleId = 'shd_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-        
-        return await guilds(guildId).updateDocField(`sessionSchedules.${scheduleId}`, sessionScheduleObject)
-    },
-
     // Adjust Guild Setup Flag:
     setSetupComplete : async (isComplete) => {
         return await guilds(guildId).updateDocField('setupCompleted', isComplete)
@@ -288,7 +280,7 @@ const guildPanel = (guildId) => {return {
 
 
     // Set/Update 'Panel Channel' Id:
-    setPannelChannelById: async (channelId) => {
+    setPanelChannelById: async (channelId) => {
         return await guilds(guildId).updateDocField('sessionSignup.panelChannelId', channelId)
     },
 
@@ -475,6 +467,69 @@ const guildPanel = (guildId) => {return {
 
         // Success - Result:
         return { success: true, data: 'Daily Signup Thread Content Success', sessionMessageMap: sentSignupMessages };
+    },
+
+}}
+
+
+// Guild Schedules - Nested Functions:
+const guildSchedules = (guildId) => {return { 
+
+    // Add Specific Session Schedule:
+    addSessionSchedule : async (sessionScheduleObject) => {
+        // Read original schedules:
+        const readResults = await guilds(guildId).readGuild()
+        if(!readResults.success || !readResults.data) return {success: false, data: 'Failed to read guild data'}
+        const guildData = readResults?.data;
+        /** @type {import('@sessionsbot/api-types').SessionSchedule[]} */
+        const guildSchedules = guildData?.sessionSchedules;
+        if(!guildSchedules) return {success: false, data: 'Guild does not have any schedules set up'}
+        
+        // Append new schedule to array:
+        guildSchedules.push(sessionScheduleObject)
+
+        // Save updated array:
+        const saveResults = await guilds(guildId).updateDocField(`sessionSchedules`, guildSchedules);
+        if(!saveResults.success) return {success: false, data: 'Failed to save updated guild schedules'}
+        
+        return {success: true, data: 'Schedule was added to guilds successfully!' }
+    },
+
+    // Read Specific Session Schedule:
+    readSessionSchedule : async (scheduleId) => {
+        // Read guild:
+        const readResults = await guilds(guildId).readGuild()
+        if(!readResults.success) return {success: false, data: 'Failed to read guild data'}
+        const guildData = readResults.data;
+        if(!guildData?.sessionSchedules) return {success: false, data: 'Guild does not have any schedules set up'}
+        // Find & Return sch data:
+        const reqSchedule = guildData?.sessionSchedules.find((sch) => sch?.scheduleId == scheduleId);
+        if(!reqSchedule) return {success: false, data: 'Not found | Failed to find schedule by id'}
+        // Success:
+        return {success: true, data: reqSchedule}
+    },
+
+    // Remove Specific Session Schedule:
+    removeSessionSchedule : async (scheduleId) => {
+        // Read guild:
+        const readResults = await guilds(guildId).readGuild()
+        if(!readResults.success) return {success: false, data: 'Failed to read guild data'}
+        const guildData = readResults?.data;
+        /** @type {import('@sessionsbot/api-types').SessionSchedule[]} */
+        const guildSchedules = guildData?.sessionSchedules;
+        if(!guildSchedules) return {success: false, data: 'Guild does not have any schedules set up'}
+        // Find sch to remove:
+        const a = Array()
+        const reqScheduleIndex = guildSchedules.findIndex((sch) => sch?.scheduleId == scheduleId);
+        if(reqScheduleIndex === -1) return {success: false, data: 'Not found | Failed to find schedule by id to remove'}
+        // Remove schedule:
+        const updatedSchedules = guildSchedules.splice(reqScheduleIndex, 1)
+        // Save updated array:
+        const saveResults = await guilds(guildId).updateDocField(`sessionSchedules`, guildSchedules);
+        if(!saveResults.success) return {success: false, data: 'Failed to save updated/removed guild schedules'}
+
+        // Success:
+        return {success: true, data: {removed: updatedSchedules}}
     },
 
 }}
@@ -870,5 +925,6 @@ module.exports = {
     guilds,
     guildConfiguration,
     guildPanel,
+    guildSchedules,
     guildSessions
 }
