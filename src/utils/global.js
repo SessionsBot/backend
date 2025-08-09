@@ -1,8 +1,9 @@
 module.exports = {
-    botVersion: '1.1.8c',
+    botVersion: require('../../package.json').version,
     frontend_Url: 'https://sessionsbot.fyi',
     outputDebug_General: true,
     outputDebug_InDepth: false,
+    /** Main Discord Bot Client for SessionsBot */
     client: null,
     colors: {
         success: '#6dc441', // green

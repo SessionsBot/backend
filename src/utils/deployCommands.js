@@ -1,5 +1,5 @@
 // Env Variables:
-require('dotenv').config();
+
 const botToken = process.env['BOT_TOKEN']
 const clientId = process.env['CLIENT_ID']
 
