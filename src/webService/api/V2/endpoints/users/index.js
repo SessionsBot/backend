@@ -95,7 +95,7 @@ router.get('/auth/discord', async (req, res) => {
             }
         });
         const guilds = guildsResponse.data;
-        if(!firebaseToken) throw {message: 'Failed to fetch authenticating users Discord guilds!'};
+        if(!guilds) throw {message: 'Failed to fetch authenticating users Discord guilds!'};
         const allGuildsIds = guilds.map(g => (g.id));
 
         // Step 4. Filter guilds where user has manage or admin permissions
