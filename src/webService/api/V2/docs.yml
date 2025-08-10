@@ -48,47 +48,52 @@ components:
     guildConfiguration:
       type: object
       properties:
-        accentColor:
-          type: string
-          description: Accent color used within guild.
-          example: "#ff5733"
-        adminRoleIds:
-          type: array
-          description: Array of guild role IDs granted admin permissions.
-          items:
-            type: string
-          example:
-            - "123456789012345678"
-            - "987654321098765432"
-        sessionSchedules:
-          type: array
-          description: All session configurations currently scheduled for guild.
-          items:
-            type: object
-          example: "(see data structure)"
-        sessionSignup:
+        configuration:
           type: object
-          description: Current signup/panel post configuration for guild.
-          example: "(see data structure)"
-        timeZone:
-          type: string
-          description: Current timezone configuration for guild.
-          example: "America/New_York"
-        setupCompleted:
-          type: boolean
-          description: Indicates whether guild has successfully completed setup process.
-          example: true
-        upcomingSessions:
-          type: object
-          description: Key/Value pairs of upcoming session IDs and their corresponding data.
-          example: "(see data structure)"
+          properties:
+            accentColor:
+              type: string
+              description: Accent color used within guild.
+              example: "#ff5733"
+            adminRoleIds:
+              type: array
+              description: Array of guild role IDs granted admin permissions.
+              items:
+                type: string
+              example:
+                - "123456789012345678"
+                - "987654321098765432"
+            sessionSchedules:
+              type: array
+              description: All session configurations currently scheduled for guild.
+              items:
+                type: object
+              example: "(see data structure)"
+            sessionSignup:
+              type: object
+              description: Current signup/panel post configuration for guild.
+              example: "(see data structure)"
+            timeZone:
+              type: string
+              description: Current timezone configuration for guild.
+              example: "America/New_York"
+            setupCompleted:
+              type: boolean
+              description: Indicates whether guild has successfully completed setup process.
+              example: true
+            upcomingSessions:
+              type: object
+              description: Key/Value pairs of upcoming session IDs and their corresponding data.
+              example: "(see data structure)"
+          required:
+            - accentColor
+            - adminRoleIds
+            - sessionSchedules
+            - sessionSignup
+            - timeZone
+            - upcomingSessions
       required:
-        - accentColor
-        - adminRoleIds
-        - sessionSchedules
-        - sessionSignup
-        - timeZone
-        - upcomingSessions
+        - configuration
 
     sessionRoleModification:
       properties:
