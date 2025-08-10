@@ -452,7 +452,7 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/success"
-        "4XX":
+        "400":
           $ref: "#/components/responses/badRequest"
         "401":
           $ref: "#/components/responses/unauthorized"
@@ -484,7 +484,7 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/success"
-        "4XX":
+        "400":
           $ref: "#/components/responses/badRequest"
         "401":
           $ref: "#/components/responses/unauthorized"
@@ -513,12 +513,12 @@ paths:
         required: true
         content:
           application/json:
-            schemas:
+            schema:
               $ref: "#/components/schemas/scheduleData"
       responses:
         "200":
           $ref: "#/components/responses/success"
-        "4XX":
+        "400":
           $ref: "#/components/responses/badRequest"
         "401":
           $ref: "#/components/responses/unauthorized"
