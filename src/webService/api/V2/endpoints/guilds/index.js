@@ -30,7 +30,7 @@ router.get('/:guildId', async (req, res) => {
         // Get General Guild Data:
         const discordReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, {
             headers: {
-                Authorization: `Bot ${botToken}`,
+                Authorization: `Bot ${BOT_TOKEN}`,
             },
         });
         if (!discordReq.ok) return responder.errored(res, 'Failed to fetch guild data from Discord!', discordReq.status)
@@ -40,7 +40,7 @@ router.get('/:guildId', async (req, res) => {
         // Get Guild Channels Data:
         const channelsReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
             headers: {
-                Authorization: `Bot ${botToken}`,
+                Authorization: `Bot ${BOT_TOKEN}`,
             },
         });
         if (!channelsReq.ok) return responder.errored(res, 'Failed to fetch channel guild data from Discord!', channelsReq.status)
