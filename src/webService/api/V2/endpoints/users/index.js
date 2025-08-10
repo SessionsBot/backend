@@ -8,6 +8,7 @@ const { frontend_Url } = require('../../../../../utils/global');
 const verifyToken = require('../../utils/verifyToken');
 const { admin, auth } = require('../../../../../utils/firebase');
 const { Response } = require('express');
+const LZString = require('lz-string')
 
 
 // Secure Variables:
@@ -44,11 +45,11 @@ router.get('/auth/discord', async (req, res) => {
         */
         redirectAuthError : (res) => {res.redirect(`${frontend_Url}/api/sign-in/discord-redirect?failed=true`)},
 
-        /** _Sign in success:_ Send user back to frontend with user token/data.
+        /** _Sign in success:_ Send user back to frontend with encoded user token/data.
         * @param {Response} res Response object from initial API call.
-        * @param {JsonWebKey} token Generated auth token to assign user within app.
+        * @param {any} encodedToken Generated encoded auth token(s) to assign user within app.
         */
-        redirectAuthSuccess: (res, authToken, firebaseToken) => {res.redirect(`${frontend_Url}/api/sign-in/discord-redirect?authToken=${authToken}?firebaseToken=${firebaseToken}`)}
+        redirectAuthSuccess: (res, encodedTokens) => {res.redirect(`${frontend_Url}/api/sign-in/discord-redirect?token=${encodedTokens}`)}
     }
 
     // Check for errors/access code provided from Discord:
@@ -84,8 +85,6 @@ router.get('/auth/discord', async (req, res) => {
         });
         const userData = userResponse?.data;
         const userDiscordId = userData?.id
-        // Log authentication:
-        console.log(`[ i ] User Authenticated: ${userData?.username}`);
 
         // Step 3: Fetch user guilds
         const ADMINISTRATOR = 0x00000008;
@@ -96,6 +95,7 @@ router.get('/auth/discord', async (req, res) => {
             }
         });
         const guilds = guildsResponse.data;
+        if(!firebaseToken) throw {message: 'Failed to fetch authenticating users Discord guilds!'};
         const allGuildsIds = guilds.map(g => (g.id));
 
         // Step 4. Filter guilds where user has manage or admin permissions
@@ -111,6 +111,7 @@ router.get('/auth/discord', async (req, res) => {
             allGuilds: allGuildsIds,
             manageableGuilds: manageableGuildsIds 
         });
+        if(!firebaseToken) throw {message: 'Failed to generate custom Firebase token for authenticating user!'};
 
         // Step 6. Prepare Data for Sending to Frontend
         const userToSend = {
@@ -125,13 +126,24 @@ router.get('/auth/discord', async (req, res) => {
 
         // Step 7. Create Secure JSON Token:
         const authToken = jwt.sign(userToSend, JSON_SECRET, { expiresIn: '7d' }); // expires in 7 days
+        if(!authToken) throw {message: 'Failed to generate JWT auth token for authenticating user!'};
 
-        // Step 8. Redirect User back to Frontend w/ token(s):
-        return redirects.redirectAuthSuccess(res, authToken, firebaseToken);
+        // Step 8. Encode both auth tokens for response:
+        const payload = JSON.stringify({
+            jwt: authToken,
+            firebase: firebaseToken
+        });
+        const encodedTokens = LZString.compressToEncodedURIComponent(payload);
+
+        // Log authentication:
+        console.log(`[ i ] User Authenticated: ${userData?.username}`);
+
+        // Step X. Redirect User back to Frontend w/ token(s):
+        return redirects.redirectAuthSuccess(res, encodedTokens);
 
     } catch (err) {
         // Error Occurred - OAuth2 process:
-        console.error('OAuth2 Error occurred:', err.response?.data || err.message);
+        console.error('{!}[OAuth2] Error Occurred:', err.response?.data || err.message);
         // Redirect to Homepage - FAILED sign in page:
         return redirects.redirectAuthError(res);
     }
