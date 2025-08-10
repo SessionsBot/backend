@@ -13,7 +13,10 @@ const inDepthDebug = (c) => {if(global.outputDebug_InDepth) console.log(c)}
 
 
 // Bot Initialization Fn:
+let alreadyInitialized = false
 async function botInitialize() {
+    if(alreadyInitialized) return console.log(`[!] botInitialize already called, skipping duplicate initialization!`)
+    alreadyInitialized = true;
     // Runs Daily @11:59 PM - Loads and schedules all other 'Guild Schedules':
     const dailyInitializeShd = cron.schedule('0 59 23 * * *', async (ctx) => {
             generalDebug(`[⏳] Loading All Guild Schedules - ${ ctx.triggeredAt.toLocaleString('en-US', {timeZone: 'America/Chicago'}) } `);
