@@ -14,7 +14,10 @@
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.6.1",
-    "node-cron": "^4.0.5"
+    "node-cron": "^4.0.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
   },
   "scripts": {
     "start": "node index.js",
