@@ -10,7 +10,7 @@ const cors = require('cors');
 const allowedOrigins = [
   'https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app',
   'https://sessionsbot.fyi',
-  // 'http://localhost:5173' // for local dev
+  'http://localhost:5173' // for local dev
 ];
 app.use(cors({
   origin: function (origin, callback) {
