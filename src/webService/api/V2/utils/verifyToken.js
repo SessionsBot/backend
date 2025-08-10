@@ -10,6 +10,7 @@ const responder = require('./responder');
  * 2. Verifies token exists and isn't expired
  * 
  * **Valid Token**: Executes function (next) from API call.
+ * - Attaches `user` object to `req` included decoded user data.
  *
  * **Invalid Token**: Stops execution and responds to API call with permission errors.
  * 

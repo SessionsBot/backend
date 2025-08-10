@@ -7,14 +7,17 @@ const { default: axios, HttpStatusCode } = require('axios');
 const verifyToken = require('../../utils/verifyToken');
 const { admin, auth } = require('../../../../../utils/firebase');
 const verifyGuildMember = require('../../utils/verifyMember');
-const { guilds } = require('../../../../../utils/guildManager');
+const { guilds, guildConfiguration } = require('../../../../../utils/guildManager');
+const { createAutoSignupChannel } = require('../../../../events/createAutoSignupChannel')
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
+
 // Root Call:
 router.get('/', (req, res) => {
     return responder.errored(res, 'Please provide a valid endpoint', HttpStatusCode.MultipleChoices)
 })
+
 
 // GET/FETCH - Read Guild:
 router.get('/:guildId', async (req, res) => {
@@ -46,6 +49,7 @@ router.get('/:guildId', async (req, res) => {
     }
 })
 
+
 // GET/FETCH - Archive Guild:
 router.delete('/:guildId', verifyToken, verifyGuildMember, async (req, res) => {
     const deleteId = req.params.guildId
@@ -58,6 +62,31 @@ router.delete('/:guildId', verifyToken, verifyGuildMember, async (req, res) => {
     else return responder.succeeded(res, 'Guild has been archived successfully.')
 })
 
+
+// PATCH/UPDATE - Configure Guild:
+router.patch('/:guildId/configuration', verifyToken, verifyGuildMember, async (req, res) => {
+    // 1. Verify Params:
+    const guildId = req.params?.guildId;
+    const configurationSetup = req.body?.configuration;
+
+    // 2. Attempt Save:
+    const configureResult = await guildConfiguration(guildId).configureGuild(configurationSetup);
+    if(!configureResult.success) return responder.errored(res, 'Failed to save guild configuration, please try again!', 500);
+    else return responder.succeeded(res, 'Guild configuration saved successfully!');
+})
+
+
+// POST/CREATE - Auto Signup Channel:
+router.post('/:guildId/channels/auto-signup', verifyToken, verifyGuildMember, async (req, res) => {
+    // 1. Verify Params:
+    const guildId = req.params?.guildId;
+    const actorId = req?.user?.id
+
+    // 2. Attempt Save:
+    const creationResults = await createAutoSignupChannel(guildId, actorId)
+    if(!creationResults.success) return responder.errored(res, 'Failed to create default signup channel, please try again!', 500);
+    else return responder.succeeded(res, 'Guild signup channel created successfully!');
+})
 
 //-------------------------------------[ Export Endpoints ]-------------------------------------\\
 module.exports = router
