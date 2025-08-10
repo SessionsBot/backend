@@ -9,7 +9,6 @@ const { admin, auth } = require('../../../../../utils/firebase');
 const verifyGuildMember = require('../../utils/verifyMember');
 const { guilds, guildConfiguration } = require('../../../../../utils/guildManager');
 const { createAutoSignupChannel } = require('../../../../events/createAutoSignupChannel');
-const { client } = require('../../../../../utils/global');
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -48,6 +47,7 @@ router.get('/:guildId', async (req, res) => {
     
     
         // Check if Bot is in Guild:
+        const { client } = require('../../../../../utils/global');
         if(!client) return responder.errored(res, 'Failed to fetch guild data! Client was inaccessible, please try again later.', 500);
         const guildsCollection = await client.guilds.fetch(); // Collection of [guildId, guild]
         const clientGuildIds = Array.from(guildsCollection.keys()); // Array of guild IDs
