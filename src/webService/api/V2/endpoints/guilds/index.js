@@ -8,7 +8,8 @@ const verifyToken = require('../../utils/verifyToken');
 const { admin, auth } = require('../../../../../utils/firebase');
 const verifyGuildMember = require('../../utils/verifyMember');
 const { guilds, guildConfiguration } = require('../../../../../utils/guildManager');
-const { createAutoSignupChannel } = require('../../../../events/createAutoSignupChannel')
+const { createAutoSignupChannel } = require('../../../../events/createAutoSignupChannel');
+const { client } = require('../../../../../utils/global');
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -22,24 +23,57 @@ router.get('/', (req, res) => {
 // GET/FETCH - Read Guild:
 router.get('/:guildId', async (req, res) => {
     // 1. Get & Verify Parameters:
-    const fetchId = req.params.guildId
-    if(!fetchId) return responder.errored(res, `Invalid Input - No 'guildId' was provided.`)
+    const guildId = req.params.guildId
+    if(!guildId) return responder.errored(res, `Invalid Input - No 'guildId' was provided.`)
     // 2. Fetch Discord Data:
     try {
-        // Discord API
-        const discordGuildReq = await axios.get(`https://discord.com/api/v10/guilds/${fetchId}`, {
+        // Get General Guild Data:
+        const discordReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, {
             headers: {
-                Authorization: `Bot ${BOT_TOKEN}`
-            }
+                Authorization: `Bot ${botToken}`,
+            },
         });
-        let discordGuildData = discordGuildReq?.data;
-        if(!discordGuildData) return responder.errored(res, `Failed to fetch Discord guild data!`, 500);
+        if (!discordReq.ok) return responder.errored(res, 'Failed to fetch guild data from Discord!', discordReq.status)
+        const guildData = await discordReq.json();
+    
+    
+        // Get Guild Channels Data:
+        const channelsReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
+            headers: {
+                Authorization: `Bot ${botToken}`,
+            },
+        });
+        if (!channelsReq.ok) return responder.errored(res, 'Failed to fetch channel guild data from Discord!', channelsReq.status)
+        const guildChannels = await channelsReq.json();
+    
+    
+        // Check if Bot is in Guild:
+        if(!client) return responder.errored(res, 'Failed to fetch guild data! Client was inaccessible, please try again later.', 500);
+        const guildsCollection = await client.guilds.fetch(); // Collection of [guildId, guild]
+        const clientGuildIds = Array.from(guildsCollection.keys()); // Array of guild IDs
+        const sessionsBotInGuild = clientGuildIds.includes(String(guildId));
+    
+        // Get Guild Data from Database:
+        let guildDatabaseData;
+        const guildDataRetrieval = await guilds(String(guildId)).readGuild()
+        if (!guildDataRetrieval.success) {
+            guildDatabaseData = 'null'
+        } else {
+            guildDatabaseData = guildDataRetrieval.data
+        }
+    
         
-        // Internal Database:
-        const readGuildAttempt = await guilds(fetchId).readGuild()
-        if(!readGuildAttempt.success) return responder.errored(res, `Failed to fetch internal guild data!`, 500);
+        // Return Data to Frontend:
+        const responseData = {
+            guildGeneral: guildData,
+            guildChannels,
+            guildDatabaseData,
+            guildIcon: guildData.icon ? `https://cdn.discordapp.com/icons/${guildId}/${guildData.icon}.png` : null,
+            guildBanner: guildData.banner ? `https://cdn.discordapp.com/banners/${guildId}/${guildData.banner}.png` : null,
+            sessionsBotInGuild
+        }
 
-        return responder.succeeded(res, {discord: discordGuildData, firebase: readGuildAttempt.data})
+        return responder.succeeded(res, responseData)
 
     } catch (err) {
         if (err?.response?.data?.code === 10007) return responder.errored(res, `Invalid Permission - You're not a member of this guild.`)
@@ -50,7 +84,7 @@ router.get('/:guildId', async (req, res) => {
 })
 
 
-// GET/FETCH - Archive Guild:
+// DELETE/REMOVE - Archive Guild:
 router.delete('/:guildId', verifyToken, verifyGuildMember, async (req, res) => {
     const deleteId = req.params.guildId
     if(!deleteId) return responder.errored(res, `invalid "guildId" provided`)
