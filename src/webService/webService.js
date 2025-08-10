@@ -3,6 +3,7 @@ const express = require('express');
 app.set('trust proxy', 1) // for: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR' error
 const global = require('../utils/global.js')
 const app = express();
+app.set('trust proxy', 1) // for: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR' error
 app.use(express.json());
 
 // Security - Middleware:
