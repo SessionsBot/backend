@@ -2,7 +2,7 @@
   "name": "sessions-bot",
   "version": "0.0.0",
   "dependencies": {
-    "@discordjs/builders": "^1.11.2",
+    "@discordjs/builders": "^1.11.3",
     "axios": "^1.9.0",
     "chalk": "^5.4.1",
     "cors": "^2.8.5",
@@ -28,6 +28,6 @@
   "main": "index.js",
   "private": "true",
   "devDependencies": {
-    "@sessionsbot/api-types": "^2.0.1"
+    "@sessionsbot/api-types": "^2.1.3"
   }
 }
