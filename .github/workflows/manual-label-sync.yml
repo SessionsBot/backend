@@ -1,0 +1,20 @@
+name: Manual - Label Sync
+
+on:
+    workflow_dispatch:
+      inputs:
+        deleteUnmatched:
+            type: boolean
+            description: 'Delete labels not in config?'
+            default: false
+
+permissions:
+    issues: write
+
+jobs:
+    Sync-Labels:
+        uses: SessionsBot/.github/.github/workflows/sync-all-labels.yml@main
+        with: 
+            deleteUnmatched: ${{ inputs.deleteUnmatched }}
+        permissions:
+            issues: write

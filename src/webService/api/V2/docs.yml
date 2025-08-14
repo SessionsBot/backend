@@ -1,0 +1,536 @@
+openapi: 3.1.0
+
+
+info:
+  title: Session Bot - Backend API
+  description: Internal backend API used for Sessions Bot on Discord.
+  version: 2.1.1
+
+
+servers:
+  - url: https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app
+
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: User Authentication Token - JWT
+
+  responses:
+    success:
+      description: 'Successful - Request was successful'
+    badRequest:
+      description: 'Bad Request - Invalid Request, confirm inputs'
+    unauthorized:
+      description: 'Unauthorized - Invalid Permission'
+    notFound:
+      description: 'Not Found - Cannot find resource'
+    internalError:
+      description: 'Internal Error - An internal error occurred'
+
+  defaultResponses:
+    "200":
+      $ref: "#/components/responses/success"
+    "400":
+      $ref: "#/components/responses/badRequest"
+    "401":
+      $ref: "#/components/responses/unauthorized"
+    "403":
+      $ref: "#/components/responses/unauthorized"
+    "404":
+      $ref: "#/components/responses/notFound"
+    "500":
+      $ref: "#/components/responses/internalError"
+
+  schemas:
+    guildConfiguration:
+      type: object
+      properties:
+        configuration:
+          type: object
+          properties:
+            accentColor:
+              type: string
+              description: Accent color used within guild.
+              example: "#ff5733"
+            adminRoleIds:
+              type: array
+              description: Array of guild role IDs granted admin permissions.
+              items:
+                type: string
+              example:
+                - "123456789012345678"
+                - "987654321098765432"
+            sessionSchedules:
+              type: array
+              description: All session configurations currently scheduled for guild.
+              items:
+                type: object
+              example: "(see data structure)"
+            sessionSignup:
+              type: object
+              description: Current signup/panel post configuration for guild.
+              example: "(see data structure)"
+            timeZone:
+              type: string
+              description: Current timezone configuration for guild.
+              example: "America/New_York"
+            setupCompleted:
+              type: boolean
+              description: Indicates whether guild has successfully completed setup process.
+              example: true
+            upcomingSessions:
+              type: object
+              description: Key/Value pairs of upcoming session IDs and their corresponding data.
+              example: "(see data structure)"
+          required:
+            - accentColor
+            - adminRoleIds
+            - sessionSchedules
+            - sessionSignup
+            - timeZone
+            - upcomingSessions
+      required:
+        - configuration
+
+    sessionRoleModification:
+      properties:
+        roleName: 
+          type: string
+          example: Event Host
+        userId:
+          type: string
+          example: 25294923429234145185
+      required:
+        - roleName
+        - userId
+
+    scheduleData:
+      type: object
+      properties:
+        scheduleData:
+          type: object
+          properties:
+            sessionTitle:
+              type: string
+              example: Example Title
+            sessionDateDaily:
+              type: object
+              properties:
+                hours:
+                  type: integer
+                  example: 17
+                minutes:
+                  type: integer
+                  example: 30
+            sessionUrl:
+              type: string
+              format: uri
+              example: https://www.roblox.com/games
+            roles:
+              type: array
+              items:
+                type: object
+                properties:
+                  roleName:
+                    type: string
+                    example: Attendee
+                  roleDescription:
+                    type: string
+                    example: Regular Attendee
+                  roleEmoji:
+                    type: string
+                    example: "💼"
+                  roleCapacity:
+                    type: integer
+                    example: 10
+                  users:
+                    type: array
+                    items:
+                      type: string
+                    example: []
+            scheduleId:
+              type: string
+              example: shd_me35lbdpb4au
+          required:
+            - sessionTitle
+            - sessionDateDaily
+            - sessionUrl
+            - roles
+            - scheduleId
+      required:
+        - scheduleData
+
+paths:
+  /api/v2/users/{userId}:
+    get:
+      tags:
+        - Users
+      summary: Get a user by id
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: The user id to fetch data for
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "4XX":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+        
+    delete:
+      tags:
+        - Users
+      summary: Delete a user by id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: The user id to delete data for
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+  
+  /api/v2/guilds/{guildId}:
+    get:
+      summary: Get a guild by id
+      tags:
+        - Guilds
+      parameters:
+        - in: path
+          name: guildId
+          schema:
+            type: string
+          description: The guild id to fetch data for
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+    delete:
+      summary: Delete a guild by id
+      description: 'Note: This endpoint will not fully delete the guilds data from internal databases, rather it will archive it.'
+      tags:
+        - Guilds
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: guildId
+          schema:
+            type: string
+          description: The guild id to fetch data for
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+  
+  /api/v2/guilds/{guildId}/configuration:
+    patch:
+      summary: Configure a guild by id
+      tags:
+        - Guilds
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: guildId
+          schema:
+            type: string
+          description: The guild id to update configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+           schema:
+            $ref: "#/components/schemas/guildConfiguration"
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+
+  /api/v2/guilds/{guildId}/channels/auto-signup:
+    post:
+      summary: Create auto 'Signup Channel' for guild
+      tags:
+        - Guilds
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: guildId
+          schema:
+            type: string
+          description: The guild id to create channel for
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+
+  /api/v2/guilds/{guildId}/sessions/{sessionId}:
+    get:
+      summary: Get session data by id
+      tags:
+        - Sessions
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: guildId
+          schema:
+            type: string
+          description: The guild id to get data for
+        - in: path
+          name: sessionId
+          schema:
+            type: string
+          description: The session id to get data for
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+
+  /api/v2/guilds/{guildId}/sessions/{sessionId}/roles:
+    patch:
+      summary: Add user to session role by id
+      tags:
+        - Sessions
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: guildId
+          schema:
+            type: string
+          description: The guild id to modify data for
+        - in: path
+          name: sessionId
+          schema:
+            type: string
+          description: The session id to modify data for
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/sessionRoleModification"
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+    delete:
+      summary: Remove user from session role by id
+      tags:
+        - Sessions
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: guildId
+          schema:
+            type: string
+          description: The guild id to modify data for
+        - in: path
+          name: sessionId
+          schema:
+            type: string
+          description: The session id to modify data for
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/sessionRoleModification"
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+
+  /api/v2/guilds/{guildId}/schedules/{scheduleId}:
+    get:
+      tags:
+        - Schedules
+      summary: Get a schedule by id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+          description: The guild id to fetch data for
+        - in: path
+          name: scheduleId
+          required: true
+          schema:
+            type: string
+          description: The schedule id to fetch data for
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+    delete:
+      tags:
+        - Schedules
+      summary: Delete a schedule by id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+          description: The guild id to modify data for
+        - in: path
+          name: scheduleId
+          required: true
+          schema:
+            type: string
+          description: The schedule id to delete data for
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+
+  /api/v2/guilds/{guildId}/schedules:
+    post:
+      tags:
+        - Schedules
+      summary: Create a new schedule for guild
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+          description: The guild id to add data to
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/scheduleData"
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+

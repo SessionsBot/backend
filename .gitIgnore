@@ -1,0 +1,6 @@
+# Local Development Paths:
+.vscode/
+.env 
+node_modules/
+private/
+
