@@ -1,0 +1,43 @@
+{
+  "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+  "hooks": {
+    "before:init": "echo 🚀 Release Initiated!"
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": {
+      "name": "conventionalcommits",
+      "types": [
+        {"type": "feat", "section": "⚡️ Features"},
+        {"type": "fix", "section": "🐞 Bug Fixes"},
+        {"type": "chore", "section": "🧹 Chores"},
+        {"type": "docs", "section": "📄 Documentation"},
+        {"type": "style", "section": "🎨 Styling"},
+        {"type": "refactor", "section": "♻️ Refactoring"},
+        {"type": "perf", "section": "📈 Performance"},
+        {"type": "test", "section": "🧪 Tests"}
+      ]
+    },
+      "infile": "CHANGELOG.md",
+      "ignoreRecommendedBump": true
+    }
+  },
+  "git": {
+    "changelog": "git log --pretty=format:\"* %s (%h)\" ${from}...${to}",
+    "requireCleanWorkingDir": true,
+    "tagAnnotation": "Release ${version}",
+    "push": true
+  },
+  "github": {
+    "release": true,
+    "releaseName": "v${version}",
+    "comments": {
+      "submit": true,
+      "issue": ":rocket: _This issue has been resolved in v${version}. See [${releaseName}](${releaseUrl}) for release notes._",
+      "pr": ":rocket: _This pull request is included in v${version}. See [${releaseName}](${releaseUrl}) for release notes._"
+    }
+  },
+  "npm": {
+    "publish": false
+  }
+}
