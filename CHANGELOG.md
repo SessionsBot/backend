@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.4](https://github.com/SessionsBot/backend/compare/v0.1.3...v0.1.4) (2025-08-16)
+
+### 🐞 Bug Fixes
+
+* deployment workflow ([8ca29c5](https://github.com/SessionsBot/backend/commit/8ca29c58fd4f4b8304055987b2fc16480a47f0c4))
+
+### 📄 Documentation
+
+* update read me ([5d62dd1](https://github.com/SessionsBot/backend/commit/5d62dd16b2c3c0222435b987567854278ec014b4))
+
 ## [0.1.3](https://github.com/SessionsBot/backend/compare/0.1.2-5-g4dee820bc883b4c3323ac04b9ab205aac69c08dc...v0.1.3) (2025-08-16)
 
 ## [0.1.2](https://github.com/SessionsBot/backend/compare/v0.1.1...v0.1.2) (2025-08-16)
