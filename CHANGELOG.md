@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.1](https://github.com/SessionsBot/backend/compare/0.1.0...0.1.1) (2025-08-16)
+
+### 🐞 Bug Fixes
+
+* allow merge guild config update ([37cbc58](https://github.com/SessionsBot/backend/commit/37cbc585cd8de0ece055cd882bdbcfe946b75ee5))
+
 ## 0.1.0 (2025-08-14)
 
 ### ⚡️ Features
