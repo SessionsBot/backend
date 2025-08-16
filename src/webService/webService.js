@@ -43,10 +43,6 @@ app.get('/', (req, res) => res.status(200).json({ status: 'ONLINE', version: glo
 app.get('/status', (req, res) => res.status(200).json({ status: 'ONLINE', message: 'Our Discord/Web-App Backend is currently operational!' }));
 app.get('/version', (req, res) => res.status(200).json({ version: global.botVersion}));
 
-// Discord Auth Requests:
-const discordAuthRouter = require('./discordAuth.js');
-// app.use('/api', discordAuthRouter); // or just app.use(discordAuthRouter);
-
 // Router - API V2:
 const apiV2 = require('./api/V2/index.js')
 app.use('/api/v2', apiV2)
