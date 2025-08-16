@@ -10,10 +10,10 @@ This repository contains the **backend and API** for [SessionsBot](https://githu
 
 ## 📋 Table of Contents
 
-- [Tech Stack](#tech-stack)
-- [Contributing](#contributing)
-- [Security](#security)
-- [License](#license)
+- [Tech Stack](#-tech-stack)
+- [Contributing](#-contributing)
+- [Security](#-security)
+- [License](#-license)
 
 ---
 
