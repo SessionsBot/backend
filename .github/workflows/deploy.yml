@@ -13,7 +13,7 @@ jobs:
       contents: read
       deployments: write # Required to create and update deployments
     steps:
-      - name: Checkout repo
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
       - name: Create GitHub Deployment
@@ -25,14 +25,13 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: context.sha,
-              required_contexts: [],
               environment: "Discord Bot - Backend",
-              auto_merge: false,
+              production_environment: true
             });
 
             core.setOutput("deployment_id", response.data.id);
 
-      - name: Download and install Koyeb CLI
+      - name: Install Koyeb CLI
         run: |
           curl -fsSL https://raw.githubusercontent.com/koyeb/koyeb-cli/master/install.sh | sh
           echo "$HOME/.koyeb/bin" >> $GITHUB_PATH
@@ -45,7 +44,7 @@ jobs:
         run: |
           koyeb service redeploy brilliant-austina/sessions-bot --token $KOYEB_API_KEY
 
-      - name: Mark deployment as finished
+      - name: Update Deployment Status
         if: always()
         uses: actions/github-script@v7
         env:
