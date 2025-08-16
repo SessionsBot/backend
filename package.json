@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "deploy-cmds": "node src/utils/deployCommands.js",
-    "release": "npm release-it"
+    "release": "npx release-it"
   },
   "dependencies": {
     "@discordjs/builders": "^1.11.3",
