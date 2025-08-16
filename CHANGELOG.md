@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/SessionsBot/backend/compare/0.1.1...0.1.2) (2025-08-16)
+
+### 🐞 Bug Fixes
+
+* deployment checks ([46d36de](https://github.com/SessionsBot/backend/commit/46d36de12baa10e5a95c8e786afa8eab157d95c9))
+* deployment urls ([cbd94ca](https://github.com/SessionsBot/backend/commit/cbd94cab56fcb89657a73297e4b3193928930faa))
+* only deploy on new tag ([47d7474](https://github.com/SessionsBot/backend/commit/47d7474cac873c9cb1920edf22e7bf1594fd447b))
+
 ## [0.1.1](https://github.com/SessionsBot/backend/compare/0.1.0...0.1.1) (2025-08-16)
 
 ### 🐞 Bug Fixes
