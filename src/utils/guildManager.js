@@ -161,7 +161,7 @@ const guildConfiguration = (guildId) => {return {
                 },
                 ['timeZone']: configuration.timeZone,
                 ['setupCompleted']: true
-            });
+            }, { merge: true });
             // Success:
             return {success: true, data: 'Saved new guild configuration to database!'}
 
