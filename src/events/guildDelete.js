@@ -1,11 +1,11 @@
-// Improts:
+// Imports:
 const { Events, ChannelType, PermissionsBitField } = require('discord.js');
 const global = require('../utils/global')
 const guildManager = require('../utils/guildManager');
 
 
 
-// Event Excecution:
+// Event Execution:
 module.exports = {
     name: Events.GuildDelete,
     async execute(guild) {

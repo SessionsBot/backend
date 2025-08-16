@@ -1,4 +1,4 @@
-// Improts:
+// Imports:
 const { Events, ChannelType, PermissionsBitField } = require('discord.js');
 const global = require('../utils/global')
 const guildManager = require('../utils/guildManager');
@@ -39,7 +39,7 @@ module.exports = {
             }
         }
 
-        // 3. Attempt to send in any chattable channel:
+        // 3. Attempt to send in any chat-able channel:
         const fallbackChannel = guild.channels.cache.find(channel =>
             channel.type === ChannelType.GuildText &&
             channel.viewable &&

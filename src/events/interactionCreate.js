@@ -26,7 +26,7 @@ module.exports = {
 
 		// Button Interactions:
 		if (interaction.isButton()) {
-			// Parese interaction.customId data:
+			// Parse interaction.customId data:
 			const interactionData = interaction.customId.split(':');
 			const interactionCustomId = interactionData[0];
 
@@ -71,8 +71,8 @@ module.exports = {
 		if (interaction.isStringSelectMenu()) {
 
 			if(interaction) return; // DISABLED - NO STAND ALONE SELECT MENU INTERACTIONS
-			// ## THE FOLLOWING CODE WILL NOT EXCECUTE: ##
-			// Parese interaction.customId data:
+			// ## THE FOLLOWING CODE WILL NOT EXECUTE: ##
+			// Parse interaction.customId data:
 			const interactionData = interaction.customId.split(':');
 			const interactionCustomId = interactionData[0];
 
@@ -95,7 +95,7 @@ module.exports = {
 					await interaction.reply({ content: 'There was an error while executing this select menu!', flags: MessageFlags.Ephemeral });
 				}
 			}
-			// ## THE ABOVE CODE WILL NOT EXCECUTE: ##
+			// ## THE ABOVE CODE WILL NOT EXECUTE: ##
 		}
 		
 	},

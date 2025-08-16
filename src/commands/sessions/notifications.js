@@ -27,7 +27,7 @@ const data = new SlashCommandBuilder()
 				.setRequired(true))
 
 
-// On Command Excecution:
+// On Command Execution:
 async function execute(interaction) {
 
     // Get selections:
@@ -59,7 +59,7 @@ async function execute(interaction) {
         await dmChannel.send({
             embeds: [
                 new EmbedBuilder()
-                .setTitle('⚙️ - Notifcation Adjusted:')
+                .setTitle('⚙️ - Notification Adjusted:')
                 .setDescription(`Below are your currently selected options:`)
                 .setColor(global.colors.warning)
                 .addFields(

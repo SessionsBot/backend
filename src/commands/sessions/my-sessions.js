@@ -17,7 +17,7 @@ const global = require('../../utils/global.js'); // Import Global Variables
 
 const mySessionsResponses = require('../../utils/responses/mySessionsResponses.js');
 
-// --------------------- [Command/Excecution] --------------------- \\
+// --------------------- [Command/Execution] --------------------- \\
 
 // Register Command:
 const data = new SlashCommandBuilder()
@@ -25,11 +25,11 @@ const data = new SlashCommandBuilder()
     .setDescription("Lists your currently assigned sessions with respective options.")
     .setContexts(InteractionContextType.Guild)
 
-// On Command Excecution:
+// On Command Execution:
 async function execute(interaction) { 
     try {
         // Defer Response:
-        await interaction.deferReply({ flags: MessageFlags.Ephemeral }).catch((err) => { // Error Deffering:
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral }).catch((err) => { // Error Deferring:
             console.log(`{!} Couldn't defer /my-sessions response:`)
             console.log(err)
         });
@@ -52,9 +52,9 @@ async function execute(interaction) {
 
         // On Interaction Collection:
         collector.on('collect', async (collectorInteraction) => {
-            // Defer Colector Response:
+            // Defer Collector Response:
             await collectorInteraction.deferUpdate().catch((err) => { // Defer Response:
-                console.log(`{!} Error Deffering: - /${interaction.commandName}:`)
+                console.log(`{!} Error Deferring: - /${interaction.commandName}:`)
                 console.log(err)
             });
 
@@ -128,7 +128,7 @@ async function execute(interaction) {
                     removalResponseContainer.setAccentColor(0xd43f37)
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - ERROR ⚠️'))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("*`An error occured while trying to remove yourself from this session, are you sure you're assigned it?`*"))
+                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("*`An error occurred while trying to remove yourself from this session, are you sure you're assigned it?`*"))
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# (${sessionID})`))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
                     removalResponseContainer.addActionRowComponents(
@@ -150,7 +150,7 @@ async function execute(interaction) {
                 })
             }
 
-            // REJECTED/CANCELD:
+            // REJECTED/CANCELED:
             if(interactionID == 'cancelSessionRemoval') { // Session Role Removal Confirmation 
                 // Send Session List:
                 const guildRetrieval = await guildManager.guilds(interaction.guild.id).readGuild()
@@ -186,7 +186,7 @@ async function execute(interaction) {
         })
 
         // Log Error:
-        console.log(`{!} [/${interaction.commandName}] An error occured:`)
+        console.log(`{!} [/${interaction.commandName}] An error occurred:`)
         console.log(e)
     }
 }

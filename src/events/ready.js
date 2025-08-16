@@ -47,7 +47,7 @@ module.exports = {
 			roles: [
 				{
 					roleName: 'Event Host', 
-					roleDescription: 'This is main speaker/cordinator of the session.',
+					roleDescription: 'This is main speaker/coordinator of the session.',
 					roleEmoji: '🎙️',
 					roleCapacity: 1,
 					users: []

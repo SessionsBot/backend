@@ -84,7 +84,7 @@ const responses = {
 
 		container.setAccentColor(0xd43f37);
 		
-		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⌛️ Session Already Occured!`))
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⌛️ Session Already Occurred!`))
 		container.addSeparatorComponents(separator);
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🧾 Details:** \n *You cannot sign up for this session, it has already taken place... Please choose a different session and try again!* `))
 		container.addSeparatorComponents(separator);
@@ -171,7 +171,7 @@ module.exports = {
 		customId: 'sessionSignup',
 	},
 	async execute(interaction) {
-		// Parese Interaction Data:
+		// Parse Interaction Data:
 		const [interactionId, interactionSessionId] = interaction.customId.split(':');
 		const userId = interaction.user.id
 
@@ -179,7 +179,7 @@ module.exports = {
 		// Get Guild Data:
 		const guildId = interaction.message.guildId;
 		const guildDataRetrieval = await guildManager.guilds(guildId).readGuild();
-		if(!guildDataRetrieval.success) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occured!', 'An internal server error occured! Cannot find guild data, please contact an administrator...');
+		if(!guildDataRetrieval.success) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occurred!', 'An internal server error occurred! Cannot find guild data, please contact an administrator...');
 		let guildData = guildDataRetrieval.data;
 
 
@@ -189,9 +189,9 @@ module.exports = {
 		let sessionRoles = requestedSessionData?.['roles']
 		const sessionDateDiscord = requestedSessionData?.['date']?.['discordTimestamp']
 		const nowUTCSeconds = DateTime.now().toUnixInteger()
-		if(!upcomingSessions || !requestedSessionData || !sessionRoles) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occured!', 'An internal server error occured! Cannot find session data, please contact an administrator...');
+		if(!upcomingSessions || !requestedSessionData || !sessionRoles) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occurred!', 'An internal server error occurred! Cannot find session data, please contact an administrator...');
 
-		// Check if Session Already Occured:
+		// Check if Session Already Occurred:
 		const pastSession = nowUTCSeconds >= sessionDateDiscord;
 		if (pastSession){
 			await guildManager.guildSessions(interaction.message.guildId).updateSessionSignup(String(interactionSessionId), guildData)
@@ -201,14 +201,14 @@ module.exports = {
 
 		// Check if User Already Assigned:
 		let userAlreadyInSession = false;
-		let exisitngRoleName = '';
+		let existingRoleName = '';
 		sessionRoles.forEach(role => {
 			if(role['users'].includes(userId)) {
 				userAlreadyInSession = true;
-				exisitngRoleName = role['roleName'] || 'Undefined';
+				existingRoleName = role['roleName'] || 'Undefined';
 			}
 		});
-		if(userAlreadyInSession) return await responses.alreadyAssignedRole(interaction, interactionSessionId, exisitngRoleName)
+		if(userAlreadyInSession) return await responses.alreadyAssignedRole(interaction, interactionSessionId, existingRoleName)
 
 
 		// Check Roles are Available:
