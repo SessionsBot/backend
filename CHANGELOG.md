@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.1.3](https://github.com/SessionsBot/backend/compare/0.1.2-5-g4dee820bc883b4c3323ac04b9ab205aac69c08dc...v0.1.3) (2025-08-16)
+
 ## [0.1.2](https://github.com/SessionsBot/backend/compare/v0.1.1...v0.1.2) (2025-08-16)
 
 ### 🐞 Bug Fixes
