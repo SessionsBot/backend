@@ -4,6 +4,3 @@
 node_modules/
 private*
 *.private*
-# Private Release Config:
-.release-it.private.json
-.release-it.json
