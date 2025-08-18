@@ -499,6 +499,45 @@ paths:
           $ref: "#/components/responses/notFound"
         "500":
           $ref: "#/components/responses/internalError"
+    patch:
+      tags:
+        - Schedules
+      summary: Update a schedule by id
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+          description: The guild id to modify data for
+        - in: path
+          name: scheduleId
+          required: true
+          schema:
+            type: string
+          description: The schedule id to modify data for
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/scheduleData"
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
+      
 
   /api/v2/guilds/{guildId}/schedules:
     post:
