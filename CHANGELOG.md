@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.6](https://github.com/SessionsBot/backend/compare/v0.1.5...v0.1.6) (2025-08-18)
+
+### 🐞 Bug Fixes
+
+* client login ([0c556ed](https://github.com/SessionsBot/backend/commit/0c556edbcd9fba70207cda81968a8015e18a1344))
+
 ## [0.1.5](https://github.com/SessionsBot/backend/compare/v0.1.4...v0.1.5) (2025-08-18)
 
 ### ⚡️ Features
