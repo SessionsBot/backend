@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.5](https://github.com/SessionsBot/backend/compare/v0.1.4...v0.1.5) (2025-08-18)
+
+### ⚡️ Features
+
+* **api:** modify schedule by id ([b6648ab](https://github.com/SessionsBot/backend/commit/b6648ab747cda5199804b3a3a6b4ae8e39a41f4c))
+
+### 🐞 Bug Fixes
+
+* readme links ([c579771](https://github.com/SessionsBot/backend/commit/c579771c457c95e67508f9f1520f5d253d1f8407))
+
+### 🧹 Chores
+
+* **deps:** bump the npm-dependencies group with 2 updates ([f97b67a](https://github.com/SessionsBot/backend/commit/f97b67ae8abb30c2012456242d092401e55990c4))
+
 ## [0.1.4](https://github.com/SessionsBot/backend/compare/v0.1.3...v0.1.4) (2025-08-16)
 
 ### 🐞 Bug Fixes
