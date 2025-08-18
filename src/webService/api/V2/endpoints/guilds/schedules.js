@@ -77,7 +77,7 @@ router.patch('/:scheduleId', verifyToken, verifyGuildMember, async (req, res) =>
     const modifySchAttempt = await guildManager.guildSchedules(guildId).modifySessionSchedule(scheduleId, scheduleData)
     if(!modifySchAttempt.success) throw {message: `Internal Error - Failed to add schedule to guild data, please try again!`, code: 500};
     // 4. Return Result:
-    return responder.succeeded(res, ['Schedule Added!', {guildId, scheduleData}]);
+    return responder.succeeded(res, ['Schedule Modified!', {guildId, scheduleData}]);
 
 } catch (err) {
     if(err?.message) { // Known Error:
