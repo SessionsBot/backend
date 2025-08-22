@@ -222,7 +222,7 @@ const guildPanel = (guildId) => {return {
         
         const panelChannelId = guildData?.['sessionSignup'] ?.['panelChannelId'];
         if(!panelChannelId) return { success: false, data: `No 'panelChannelId' provided, cannot create new panel!` };
-        const accentColor = Number(guildData['accentColor'] | 0x9b42f5);
+        const accentColor = Number(guildData['accentColor'] || 0x9b42f5);
 
         // Create Panel Container:
         const panelContainer = new ContainerBuilder()
@@ -370,7 +370,7 @@ const guildPanel = (guildId) => {return {
         }
         if(!guildData) return {success: false, data: `Cannot get Guild Data for Guild Signup Contents!`};
         if(!signupThread) return { success: false, data: `Failed to Send Daily Thread Content | No Thread Provided!`, rawError: e };
-        const accentColor = Number(guildData['accentColor'] | 0x9b42f5);
+        const accentColor = Number(guildData['accentColor'] || 0x9b42f5);
 
         // Variables:
         const signupMentionRoles = guildData?.['sessionSignup']?.['mentionRoleIds'] || [];
@@ -918,7 +918,7 @@ const guildSessions = (guildId) => {return {
             guildData = optional_guildData;
         }
         if(!guildData) return {success: false, data: `Cannot get Guild Data for Session Signup Update!`};
-        const accentColor = Number(guildData['accentColor'] | 0x9b42f5);
+        const accentColor = Number(guildData['accentColor'] || 0x9b42f5);
 
         // Get Session Data:
         const sessionData = guildData?.['upcomingSessions']?.[String(sessionId)]
