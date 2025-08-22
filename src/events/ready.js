@@ -31,7 +31,7 @@ module.exports = {
 		}
 
 		// Testing logtail:
-		logtail.info(' [✅] Bot Startup', { clientTag: client?.user?.tag });
+		logtail.info(' [✅] Bot Startup', { clientTag: client?.user?.tag, botVersion: global?.botVersion });
 
 		// Set Bot User's Activity:
 		client.user.setActivity('📅 Training Sessions', { type: ActivityType.Watching });
@@ -40,7 +40,6 @@ module.exports = {
 		setTimeout(async () => {
 			await scheduleManager.botInitialize()
 		}, 1_500);
-
 
 	},
 };

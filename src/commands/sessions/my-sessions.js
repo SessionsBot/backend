@@ -188,6 +188,7 @@ async function execute(interaction) {
         // Log Error:
         console.log(`{!} [/${interaction.commandName}] An error occurred:`)
         console.log(e)
+        logtail.error(`[/${interaction.commandName}] An error occurred:`, {rawError: e});
     }
 }
 
