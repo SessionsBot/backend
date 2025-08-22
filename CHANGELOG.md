@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.2.0](https://github.com/SessionsBot/backend/compare/v0.1.6...v0.2.0) (2025-08-22)
+
+### ⚡️ Features
+
+* error log storage ([c3b0956](https://github.com/SessionsBot/backend/commit/c3b09561ed3441c1229d02d589af9785c940bd58))
+* logtail logging ([3c5a6b3](https://github.com/SessionsBot/backend/commit/3c5a6b3ad2f33c0aa241bd8362befb9c35354a4a))
+
+### 🐞 Bug Fixes
+
+* accent color logic (Fixes [#27](https://github.com/SessionsBot/backend/issues/27)) ([9c3b2ab](https://github.com/SessionsBot/backend/commit/9c3b2ab571820c1ba6a1762e9b7721daffe93119))
+* accent color logic operators ([bb20e99](https://github.com/SessionsBot/backend/commit/bb20e9914db995f7e55bf8267e8441b1c6ae39f5))
+* client login ([638b674](https://github.com/SessionsBot/backend/commit/638b6747530c3a4d25f16f080e5727fad2d73441))
+* client login ([cb5125d](https://github.com/SessionsBot/backend/commit/cb5125d871af86ad687fbaf9ac927204a0fdbf89))
+* dependabot schedule ([a895444](https://github.com/SessionsBot/backend/commit/a8954442f3fa9d3fefa35f155402a7edd38bd639))
+* old session response (Fixes [#18](https://github.com/SessionsBot/backend/issues/18)) ([ae2a8ca](https://github.com/SessionsBot/backend/commit/ae2a8cab33a311c69476aeecd1e02739b17a0455))
+
+### 🧹 Chores
+
+* **deps:** bump the npm-dependencies group across 1 directory with 12 updates ([a6e69fa](https://github.com/SessionsBot/backend/commit/a6e69fade9a80920e05a6790c6b6b653b513d463))
+
+### ♻️ Refactoring
+
+* removed comments ([132a5c7](https://github.com/SessionsBot/backend/commit/132a5c769a858d0bbbc7bd4d6fc07ee841e6ff71))
+
 ## [0.1.6](https://github.com/SessionsBot/backend/compare/v0.1.5...v0.1.6) (2025-08-18)
 
 ### 🐞 Bug Fixes
