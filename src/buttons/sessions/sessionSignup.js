@@ -189,8 +189,8 @@ module.exports = {
 		let sessionRoles = requestedSessionData?.['roles']
 		const sessionDateDiscord = requestedSessionData?.['date']?.['discordTimestamp']
 		const nowUTCSeconds = DateTime.now().toUnixInteger()
-		if(!upcomingSessions || !requestedSessionData || !sessionRoles) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occurred!', 'An internal server error occurred! Cannot find session data, please contact an administrator...');
-
+		if(!upcomingSessions ) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occurred!', 'An internal server error occurred! Cannot find session data, please contact an administrator...');
+		if(!requestedSessionData || !sessionRoles) return await responses.databaseFailure(interaction, interactionSessionId, '🤨 - Session not Available!', `This session's data is no longer accessible, it may be outdated!`);
 		// Check if Session Already Occurred:
 		const pastSession = nowUTCSeconds >= sessionDateDiscord;
 		if (pastSession){

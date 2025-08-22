@@ -2,6 +2,7 @@
 const { Events, ChannelType, PermissionsBitField } = require('discord.js');
 const global = require('../utils/global')
 const guildManager = require('../utils/guildManager');
+const logtail = require('../utils/logtail.ts')
 
 // Event:
 module.exports = {
@@ -13,6 +14,7 @@ module.exports = {
             console.log(`guildID: ${guild.id}`)
         }
 
+        logtail.info(`Guild ${guild?.name}(${guild?.id}) has added Sessions Bot!`);
 
         // 1. Add New Guild to Database:
         const addGuildResult = await guildManager.guilds(guild.id).createNewGuild()
@@ -62,6 +64,7 @@ module.exports = {
             return;
         } catch (err) {
             console.warn('Failed to DM the guild owner:', err);
+            logtail.error('No suitable greeting message location for newly joined guild!', {guildId: guild?.id, guildName: guild?.name});
             return console.warn(`{!} CRITICAL ERROR: Failed to send welcome/setup message for ${guild.name}.`);
         }
         

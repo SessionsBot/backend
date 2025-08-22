@@ -17,6 +17,7 @@ const { // Discord.js:
     ThumbnailBuilder
 } = require('discord.js');
 const { json } = require('express');
+const logtail = require('../utils/logtail.ts')
 
 const inDepthDebug = (c) => { if (global.outputDebug_InDepth) { console.log(`[Guild Manager]: ${c}`) } }
 
@@ -54,6 +55,7 @@ const guilds = (guildId) => {return {
             return result;
         } catch (error) {
             // Error:
+            logtail.error('Error adding newly added guild to database!', {guildId})
             console.warn('[!] Error adding new guild document: ', error);
             const result = { success: false, data: `An error occurred when trying to save this guild! (${guildId})` };
             return result;
@@ -70,6 +72,7 @@ const guilds = (guildId) => {return {
             return { success: true, data: guildData };
         } catch (e) {
             console.warn('[!] Error reading guild document: ', e);
+            logtail.error('Error reading guild from database!', {guildId})
             return { success: false, data: 'An error occurred when trying to read this guild!', rawError: e};
         }
     },
@@ -107,6 +110,7 @@ const guilds = (guildId) => {return {
 
         } catch (e) {
             console.error(`Failed to move guild ${guildId} to archive:`, err);
+            logtail.error('Error archiving guild that recently removed Sessions Bot!', {guildId})
             return { success: false, data: `Failed to move guild ${guildId} to archive:`, rawError: e };
         }
     },
@@ -128,6 +132,7 @@ const guilds = (guildId) => {return {
         } catch (e) {
             // Error:
             console.warn('[!] Error updating guild document: ', e);
+            logtail.error('Error updating guild docField within database!', {guildId, fieldPath, fieldValue})
             const result = { success: false, data: 'An error occurred when trying to update a guild field!', rawError: e  };
             return result;
         }
@@ -168,6 +173,7 @@ const guildConfiguration = (guildId) => {return {
         } catch (e) {
             // Error:
             console.log(`{!} Failed to save new guild configuration:`)
+            logtail.error('Error saving guild configuration to database!', {guildId, configuration})
             console.log(e)
             return {success: false, data: 'Failed to save new guild configuration to database!', rawError: e}
         }
@@ -279,6 +285,7 @@ const guildPanel = (guildId) => {return {
     } catch (e) {
         // Failed to Create Guild Panel - Return:
         const result = {success: false, data: 'Error - Failed to Create Guild Panel', rawError: e};
+        logtail.error(`Failed to create guild panel for guild ${guildId}!`);
         console.log(result.data + ': ' + e);
         return result;
     }},
@@ -305,9 +312,9 @@ const guildPanel = (guildId) => {return {
         // Delete Existing Panel:
         if(panelMessageId){ try{
             const panelMessage = await panelChannel.messages.fetch(panelMessageId).catch((e) => {})
-            await panelMessage.delete().catch((e) => {})
+            await panelMessage.delete().catch((e) => {logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});})
         }catch(e){
-            //...
+            logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});
         }}
 
         // Get Panel Contents:
@@ -349,6 +356,7 @@ const guildPanel = (guildId) => {return {
     } catch(e){
         // Log Error:
         console.log(`{!} Failed to Create Daily Sessions Thread:`, e)
+        logtail.error(`Failed to create daily thread for guild ${guildId}!`);
         // Return Success Result:
         return { success: false, data: `Failed to Create Daily Sessions Thread`, rawError: e };
     }},
@@ -766,6 +774,7 @@ const guildSessions = (guildId) => {return {
         return result;
     } catch(e){
         // Error Occurred:
+        logtail.error(`Failed to create guilds sessions from schedules ${guildId}!`);
         const result = { success: false, data: `Failed to create guilds sessions from schedules! Id: ${guildId}`, rawError: e };
         return result;
     }},
