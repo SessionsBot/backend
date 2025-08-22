@@ -94,6 +94,12 @@ async function dailyInitializeFn() {
             // Store reference to guilds posting schedule:
             currentDailySchedules[doc.id] = guildPostSchedule;
 
+            // // [TESTING] Run 'testing' guild schedule early:
+            // if(doc.id == '1379160686629880028'){
+            //     console.info('RUNNING DEV-TESTING GUILD SCHEDULE EARLY...');
+            //     guildPostSchedule.execute();
+            // }
+
         }
 
     });
