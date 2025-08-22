@@ -84,8 +84,8 @@ if(debugFileLoader) {
 
 // ------- [ Login (via Token): ] -------
 
-client.login(BOT_TOKEN);
-// client.login(DEV_BOT_TOKEN);
+// client.login(BOT_TOKEN);
+client.login(DEV_BOT_TOKEN);
 
 
 // ------- [ Web Service (prevents inactivity): ] -------
