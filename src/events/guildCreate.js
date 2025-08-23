@@ -1,11 +1,12 @@
 // Imports:
-const { Events, ChannelType, PermissionsBitField } = require('discord.js');
-const global = require('../utils/global')
-const guildManager = require('../utils/guildManager');
-const logtail = require('../utils/logtail.ts')
+import {  Events, ChannelType, PermissionsBitField  } from "discord.js";
+;
+import global from "../utils/global";
+import guildManager from "../utils/guildManager";
+import logtail from "../utils/logtail.ts";
 
 // Event:
-module.exports = {
+export default {
     name: Events.GuildCreate,
     async execute(guild) {
         // Debug New Guild:

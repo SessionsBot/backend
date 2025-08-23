@@ -1,6 +1,6 @@
 // --------------------- [Imports/Variables] --------------------- \\
 
-const {
+import {
     InteractionContextType, 
     SlashCommandBuilder, 
     MessageFlags,
@@ -11,11 +11,11 @@ const {
     ButtonStyle,
     ContainerBuilder,
     ComponentType,
-} = require('discord.js'); // Import Discord.js
-const guildManager = require('../../utils/guildManager.js'); // Import Guild Manager
-const global = require('../../utils/global.js'); // Import Global Variables
+} from 'discord.js'; // Import Discord.js
+import guildManager from "../../utils/guildManager.js"; // Import Guild Manager
+import global from "../../utils/global.js"; // Import Global Variables
 
-const mySessionsResponses = require('../../utils/responses/mySessionsResponses.js');
+import mySessionsResponses from "../../utils/responses/mySessionsResponses.js";
 
 // --------------------- [Command/Execution] --------------------- \\
 
@@ -193,7 +193,7 @@ async function execute(interaction) {
 }
 
 // Exports:
-module.exports = {
+export default {
     data,
     execute
 };

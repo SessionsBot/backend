@@ -1,14 +1,18 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
 const BOT_TOKEN = process.env['BOT_TOKEN'];
-const express = require('express');
+import express from "express";
 const router = express.Router()
-const responder = require('../../utils/responder')
-const { default: axios, HttpStatusCode } = require('axios');
-const verifyToken = require('../../utils/verifyToken');
-const { admin, auth } = require('../../../../../utils/firebase');
-const verifyGuildMember = require('../../utils/verifyMember');
-const { guilds, guildConfiguration } = require('../../../../../utils/guildManager');
-const { createAutoSignupChannel } = require('../../../../events/createAutoSignupChannel');
+import responder from "../../utils/responder";
+import {  default: axios, HttpStatusCode  } from "axios";
+;
+import verifyToken from "../../utils/verifyToken";
+import {  admin, auth  } from "../../../../../utils/firebase";
+;
+import verifyGuildMember from "../../utils/verifyMember";
+import {  guilds, guildConfiguration  } from "../../../../../utils/guildManager";
+;
+import {  createAutoSignupChannel  } from "../../../../events/createAutoSignupChannel";
+;
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -47,7 +51,8 @@ router.get('/:guildId', async (req, res) => {
     
     
         // Check if Bot is in Guild:
-        const { client } = require('../../../../../utils/global');
+        import {  client  } from "../../../../../utils/global";
+;
         if(!client) return responder.errored(res, 'Failed to fetch guild data! Client was inaccessible, please try again later.', 500);
         const guildsCollection = await client.guilds.fetch(); // Collection of [guildId, guild]
         const clientGuildIds = Array.from(guildsCollection.keys()); // Array of guild IDs
@@ -123,4 +128,4 @@ router.post('/:guildId/channels/auto-signup', verifyToken, verifyGuildMember, as
 })
 
 //-------------------------------------[ Export Endpoints ]-------------------------------------\\
-module.exports = router
+export default router

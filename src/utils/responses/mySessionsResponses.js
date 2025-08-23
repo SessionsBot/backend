@@ -1,4 +1,4 @@
-const {
+import {
     InteractionContextType, 
     SlashCommandBuilder, 
     MessageFlags,
@@ -9,13 +9,14 @@ const {
     ButtonStyle,
     ContainerBuilder,
     ComponentType,
-} = require('discord.js'); // Import Discord.js
+} from 'discord.js'; // Import Discord.js
 
-const guildManager = require('../guildManager.js');
-const global = require('../global.js');
-const { DateTime } = require('luxon');
+import guildManager from "../guildManager.js";
+import global from "../global.js";
+import {  DateTime  } from "luxon";
+;
 
-module.exports = {
+export default {
     // Bot Responses - Get Contents:
     getContents: (interaction) => {return {
         

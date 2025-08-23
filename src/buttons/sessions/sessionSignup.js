@@ -1,4 +1,4 @@
-const {
+import {
 	MessageFlags,
 	ActionRowBuilder,
 	StringSelectMenuBuilder,
@@ -8,11 +8,12 @@ const {
 	ContainerBuilder,
 	SeparatorBuilder,
 	TextDisplayBuilder,
-} = require('discord.js');
+} from 'discord.js';
 
-const guildManager = require('../../utils/guildManager.js');
-const global = require('../../utils/global.js');
-const { DateTime } = require('luxon');
+import guildManager from "../../utils/guildManager.js";
+import global from "../../utils/global.js";
+import {  DateTime  } from "luxon";
+;
 
 const responses = {
 
@@ -166,7 +167,7 @@ const responses = {
 
 }
 
-module.exports = {
+export default {
 	data: {
 		customId: 'sessionSignup',
 	},

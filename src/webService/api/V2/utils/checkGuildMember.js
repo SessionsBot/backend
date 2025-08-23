@@ -1,5 +1,6 @@
 async function checkIfUserInGuild(guildId, userId) {
-  const { client } = require("../../../../utils/global");
+  import {  client  } from "../../../../utils/global";
+;
   try {
 
     if(!client) return {
@@ -46,4 +47,4 @@ async function checkIfUserInGuild(guildId, userId) {
   }
 }
 
-module.exports = { checkIfUserInGuild };
+export default {  checkIfUserInGuild  };

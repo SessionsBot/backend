@@ -1,8 +1,9 @@
 // Imports
 const JWT_KEY = process.env.JSON_WEBTOKEN_SECRET;
-const jwt = require('jsonwebtoken');
-const { Request, Response, NextFunction } = require('express');
-const responder = require('./responder');
+import jwt from "jsonwebtoken";
+import {  Request, Response, NextFunction  } from "express";
+;
+import responder from "./responder";
 
 
 /** __Utility function used to verify and decode a users authentication token.__
@@ -42,4 +43,4 @@ const verifyToken = (req, res, next) => {
 }
 
 // Export:
-module.exports = verifyToken
+export default verifyToken

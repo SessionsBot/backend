@@ -1,8 +1,9 @@
 // -------------------------- [ Imports/Variables ] -------------------------- \\
-const cron = require('node-cron');
-const global = require('./global.js') // Import Global Variables
-const guildManager = require('./guildManager.js')
-const { db } = require('./firebase.js'); // Import Firebase
+import cron from "node-cron";
+import global from "./global.js"; // Import Global Variables
+import guildManager from "./guildManager.js";
+import {  db  } from "./firebase.js";
+; // Import Firebase
 
 let currentDailySchedules = {}; // <-- Store node schedules to be replaced each day w/ fresh data
 
@@ -109,6 +110,6 @@ async function dailyInitializeFn() {
 
 
 // -------------------------- [ Exports ] -------------------------- \\
-module.exports = {
+export default {
     botInitialize,
 }

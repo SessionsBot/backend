@@ -1,14 +1,18 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const { default: axios, HttpStatusCode } = require('axios');
-const responder = require('../../utils/responder');
-const { frontend_Url } = require('../../../../../utils/global');
-const verifyToken = require('../../utils/verifyToken');
-const { admin, auth } = require('../../../../../utils/firebase');
-const { Response } = require('express');
-const LZString = require('lz-string')
+import jwt from "jsonwebtoken";
+import {  default: axios, HttpStatusCode  } from "axios";
+;
+import responder from "../../utils/responder";
+import {  frontend_Url  } from "../../../../../utils/global";
+;
+import verifyToken from "../../utils/verifyToken";
+import {  admin, auth  } from "../../../../../utils/firebase";
+;
+import {  Response  } from "express";
+;
+import LZString from "lz-string";
 
 
 // Secure Variables:
@@ -192,4 +196,4 @@ router.delete('/:userId', verifyToken, async (req, res) => {
 })
 
 //-------------------------------------[ Export Endpoints ]-------------------------------------\\
-module.exports = router
+export default router

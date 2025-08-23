@@ -1,4 +1,4 @@
-const { 
+import { 
     SlashCommandBuilder,
     InteractionContextType,
     MessageFlags,
@@ -7,10 +7,10 @@ const {
     TextDisplayBuilder,
     SeparatorBuilder,
     PermissionFlagsBits,
-} = require('discord.js'); // Import Discord.js
+} from 'discord.js'; // Import Discord.js
 
-// const sessionManager = require('../../utils/guildManager'); // Import Session Manager
-// const global = require('../../global'); // Import Global Variables
+// import sessionManager from "../../utils/guildManager"; // Import Session Manager
+// import global from "../../global"; // Import Global Variables
 
 // Register Command:
 const data = new SlashCommandBuilder()
@@ -176,7 +176,7 @@ async function autocomplete(interaction) {
 
 
 // Exports:
-module.exports = {
+export default {
     data,
     execute,
     autocomplete

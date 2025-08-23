@@ -1,5 +1,7 @@
-module.exports = {
-    botVersion: require('../../package.json').version,
+import pkg from '../../package.json'
+
+export default {
+    botVersion: pkg.version,
     frontend_Url: 'https://sessionsbot.fyi',
     outputDebug_General: true,
     outputDebug_InDepth: false,

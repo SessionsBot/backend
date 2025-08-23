@@ -1,8 +1,9 @@
 // Imports
 const JWT_KEY = process.env.JSON_WEBTOKEN_SECRET;
-const jwt = require('jsonwebtoken');
-const { Request, Response, NextFunction } = require('express');
-const responder = require('./responder');
+import jwt from "jsonwebtoken";
+import {  Request, Response, NextFunction  } from "express";
+;
+import responder from "./responder";
 
 
 /** __Utility function used to verify the authorized user is member of the requested guild.__
@@ -29,7 +30,8 @@ const verifyGuildMember = async (req, res, next) => {
     if(!actorUserId) return responder.errored(res, `Internal Error - Couldn't access authed user from req data.`, 500)
     
     // Check if actor is member:
-    const { client } = require("../../../../utils/global");
+    import {  client  } from "../../../../utils/global";
+;
     try {
         if(!client) throw 'Discord bot client is not accessible.'
 
@@ -52,4 +54,4 @@ const verifyGuildMember = async (req, res, next) => {
 }
 
 // Export:
-module.exports = verifyGuildMember
+export default verifyGuildMember

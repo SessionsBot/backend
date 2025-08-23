@@ -1,19 +1,20 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const responder = require('./utils/responder.js');
-const { HttpStatusCode } = require('axios');
+import responder from "./utils/responder.js";
+import {  HttpStatusCode  } from "axios";
+;
 
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const path = require('path');
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
+import path from "path";
 const swaggerDocument = YAML.load(path.join(__dirname, 'docs.yml'));
 
 // Nested Endpoints:
-const users = require('./endpoints/users');
-const guilds = require('./endpoints/guilds');
-const sessions = require('./endpoints/guilds/sessions');
-const schedules = require('./endpoints/guilds/schedules');
+import users from "./endpoints/users";
+import guilds from "./endpoints/guilds";
+import sessions from "./endpoints/guilds/sessions";
+import schedules from "./endpoints/guilds/schedules";
 
 
 
@@ -33,4 +34,4 @@ router.get('/', (req, res) => {
 router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Router:
-module.exports = router
+export default router

@@ -1,13 +1,16 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
-const express = require('express');
+import express from "express";
 const router = express.Router({mergeParams: true})
-const responder = require('../../utils/responder');
-const { HttpStatusCode } = require('axios');
-const guildManager = require('../../../../../utils/guildManager');
-const { client } = require('../../../../../utils/global');
-const { checkIfUserInGuild } = require('../../utils/checkGuildMember');
-const verifyToken = require('../../utils/verifyToken');
-const verifyGuildMember = require('../../utils/verifyMember');
+import responder from "../../utils/responder";
+import {  HttpStatusCode  } from "axios";
+;
+import guildManager from "../../../../../utils/guildManager";
+import {  client  } from "../../../../../utils/global";
+;
+import {  checkIfUserInGuild  } from "../../utils/checkGuildMember";
+;
+import verifyToken from "../../utils/verifyToken";
+import verifyGuildMember from "../../utils/verifyMember";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -142,4 +145,4 @@ router.delete('/:sessionId/roles', verifyToken, verifyGuildMember, async (req, r
 }})
 
 //-------------------------------------[ Export Endpoints ]-------------------------------------\\
-module.exports = router
+export default router

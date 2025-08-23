@@ -1,15 +1,20 @@
 // ------- [ Variables/Setup: ] -------
 
-require('dotenv').config();
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+import dotenv from "dotenv";
+import { fileURLToPath } from "node:url";
+dotenv.config();
+import {  Client, Collection, GatewayIntentBits  } from "discord.js";
+;
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-const global = require('./src/utils/global.js')
+import global from "./src/utils/global.js";
 const BOT_TOKEN = process.env['BOT_TOKEN'];
 const DEV_BOT_TOKEN = process.env['DEV_BOT_TOKEN'];
 
-const fs = require('fs');
-const path = require('node:path');
+import fs from "fs";
+import path from "node:path";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ------- [ File Loader Utility: ] -------
 
@@ -32,7 +37,7 @@ client.commands = new Collection();
 const commandFiles = getAllFiles(path.join(__dirname, 'src', 'commands'), '.js');
 
 for (const filePath of commandFiles) {
-	const command = require(filePath);
+	const { default: command } = await import(filePath);
 	if ('data' in command && 'execute' in command) {
 		client.commands.set(command.data.name, command);
 	} else {
@@ -47,7 +52,7 @@ client.buttons = new Collection();
 const buttonFiles = getAllFiles(path.join(__dirname, 'src', 'buttons'), '.js');
 
 for (const filePath of buttonFiles) {
-	const button = require(filePath);
+	const { default: button } = await import(filePath);
 	if ('data' in button && 'execute' in button) {
 		client.buttons.set(button.data.customId, button);
 	} else {
@@ -62,7 +67,7 @@ const eventFiles = fs.readdirSync(path.join(__dirname, 'src', 'events')).filter(
 
 for (const file of eventFiles) {
 	const filePath = path.join(__dirname, 'src', 'events', file);
-	const event = require(filePath);
+	const { default: event } = await import(filePath);
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args));
 	} else {
@@ -84,10 +89,10 @@ if(debugFileLoader) {
 
 // ------- [ Login (via Token): ] -------
 
-client.login(BOT_TOKEN);
-// client.login(DEV_BOT_TOKEN);
+// client.login(BOT_TOKEN);
+client.login(DEV_BOT_TOKEN);
 
 
 // ------- [ Web Service (prevents inactivity): ] -------
 
-require('./src/webService/webService.js')
+import './src/webService/webService.js';

@@ -1,4 +1,4 @@
-const {
+import {
     SlashCommandBuilder,
     InteractionContextType,
     MessageFlags,
@@ -6,9 +6,9 @@ const {
     TextDisplayBuilder,
     SeparatorBuilder,
     PermissionFlagsBits,
-} = require('discord.js'); // Import Discord.js
+} from 'discord.js'; // Import Discord.js
 
-const guildManager = require('../../utils/guildManager.js'); // Import Session Manager
+import guildManager from "../../utils/guildManager.js"; // Import Session Manager
 
 // Register Command:
 const data = new SlashCommandBuilder()
@@ -67,7 +67,7 @@ async function execute(interaction) {
 
 
 // Exports:
-module.exports = {
+export default {
     data,
     execute
 }

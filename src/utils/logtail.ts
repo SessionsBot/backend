@@ -1,4 +1,5 @@
-const { Logtail } = require("@logtail/node");
+import {  Logtail  } from "@logtail/node";
+;
 const sourceToken = process.env['SOURCE_TOKEN'];
 const ingestingHost = process.env['INGESTING_HOST'];
 
@@ -7,4 +8,4 @@ const logtail = new Logtail(sourceToken, {
   endpoint: ingestingHost,
 });
 
-module.exports = logtail
+export default logtail

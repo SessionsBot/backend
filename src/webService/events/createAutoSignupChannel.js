@@ -1,5 +1,6 @@
-const { ChannelType, PermissionFlagsBits, ContainerBuilder, TextDisplayBuilder, MessageFlags, SeparatorBuilder } = require('discord.js');
-const global = require('../../utils/global.js')
+import {  ChannelType, PermissionFlagsBits, ContainerBuilder, TextDisplayBuilder, MessageFlags, SeparatorBuilder  } from "discord.js";
+;
+import global from "../../utils/global.js";
 
 const createAutoSignupChannel = async (guildId, adminId) => {
     try {
@@ -93,4 +94,4 @@ const createAutoSignupChannel = async (guildId, adminId) => {
     }
 };
 
-module.exports = { createAutoSignupChannel };
+export default {  createAutoSignupChannel  };

@@ -1,5 +1,7 @@
-const { HttpStatusCode } = require('axios');
-const { Response } = require('express');
+import {  HttpStatusCode  } from "axios";
+;
+import {  Response  } from "express";
+;
 
 /** Used for sending consistent API responses, for both successful and unsuccessful responses. */
 const responder = {
@@ -34,4 +36,4 @@ const responder = {
     },
 }
 
-module.exports = responder
+export default responder

@@ -1,14 +1,16 @@
 // Imports:
-const { Events, ChannelType, PermissionsBitField } = require('discord.js');
-const global = require('../utils/global')
-const guildManager = require('../utils/guildManager');
-const logtail = require('../utils/logtail.ts')
-const { DateTime } = require('luxon')
+import {  Events, ChannelType, PermissionsBitField  } from "discord.js";
+;
+import global from "../utils/global";
+import guildManager from "../utils/guildManager";
+import logtail from "../utils/logtail.ts";
+import {  DateTime  } from "luxon";
+
 
 
 
 // Event Execution:
-module.exports = {
+export default {
     name: Events.GuildDelete,
     async execute(guild) {
         // Debug - Leaving Guild:

@@ -1,4 +1,4 @@
-const {
+import {
     InteractionContextType, 
     SlashCommandBuilder, 
     MessageFlags,
@@ -9,15 +9,16 @@ const {
     ButtonStyle,
     ContainerBuilder,
     ComponentType,
-} = require('discord.js'); // Import Discord.js
+} from ('discord.js') // Import Discord.js
 
-const guildManager = require('../../utils/guildManager.js');
-const global = require('../../utils/global.js');
-const { DateTime } = require('luxon');
-const mySessionsResponses = require('../../utils/responses/mySessionsResponses.js');
+import guildManager from "../../utils/guildManager.js";
+import global from "../../utils/global.js";
+import { DateTime } from "luxon";
+;
+import mySessionsResponses from "../../utils/responses/mySessionsResponses.js";
 
 
-module.exports = {
+export default {
     // Button Configuration:
     data: {
 		customId: 'view-my-sessions',
