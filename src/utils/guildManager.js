@@ -597,7 +597,7 @@ const guildSessions = (guildId) => {return {
     // Create New Upcoming Session:
     createSession: async (sessionScheduleObject, timeZone) => {
         const sessionDateDaily = sessionScheduleObject.sessionDateDaily;
-        const sessionRoles = sessionScheduleObject.roles;
+        const sessionRoles = sessionScheduleObject?.roles;
         const sessionTitle = sessionScheduleObject.sessionTitle ;
         const sessionUrl = sessionScheduleObject.sessionUrl;
 
@@ -628,7 +628,7 @@ const guildSessions = (guildId) => {return {
             await db.collection('guilds').doc(String(guildId)).update({
                 [`upcomingSessions.${sessionId}`]: { // Use dot notation for nested field
                     date: sessionDateDaily,
-                    roles: sessionRoles,
+                    roles: sessionRoles || [],
                     title: sessionTitle,
                     location: sessionUrl,
                 }
@@ -728,7 +728,7 @@ const guildSessions = (guildId) => {return {
         for(const[scheduleId, scheduleData] of Object.entries(fullSchedulesObject)) {
             // Session Data:
             const sessionDateDaily = scheduleData?.['sessionDateDaily'];
-            const sessionRoles = scheduleData?.['roles'];
+            const sessionRoles = scheduleData?.['roles'] || [];
             const sessionTitle = scheduleData?.['sessionTitle'] ;
             const sessionUrl = scheduleData?.['sessionUrl'];
             

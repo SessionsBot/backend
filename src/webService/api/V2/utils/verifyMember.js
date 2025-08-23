@@ -25,6 +25,7 @@ const verifyGuildMember = async (req, res, next) => {
     // Guild from request:
     const guildId = req.params?.guildId
     const actorUserId = req?.user?.id
+    if(!guildId) return responder.errored(res, {message: `Bad Request - Couldn't verify guild membership, a guild id was unprovided.`, orgRequest: req?.originalUrl}, 400)
     if(!actorUserId) return responder.errored(res, `Internal Error - Couldn't access authed user from req data.`, 500)
     
     // Check if actor is member:
@@ -45,7 +46,7 @@ const verifyGuildMember = async (req, res, next) => {
     } catch (err) {
         if (err.code === 10007) return responder.errored(res, `Invalid Permission - You're not a member of this guild.`)
         if (err.code === 10004) return responder.errored(res, `Unknown Guild - Sessions Bot isn't a member of this guild.`)
-        console.log('API verifyMember Error:', err)
+        console.log('API verifyMember Error:', err, {originalReg: req?.originalUrl})
         return responder.errored(res, `Internal Error - Couldn't verify actors(ID: ${actorUserId}) guild membership within guild ${guildId}.`, 500)
     }
 }
