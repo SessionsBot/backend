@@ -20,7 +20,6 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.0.1",
     "firebase-admin": "^13.4.0",
-    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "luxon": "^3.6.1",
     "lz-string": "^1.5.0",
