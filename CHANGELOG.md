@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/SessionsBot/backend/compare/v0.2.0...v0.2.1) (2025-08-23)
+
+### 🐞 Bug Fixes
+
+* api verifyMembership() guidId param ([dc8c22e](https://github.com/SessionsBot/backend/commit/dc8c22e67e122b12ac19acaf7a3c3907362b517c))
+* Issue [#22](https://github.com/SessionsBot/backend/issues/22) ([a3f9350](https://github.com/SessionsBot/backend/commit/a3f93502736bc5fa66ff56e7ea66ee64938cedb2))
+
 ## [0.2.0](https://github.com/SessionsBot/backend/compare/v0.1.6...v0.2.0) (2025-08-22)
 
 ### ⚡️ Features
