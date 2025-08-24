@@ -4,9 +4,12 @@ const botToken = process.env['BOT_TOKEN']
 const clientId = process.env['CLIENT_ID']
 
 // Imports:
-const { REST, Routes } = require('discord.js');
-const fs = require('node:fs');
-const path = require('node:path');
+import {  REST, Routes  } from "discord.js";
+import { fileURLToPath } from "node:url";
+import fs from "node:fs";
+import path from "node:path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const commands = [];
 // Grab all the command folders from the commands directory you created earlier

@@ -1,5 +1,11 @@
-module.exports = {
-    botVersion: require('../../package.json').version,
+import fs from 'fs';
+import path from 'path';
+// Get package.json data:
+const pkgPath = path.resolve('./package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+
+export default {
+    botVersion: pkg.version,
     frontend_Url: 'https://sessionsbot.fyi',
     outputDebug_General: true,
     outputDebug_InDepth: false,

@@ -1,9 +1,9 @@
 // -------------------------- [ Imports/Variables ] -------------------------- \\
 
-const { DateTime } = require('luxon');
-const { db } = require('./firebase.js'); // Import Firebase
-const global = require('./global.js'); // Import Global Variables
-const { // Discord.js:
+import {  DateTime  } from "luxon";
+import {  db  } from "./firebase.js"; // Import Firebase
+import global from "./global.js"; // Import Global Variables
+import { // Discord.js:
     ContainerBuilder, 
     SeparatorBuilder, 
     TextDisplayBuilder,
@@ -15,9 +15,8 @@ const { // Discord.js:
     ThreadAutoArchiveDuration,
     ChannelType,
     ThumbnailBuilder
-} = require('discord.js');
-const { json } = require('express');
-const logtail = require('../utils/logtail.ts')
+} from 'discord.js';
+import logtail from "../utils/logtail.ts";
 
 const inDepthDebug = (c) => { if (global.outputDebug_InDepth) { console.log(`[Guild Manager]: ${c}`) } }
 
@@ -431,7 +430,7 @@ const guildPanel = (guildId) => {return {
         const signupFooter = async () => {
             // Build Footer Container:
             const container = new ContainerBuilder()
-            container.setAccentColor(0x354154)
+            container.setAccentColor(0x354154) // grey (secondary)
             const separator = new SeparatorBuilder()
             // Content:
             // Add Mention Roles:
@@ -960,7 +959,7 @@ const guildSessions = (guildId) => {return {
 
 // -------------------------- [ Exports ] -------------------------- \\
 
-module.exports = {
+export default {
     guilds,
     guildConfiguration,
     guildPanel,

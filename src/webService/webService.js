@@ -1,12 +1,12 @@
 // App/Imports:
-const express = require('express');
-const global = require('../utils/global.js')
+import express from "express";
+import global from "../utils/global.js";
 const app = express();
 app.set('trust proxy', 1) // for: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR' error
 app.use(express.json());
 
 // Security - Middleware:
-const cors = require('cors');
+import cors from "cors";
 const allowedOrigins = [
   'https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app',
   'https://sessionsbot.fyi',
@@ -27,7 +27,7 @@ app.use(cors({
 }));
 
 // set up rate limiter: maximum of five requests per minute
-const RateLimit = require('express-rate-limit');
+import RateLimit from "express-rate-limit";
 const limiter = RateLimit({
   windowMs: 60 * 1000 * 10, // 10 min(s)
   max: 100, // max requests
@@ -44,7 +44,7 @@ app.get('/status', (req, res) => res.status(200).json({ status: 'ONLINE', messag
 app.get('/version', (req, res) => res.status(200).json({ version: global.botVersion}));
 
 // Router - API V2:
-const apiV2 = require('./api/V2/index.js')
+import apiV2 from "./api/V2/index.js";
 app.use('/api/v2', apiV2)
 
 // Initialize Port:

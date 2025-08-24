@@ -1,4 +1,4 @@
-const {
+import {
     InteractionContextType, 
     SlashCommandBuilder, 
     MessageFlags,
@@ -9,13 +9,14 @@ const {
     ButtonStyle,
     ContainerBuilder,
     ComponentType,
-} = require('discord.js'); // Import Discord.js
+} from 'discord.js'; // Import Discord.js
 
-const guildManager = require('../guildManager.js');
-const global = require('../global.js');
-const { DateTime } = require('luxon');
+import guildManager from "../guildManager.js";
+import global from "../global.js";
+import {  DateTime  } from "luxon";
 
-module.exports = {
+
+export default {
     // Bot Responses - Get Contents:
     getContents: (interaction) => {return {
         
@@ -31,7 +32,7 @@ module.exports = {
             msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('### 📝 Signup Now'))
             // Desc:
             msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('-# Want to sign up for more sessions?'))
-            // Accent Color:
+            // Accent Color: (green)
             msgContainer.setAccentColor(0x6dc441)
             // Spacer
             msgContainer.addSeparatorComponents(separator)
@@ -158,7 +159,7 @@ module.exports = {
             const separator = new SeparatorBuilder()
             // Title
             msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Command Error:'))
-            msgContainer.setAccentColor(0xfc9d03)
+            msgContainer.setAccentColor(0xfc9d03) // orange (warning)
             // Spacer
             msgContainer.addSeparatorComponents(separator) 
             // Info

@@ -1,4 +1,4 @@
-const { // Import Discord.js
+import { // Import Discord.js
     EmbedBuilder, 
     InteractionContextType, 
     SlashCommandBuilder, 
@@ -6,9 +6,9 @@ const { // Import Discord.js
     SlashCommandBooleanOption,
     CommandInteraction,
     messageLink,
-} = require('discord.js');
+} from 'discord.js';
 
-const global = require('../../utils/global')
+import global from "../../utils/global.js";
 
 // Register Command:
 const data = new SlashCommandBuilder()
@@ -92,7 +92,7 @@ async function execute(interaction) {
     
 }
 
-module.exports = {
+export default{
     data,
     execute
 };

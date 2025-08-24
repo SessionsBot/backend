@@ -1,14 +1,15 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const { default: axios, HttpStatusCode } = require('axios');
-const responder = require('../../utils/responder');
-const { frontend_Url } = require('../../../../../utils/global');
-const verifyToken = require('../../utils/verifyToken');
-const { admin, auth } = require('../../../../../utils/firebase');
-const { Response } = require('express');
-const LZString = require('lz-string')
+import jwt from "jsonwebtoken";
+import axios from "axios";
+import responder from "../../utils/responder.ts";
+import global from "../../../../../utils/global.js";
+const frontend_Url = global.frontend_Url;
+import verifyToken from "../../utils/verifyToken.ts";
+import {  admin, auth  } from "../../../../../utils/firebase.js";
+const {  Response  } = express
+import LZString from "lz-string";
 
 
 // Secure Variables:
@@ -22,7 +23,7 @@ const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.ko
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
 // Root Call:
 router.get('/', (req, res) => {
-    return responder.errored(res, 'Please provide a valid user id or endpoint', HttpStatusCode.BadRequest);
+    return responder.errored(res, 'Please provide a valid user id or endpoint', 400);
 })
 
 // Discord oAuth2 - /api/v2/users/auth/discord
@@ -192,4 +193,4 @@ router.delete('/:userId', verifyToken, async (req, res) => {
 })
 
 //-------------------------------------[ Export Endpoints ]-------------------------------------\\
-module.exports = router
+export default router

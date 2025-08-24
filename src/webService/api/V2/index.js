@@ -1,19 +1,24 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
-const express = require('express');
+import express from "express";
 const router = express.Router();
-const responder = require('./utils/responder.js');
-const { HttpStatusCode } = require('axios');
+import responder from "./utils/responder.ts";
+import {  HttpStatusCode  } from "axios";
 
-const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const path = require('path');
-const swaggerDocument = YAML.load(path.join(__dirname, 'docs.yml'));
+import swaggerUi from "swagger-ui-express";
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import YAML from 'yamljs';
+
+const __filename = fileURLToPath(import.meta.url); // equivalent of __filename
+const __dirname = dirname(__filename);            // equivalent of __dirname
+
+const swaggerDocument = YAML.load(join(__dirname, 'docs.yml'));
 
 // Nested Endpoints:
-const users = require('./endpoints/users');
-const guilds = require('./endpoints/guilds');
-const sessions = require('./endpoints/guilds/sessions');
-const schedules = require('./endpoints/guilds/schedules');
+import users from "./endpoints/users/index.js";
+import guilds from "./endpoints/guilds/index.js";
+import sessions from "./endpoints/guilds/sessions.js";
+import schedules from "./endpoints/guilds/schedules.js";
 
 
 
@@ -33,4 +38,4 @@ router.get('/', (req, res) => {
 router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Router:
-module.exports = router
+export default router

@@ -1,14 +1,14 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
 const BOT_TOKEN = process.env['BOT_TOKEN'];
-const express = require('express');
+import express from "express";
 const router = express.Router()
-const responder = require('../../utils/responder')
-const { default: axios, HttpStatusCode } = require('axios');
-const verifyToken = require('../../utils/verifyToken');
-const { admin, auth } = require('../../../../../utils/firebase');
-const verifyGuildMember = require('../../utils/verifyMember');
-const { guilds, guildConfiguration } = require('../../../../../utils/guildManager');
-const { createAutoSignupChannel } = require('../../../../events/createAutoSignupChannel');
+import responder from "../../utils/responder.ts";
+import { HttpStatusCode  } from "axios";
+import verifyToken from "../../utils/verifyToken.ts";
+import verifyGuildMember from "../../utils/verifyMember.ts";
+import guildManager from "../../../../../utils/guildManager.js";
+import {  createAutoSignupChannel  } from "../../../../events/createAutoSignupChannel.js";
+import global from "../../../../../utils/global.js";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -47,7 +47,7 @@ router.get('/:guildId', async (req, res) => {
     
     
         // Check if Bot is in Guild:
-        const { client } = require('../../../../../utils/global');
+        const client = global.client;
         if(!client) return responder.errored(res, 'Failed to fetch guild data! Client was inaccessible, please try again later.', 500);
         const guildsCollection = await client.guilds.fetch(); // Collection of [guildId, guild]
         const clientGuildIds = Array.from(guildsCollection.keys()); // Array of guild IDs
@@ -55,7 +55,7 @@ router.get('/:guildId', async (req, res) => {
     
         // Get Guild Data from Database:
         let guildDatabaseData;
-        const guildDataRetrieval = await guilds(String(guildId)).readGuild()
+        const guildDataRetrieval = await guildManager.guilds(String(guildId)).readGuild()
         if (!guildDataRetrieval.success) {
             guildDatabaseData = 'null'
         } else {
@@ -91,7 +91,7 @@ router.delete('/:guildId', verifyToken, verifyGuildMember, async (req, res) => {
     const actingUser = req?.user
 
     // Archive guild:
-    const archiveAttempt = await guilds(deleteId).archiveGuild()
+    const archiveAttempt = await guildManager.guilds(deleteId).archiveGuild()
     if(!archiveAttempt.success) return responder.errored(res, 'Failed to archive guild, please try again!')
     else return responder.succeeded(res, 'Guild has been archived successfully.')
 })
@@ -104,7 +104,7 @@ router.patch('/:guildId/configuration', verifyToken, verifyGuildMember, async (r
     const configurationSetup = req.body?.configuration;
 
     // 2. Attempt Save:
-    const configureResult = await guildConfiguration(guildId).configureGuild(configurationSetup);
+    const configureResult = await guildManager.guildConfiguration(guildId).configureGuild(configurationSetup);
     if(!configureResult.success) return responder.errored(res, 'Failed to save guild configuration, please try again!', 500);
     else return responder.succeeded(res, 'Guild configuration saved successfully!');
 })
@@ -123,4 +123,4 @@ router.post('/:guildId/channels/auto-signup', verifyToken, verifyGuildMember, as
 })
 
 //-------------------------------------[ Export Endpoints ]-------------------------------------\\
-module.exports = router
+export default router

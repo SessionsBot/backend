@@ -1,5 +1,5 @@
-const { HttpStatusCode } = require('axios');
-const { Response } = require('express');
+import {  HttpStatusCode  } from "axios";
+import type { Response } from "express";
 
 /** Used for sending consistent API responses, for both successful and unsuccessful responses. */
 const responder = {
@@ -9,7 +9,7 @@ const responder = {
      * @param {unknown} data Any data/information to include within API response.
      * @param {HttpStatusCode} status The HTTP status code number to include with the response.
      * @returns {import('@sessionsbot/api-types').APIResponse} */
-    succeeded: (res, data = {}, status = 200) => {
+    succeeded: (res:Response, data = {}, status = 200) => {
         return res.status(status).json({
             success: true,
             data,
@@ -22,7 +22,7 @@ const responder = {
      * @param {unknown} message Any data/information to include within API response.
      * @param {HttpStatusCode} status The HTTP status code number to include with the response.
      * @returns {import('@sessionsbot/api-types').APIResponse} */
-    errored: (res, message, status = 500) => {
+    errored: (res:Response, message, status = 500) => {
         return res.status(status).json({
             success: false,
             data: null,
@@ -34,4 +34,4 @@ const responder = {
     },
 }
 
-module.exports = responder
+export default responder

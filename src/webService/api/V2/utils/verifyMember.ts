@@ -1,11 +1,13 @@
 // Imports
-const JWT_KEY = process.env.JSON_WEBTOKEN_SECRET;
-const jwt = require('jsonwebtoken');
-const { Request, Response, NextFunction } = require('express');
-const responder = require('./responder');
+import global from "../../../../utils/global.js";
+import type {  Request, Response, NextFunction  } from "express";
+import type { AuthenticatedRequest } from "./verifyToken.ts";
+import responder from "./responder.ts";
+// import type { DecodedUserData } from "@sessionsbot/api-types";
+import { Client } from "discord.js";
 
 
-/** __Utility function used to verify the authorized user is member of the requested guild.__
+/** __Utility function used to verify the *authorized user* is a member of the requested guild.__
  * 1. Checks inside original request for authentication data.
  * 2. Verifies actor is a member within specified guild in request
  * 
@@ -17,10 +19,7 @@ const responder = require('./responder');
  * @param {Response} res Original response object from API call.
  * @param {NextFunction} next The function/execution from API call.
  */
-const verifyGuildMember = async (req, res, next) => {
-    // Auth Token Data:
-    // const token = req.headers?.authorization?.split(' ')[1];
-    // if(!token) return responder.errored(res, 'Invalid Permissions - An authentication token was not provided!', 401);
+const verifyGuildMember = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
 
     // Guild from request:
     const guildId = req.params?.guildId
@@ -29,9 +28,12 @@ const verifyGuildMember = async (req, res, next) => {
     if(!actorUserId) return responder.errored(res, `Internal Error - Couldn't access authed user from req data.`, 500)
     
     // Check if actor is member:
-    const { client } = require("../../../../utils/global");
+    const cachedClient = global?.client;
+
     try {
-        if(!client) throw 'Discord bot client is not accessible.'
+        
+        if(!cachedClient) throw 'Discord bot client is not accessible.'
+        const client : Client = cachedClient
 
         // Check via Discord.js
         const guild = await client?.guilds?.fetch(guildId);
@@ -52,4 +54,4 @@ const verifyGuildMember = async (req, res, next) => {
 }
 
 // Export:
-module.exports = verifyGuildMember
+export default verifyGuildMember

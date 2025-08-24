@@ -3,6 +3,7 @@
   "version": "0.2.1",
   "private": "true",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
@@ -30,7 +31,7 @@
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^10.0.1",
-    "@sessionsbot/api-types": "^2.1.8",
+    "@sessionsbot/api-types": "^2.1.9",
     "release-it": "^19.0.4"
   }
 }
