@@ -1,8 +1,6 @@
 // Imports
 import global from "../../../../utils/global.js";
-import type {  Request, Response, NextFunction  } from "express";
-import type { AuthenticatedRequest } from "./verifyToken.ts";
-import responder from "./responder.ts";
+import responder from "./responder.js";
 // import type { DecodedUserData } from "@sessionsbot/api-types";
 import { Client } from "discord.js";
 
@@ -19,7 +17,7 @@ import { Client } from "discord.js";
  * @param {Response} res Original response object from API call.
  * @param {NextFunction} next The function/execution from API call.
  */
-const verifyGuildMember = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+const verifyGuildMember = async (req, res, next) => {
 
     // Guild from request:
     const guildId = req.params?.guildId
@@ -33,7 +31,7 @@ const verifyGuildMember = async (req: AuthenticatedRequest, res: Response, next:
     try {
         
         if(!cachedClient) throw 'Discord bot client is not accessible.'
-        const client : Client = cachedClient
+        const client = cachedClient
 
         // Check via Discord.js
         const guild = await client?.guilds?.fetch(guildId);

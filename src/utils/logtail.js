@@ -1,5 +1,5 @@
 import {  Logtail  } from "@logtail/node";
-const sourceToken: string | undefined = process.env['SOURCE_TOKEN'];
+const sourceToken = process.env['SOURCE_TOKEN'];
 const ingestingHost = process.env['INGESTING_HOST'];
 
 if(!sourceToken) console.warn(`{!} LOGTAIL is missing 'sourceToken', log storage will be unavailable!`)

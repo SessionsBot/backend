@@ -1,12 +1,12 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
 import express from "express";
 const router = express.Router({mergeParams: true})
-import responder from "../../utils/responder.ts";
+import responder from "../../utils/responder.js";
 import {  HttpStatusCode  } from "axios";
 import guildManager from "../../../../../utils/guildManager.js";
 import {  checkIfUserInGuild  } from "../../utils/checkGuildMember.js";
-import verifyToken from "../../utils/verifyToken.ts";
-import verifyGuildMember from "../../utils/verifyMember.ts";
+import verifyToken from "../../utils/verifyToken.js";
+import verifyGuildMember from "../../utils/verifyMember.js";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\

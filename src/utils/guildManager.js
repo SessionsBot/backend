@@ -16,7 +16,7 @@ import { // Discord.js:
     ChannelType,
     ThumbnailBuilder
 } from 'discord.js';
-import logtail from "../utils/logtail.ts";
+import logtail from "../utils/logtail.js";
 
 const inDepthDebug = (c) => { if (global.outputDebug_InDepth) { console.log(`[Guild Manager]: ${c}`) } }
 

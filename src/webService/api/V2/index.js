@@ -1,7 +1,7 @@
 //------------------------------------------[ Imports ]------------------------------------------\\
 import express from "express";
 const router = express.Router();
-import responder from "./utils/responder.ts";
+import responder from "./utils/responder.js";
 import {  HttpStatusCode  } from "axios";
 
 import swaggerUi from "swagger-ui-express";

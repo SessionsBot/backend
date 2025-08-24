@@ -32,6 +32,7 @@
   "devDependencies": {
     "@release-it/conventional-changelog": "^10.0.1",
     "@sessionsbot/api-types": "^2.1.9",
-    "release-it": "^19.0.4"
+    "release-it": "^19.0.4",
+    "typescript": "^5.9.2"
   }
 }

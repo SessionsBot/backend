@@ -1,9 +1,8 @@
 // Imports
 
-const JWT_KEY: string = process.env['JSON_WEBTOKEN_SECRET']!;
+const JWT_KEY = process.env['JSON_WEBTOKEN_SECRET'];
 import jwt from "jsonwebtoken";
-import type {  Request, Response, NextFunction  } from "express";
-import responder from "./responder.ts";
+import responder from "./responder.js";
 // import { DecodedUserData } from "@sessionsbot/api-types";
 
 
@@ -20,7 +19,7 @@ import responder from "./responder.ts";
  * @param {Response} res Original response object from API call.
  * @param {NextFunction} next The function/execution from API call.
  */
-const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+const verifyToken = (req, res, next) => {
     const token = req.headers?.authorization?.split(' ')[1];
     if(!token) return responder.errored(res, 'Invalid Permissions - An authentication token was not provided!', 401);
 
@@ -47,6 +46,6 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 // Export:
 export default verifyToken
 
-export interface AuthenticatedRequest extends Request {
-  user?: any // ? DecodedUserData; 
-}
+// export interface AuthenticatedRequest extends Request {
+//   user?: any // ? DecodedUserData; 
+// }

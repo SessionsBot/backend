@@ -2,10 +2,10 @@
 const BOT_TOKEN = process.env['BOT_TOKEN'];
 import express from "express";
 const router = express.Router()
-import responder from "../../utils/responder.ts";
+import responder from "../../utils/responder.js";
 import { HttpStatusCode  } from "axios";
-import verifyToken from "../../utils/verifyToken.ts";
-import verifyGuildMember from "../../utils/verifyMember.ts";
+import verifyToken from "../../utils/verifyToken.js";
+import verifyGuildMember from "../../utils/verifyMember.js";
 import guildManager from "../../../../../utils/guildManager.js";
 import {  createAutoSignupChannel  } from "../../../../events/createAutoSignupChannel.js";
 import global from "../../../../../utils/global.js";
