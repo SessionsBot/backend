@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.3.0](https://github.com/SessionsBot/backend/compare/v0.2.1...v0.3.0) (2025-08-24)
+
+### ⚡️ Features
+
+* esm upgrade ([5060f92](https://github.com/SessionsBot/backend/commit/5060f922a8acfe99af06b0f088e1eef4aa6f4ffd))
+* final (im/ex)port upgrades ([98c8c3a](https://github.com/SessionsBot/backend/commit/98c8c3a9e960795385386502fc222bb2121c96df))
+* schedule cronJob tracking ([21b3794](https://github.com/SessionsBot/backend/commit/21b379460a2c0aff3ec4bc8969b0644d70b47c8e))
+
+### 🐞 Bug Fixes
+
+* minor bug fixes ([de60e4b](https://github.com/SessionsBot/backend/commit/de60e4b23c13b6128f26a659a3c8aa25c4bc7401))
+* minor bug fixes ([fef27ed](https://github.com/SessionsBot/backend/commit/fef27ed48e3c86e464be7a9c6f2f6e0e508feb8d))
+* remove unneeded pkg (fs) ([f3ace0f](https://github.com/SessionsBot/backend/commit/f3ace0f52feafc559f217a87d58c22b828f28e47))
+
 ## [0.2.1](https://github.com/SessionsBot/backend/compare/v0.2.0...v0.2.1) (2025-08-23)
 
 ### 🐞 Bug Fixes
