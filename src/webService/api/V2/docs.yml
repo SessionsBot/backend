@@ -573,3 +573,21 @@ paths:
         "500":
           $ref: "#/components/responses/internalError"
 
+  /api/v2/system/status:
+    get:
+      tags:
+        - System
+      summary: Get current system statuses.
+      responses:
+        "200":
+          $ref: "#/components/responses/success"
+        "400":
+          $ref: "#/components/responses/badRequest"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+        "403":
+          $ref: "#/components/responses/unauthorized"
+        "404":
+          $ref: "#/components/responses/notFound"
+        "500":
+          $ref: "#/components/responses/internalError"
