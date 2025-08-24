@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.1](https://github.com/SessionsBot/backend/compare/v0.3.0...v0.3.1) (2025-08-24)
+
+### 🐞 Bug Fixes
+
+* remove ts files ([72ec5dc](https://github.com/SessionsBot/backend/commit/72ec5dc8f16e6c92fdfb65b7ce3f8f8b30be387a))
+
 ## [0.3.0](https://github.com/SessionsBot/backend/compare/v0.2.1...v0.3.0) (2025-08-24)
 
 ### ⚡️ Features
