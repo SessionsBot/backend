@@ -69,7 +69,7 @@ async function execute(interaction) {
 
                 // Ask for Confirmation:
                 const confirmContainer = new ContainerBuilder()
-                confirmContainer.setAccentColor(0xfc9d03)
+                confirmContainer.setAccentColor(0xfc9d03) // orange
                 confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Please Confirm:'))
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
                 confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('Are you sure you would like to ***unassign*** yourself from this role?')) 
@@ -107,7 +107,7 @@ async function execute(interaction) {
                 // Build Message Response:
                 const removalResponseContainer = new ContainerBuilder()
                 if (removalAttempt.success) { // Role Removal Success:
-                    removalResponseContainer.setAccentColor(0x6dc441)
+                    removalResponseContainer.setAccentColor(0x6dc441) // green
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - Success ✅'))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('*`You have successfully removed yourself as an attendee from this session!`*'))
@@ -125,7 +125,7 @@ async function execute(interaction) {
                     )
 
                 } else { // Role Removal Error:
-                    removalResponseContainer.setAccentColor(0xd43f37)
+                    removalResponseContainer.setAccentColor(0xd43f37) // red
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - ERROR ⚠️'))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
                     removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("*`An error occurred while trying to remove yourself from this session, are you sure you're assigned it?`*"))
@@ -171,7 +171,7 @@ async function execute(interaction) {
         const separator = new SeparatorBuilder()
         // Title
         msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Command Error:'))
-        msgContainer.setAccentColor(0xfc9d03)
+        msgContainer.setAccentColor(0xfc9d03) // red
         // Spacer
         msgContainer.addSeparatorComponents(separator) 
         // Info

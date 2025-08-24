@@ -21,7 +21,7 @@ const responses = {
 		const container = new ContainerBuilder();
 		const separator = new SeparatorBuilder();
 
-		container.setAccentColor(0xd43f37);
+		container.setAccentColor(0xd43f37); // red
 		
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ${responseTitle}`))
 		container.addSeparatorComponents(separator);
@@ -51,7 +51,7 @@ const responses = {
 		const container = new ContainerBuilder();
 		const separator = new SeparatorBuilder();
 
-		container.setAccentColor(0xd43f37);
+		container.setAccentColor(0xd43f37); // red
 		
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ❗️ - Already Assigned Session!`))
 		container.addSeparatorComponents(separator);
@@ -82,7 +82,7 @@ const responses = {
 		const container = new ContainerBuilder();
 		const separator = new SeparatorBuilder();
 
-		container.setAccentColor(0xd43f37);
+		container.setAccentColor(0xd43f37); // red
 		
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⌛️ Session Already Occurred!`))
 		container.addSeparatorComponents(separator);
@@ -111,7 +111,7 @@ const responses = {
 		const container = new ContainerBuilder();
 		const separator = new SeparatorBuilder();
 
-		container.setAccentColor(0x6dc441);
+		container.setAccentColor(0x6dc441); // green
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ✅ Position Assigned!`))
 		container.addSeparatorComponents(separator);
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**💼 Role:** \`${selectedRole}\` `))
@@ -140,7 +140,7 @@ const responses = {
 		const container = new ContainerBuilder();
 		const separator = new SeparatorBuilder();
 
-		container.setAccentColor(0xd43f37);
+		container.setAccentColor(0xd43f37); // red
 		
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⚠️ Position Not Assigned!`))
 		container.addSeparatorComponents(separator);

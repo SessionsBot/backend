@@ -28,6 +28,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     try {
         const decoded = jwt.verify(token, JWT_KEY);
         req['user'] = decoded // Attach decoded user data to request
+        console.log('added user obj to req', JSON.stringify(decoded, null, 2))
         next() // Allow request
     } catch (err) {
         if (err?.name === 'TokenExpiredError') {
@@ -45,3 +46,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 
 // Export:
 export default verifyToken
+
+export interface AuthenticatedRequest extends Request {
+  user?: any // ? DecodedUserData; 
+}

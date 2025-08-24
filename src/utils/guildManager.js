@@ -430,7 +430,7 @@ const guildPanel = (guildId) => {return {
         const signupFooter = async () => {
             // Build Footer Container:
             const container = new ContainerBuilder()
-            container.setAccentColor(0x354154)
+            container.setAccentColor(0x354154) // grey (secondary)
             const separator = new SeparatorBuilder()
             // Content:
             // Add Mention Roles:

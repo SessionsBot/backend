@@ -32,7 +32,7 @@ export default {
             msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('### 📝 Signup Now'))
             // Desc:
             msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('-# Want to sign up for more sessions?'))
-            // Accent Color:
+            // Accent Color: (green)
             msgContainer.setAccentColor(0x6dc441)
             // Spacer
             msgContainer.addSeparatorComponents(separator)
@@ -159,7 +159,7 @@ export default {
             const separator = new SeparatorBuilder()
             // Title
             msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Command Error:'))
-            msgContainer.setAccentColor(0xfc9d03)
+            msgContainer.setAccentColor(0xfc9d03) // orange (warning)
             // Spacer
             msgContainer.addSeparatorComponents(separator) 
             // Info

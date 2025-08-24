@@ -64,7 +64,7 @@ export default {
 
 				// Ask for Confirmation:
 				const confirmContainer = new ContainerBuilder()
-				confirmContainer.setAccentColor(0xfc9d03)
+				confirmContainer.setAccentColor(0xfc9d03) // orange
 				confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Please Confirm:'))
 				confirmContainer.addSeparatorComponents(new SeparatorBuilder())
 				confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('Are you sure you would like to ***unassign*** yourself from this role?')) 
@@ -102,7 +102,7 @@ export default {
 				// Build Message Response:
 				const removalResponseContainer = new ContainerBuilder()
 				if (removalAttempt.success) { // Role Removal Success:
-					removalResponseContainer.setAccentColor(0x6dc441)
+					removalResponseContainer.setAccentColor(0x6dc441) // green
 					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - Success ✅'))
 					removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
 					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('*`You have successfully removed yourself as an attendee from this session!`*'))
@@ -120,7 +120,7 @@ export default {
 					)
 
 				} else { // Role Removal Error:
-					removalResponseContainer.setAccentColor(0xd43f37)
+					removalResponseContainer.setAccentColor(0xd43f37) // red
 					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - ERROR ⚠️'))
 					removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
 					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("*`An error occurred while trying to remove yourself from this session, are you sure you're assigned it?`*"))
@@ -166,7 +166,7 @@ export default {
 		const separator = new SeparatorBuilder()
 		// Title
 		msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Button Error:'))
-		msgContainer.setAccentColor(0xfc9d03)
+		msgContainer.setAccentColor(0xfc9d03) // orange
 		// Spacer
 		msgContainer.addSeparatorComponents(separator) 
 		// Info
