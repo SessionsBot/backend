@@ -3,6 +3,7 @@ import cron from "node-cron";
 import global from "./global.js"; // Import Global Variables
 import guildManager from "./guildManager.js";
 import {  db  } from "./firebase.js";
+import axios from "axios";
 ; // Import Firebase
 
 let currentDailySchedules = {}; // <-- Store node schedules to be replaced each day w/ fresh data
@@ -105,6 +106,10 @@ async function dailyInitializeFn() {
 
     });
 
+    // Report Completion
+    try {  
+        const heartbeatResult = await axios.post('https://uptime.betterstack.com/api/v1/heartbeat/CReNYEQ9a6PZWdSmW5kR21Lf');
+    }catch(e){ }
 }
 
 
