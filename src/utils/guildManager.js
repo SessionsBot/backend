@@ -1,9 +1,7 @@
 // -------------------------- [ Imports/Variables ] -------------------------- \\
 
 import {  DateTime  } from "luxon";
-;
-import {  db  } from "./firebase.js";
-; // Import Firebase
+import {  db  } from "./firebase.js"; // Import Firebase
 import global from "./global.js"; // Import Global Variables
 import { // Discord.js:
     ContainerBuilder, 
@@ -18,8 +16,6 @@ import { // Discord.js:
     ChannelType,
     ThumbnailBuilder
 } from 'discord.js';
-import {  json  } from "express";
-;
 import logtail from "../utils/logtail.ts";
 
 const inDepthDebug = (c) => { if (global.outputDebug_InDepth) { console.log(`[Guild Manager]: ${c}`) } }

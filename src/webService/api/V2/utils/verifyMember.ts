@@ -1,10 +1,14 @@
 // Imports
-const JWT_KEY = process.env.JSON_WEBTOKEN_SECRET;
-import jwt from "jsonwebtoken";
-import {  Request, Response, NextFunction  } from "express";
-;
-import responder from "./responder";
+import global from "../../../../utils/global.js";
+import type {  Request, Response, NextFunction  } from "express";
+import responder from "./responder.ts";
+// import type { DecodedUserData } from "@sessionsbot/api-types";
+import { Client } from "discord.js";
 
+// Add user data to request type:
+interface AuthenticatedRequest extends Request {
+  user?: any // ? DecodedUserData; 
+}
 
 /** __Utility function used to verify the authorized user is member of the requested guild.__
  * 1. Checks inside original request for authentication data.
@@ -18,7 +22,7 @@ import responder from "./responder";
  * @param {Response} res Original response object from API call.
  * @param {NextFunction} next The function/execution from API call.
  */
-const verifyGuildMember = async (req, res, next) => {
+const verifyGuildMember = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     // Auth Token Data:
     // const token = req.headers?.authorization?.split(' ')[1];
     // if(!token) return responder.errored(res, 'Invalid Permissions - An authentication token was not provided!', 401);
@@ -30,10 +34,12 @@ const verifyGuildMember = async (req, res, next) => {
     if(!actorUserId) return responder.errored(res, `Internal Error - Couldn't access authed user from req data.`, 500)
     
     // Check if actor is member:
-    import {  client  } from "../../../../utils/global";
-;
+    const cachedClient = global?.client;
+
     try {
-        if(!client) throw 'Discord bot client is not accessible.'
+        
+        if(!cachedClient) throw 'Discord bot client is not accessible.'
+        const client : Client = cachedClient
 
         // Check via Discord.js
         const guild = await client?.guilds?.fetch(guildId);

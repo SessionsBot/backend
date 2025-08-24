@@ -1,4 +1,8 @@
-import pkg from '../../package.json'
+import fs from 'fs';
+import path from 'path';
+// Get package.json data:
+const pkgPath = path.resolve('./package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
 
 export default {
     botVersion: pkg.version,

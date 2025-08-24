@@ -2,17 +2,13 @@
 const BOT_TOKEN = process.env['BOT_TOKEN'];
 import express from "express";
 const router = express.Router()
-import responder from "../../utils/responder";
-import {  default: axios, HttpStatusCode  } from "axios";
-;
-import verifyToken from "../../utils/verifyToken";
-import {  admin, auth  } from "../../../../../utils/firebase";
-;
-import verifyGuildMember from "../../utils/verifyMember";
-import {  guilds, guildConfiguration  } from "../../../../../utils/guildManager";
-;
-import {  createAutoSignupChannel  } from "../../../../events/createAutoSignupChannel";
-;
+import responder from "../../utils/responder.ts";
+import { HttpStatusCode  } from "axios";
+import verifyToken from "../../utils/verifyToken.ts";
+import verifyGuildMember from "../../utils/verifyMember.ts";
+import guildManager from "../../../../../utils/guildManager.js";
+import {  createAutoSignupChannel  } from "../../../../events/createAutoSignupChannel.js";
+import global from "../../../../../utils/global.js";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -51,8 +47,7 @@ router.get('/:guildId', async (req, res) => {
     
     
         // Check if Bot is in Guild:
-        import {  client  } from "../../../../../utils/global";
-;
+        const client = global.client;
         if(!client) return responder.errored(res, 'Failed to fetch guild data! Client was inaccessible, please try again later.', 500);
         const guildsCollection = await client.guilds.fetch(); // Collection of [guildId, guild]
         const clientGuildIds = Array.from(guildsCollection.keys()); // Array of guild IDs
@@ -60,7 +55,7 @@ router.get('/:guildId', async (req, res) => {
     
         // Get Guild Data from Database:
         let guildDatabaseData;
-        const guildDataRetrieval = await guilds(String(guildId)).readGuild()
+        const guildDataRetrieval = await guildManager.guilds(String(guildId)).readGuild()
         if (!guildDataRetrieval.success) {
             guildDatabaseData = 'null'
         } else {
@@ -96,7 +91,7 @@ router.delete('/:guildId', verifyToken, verifyGuildMember, async (req, res) => {
     const actingUser = req?.user
 
     // Archive guild:
-    const archiveAttempt = await guilds(deleteId).archiveGuild()
+    const archiveAttempt = await guildManager.guilds(deleteId).archiveGuild()
     if(!archiveAttempt.success) return responder.errored(res, 'Failed to archive guild, please try again!')
     else return responder.succeeded(res, 'Guild has been archived successfully.')
 })
@@ -109,7 +104,7 @@ router.patch('/:guildId/configuration', verifyToken, verifyGuildMember, async (r
     const configurationSetup = req.body?.configuration;
 
     // 2. Attempt Save:
-    const configureResult = await guildConfiguration(guildId).configureGuild(configurationSetup);
+    const configureResult = await guildManager.guildConfiguration(guildId).configureGuild(configurationSetup);
     if(!configureResult.success) return responder.errored(res, 'Failed to save guild configuration, please try again!', 500);
     else return responder.succeeded(res, 'Guild configuration saved successfully!');
 })

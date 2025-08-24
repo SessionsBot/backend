@@ -193,7 +193,7 @@ async function execute(interaction) {
 }
 
 // Exports:
-export default {
+export default{
     data,
     execute
 };

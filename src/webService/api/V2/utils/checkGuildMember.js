@@ -1,6 +1,8 @@
+import global from "../../../../utils/global.js";
+
 async function checkIfUserInGuild(guildId, userId) {
-  import {  client  } from "../../../../utils/global";
-;
+  const client = global.client;
+
   try {
 
     if(!client) return {
@@ -47,4 +49,4 @@ async function checkIfUserInGuild(guildId, userId) {
   }
 }
 
-export default {  checkIfUserInGuild  };
+export {  checkIfUserInGuild  };

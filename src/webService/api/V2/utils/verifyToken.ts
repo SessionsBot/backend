@@ -1,9 +1,10 @@
 // Imports
-const JWT_KEY = process.env.JSON_WEBTOKEN_SECRET;
+
+const JWT_KEY: string = process.env['JSON_WEBTOKEN_SECRET']!;
 import jwt from "jsonwebtoken";
-import {  Request, Response, NextFunction  } from "express";
-;
-import responder from "./responder";
+import type {  Request, Response, NextFunction  } from "express";
+import responder from "./responder.ts";
+// import { DecodedUserData } from "@sessionsbot/api-types";
 
 
 /** __Utility function used to verify and decode a users authentication token.__
@@ -19,14 +20,14 @@ import responder from "./responder";
  * @param {Response} res Original response object from API call.
  * @param {NextFunction} next The function/execution from API call.
  */
-const verifyToken = (req, res, next) => {
+const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     const token = req.headers?.authorization?.split(' ')[1];
     if(!token) return responder.errored(res, 'Invalid Permissions - An authentication token was not provided!', 401);
 
     // Decode and verify user from token:
     try {
         const decoded = jwt.verify(token, JWT_KEY);
-        req.user = decoded; // Attach decoded user data to request
+        req['user'] = decoded // Attach decoded user data to request
         next() // Allow request
     } catch (err) {
         if (err?.name === 'TokenExpiredError') {

@@ -8,7 +8,7 @@ import { // Import Discord.js
     messageLink,
 } from 'discord.js';
 
-import global from "../../utils/global";
+import global from "../../utils/global.js";
 
 // Register Command:
 const data = new SlashCommandBuilder()
@@ -92,7 +92,7 @@ async function execute(interaction) {
     
 }
 
-export default {
+export default{
     data,
     execute
 };

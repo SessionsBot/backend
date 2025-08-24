@@ -110,6 +110,6 @@ async function dailyInitializeFn() {
 
 
 // -------------------------- [ Exports ] -------------------------- \\
-export default {
+export default{
     botInitialize,
 }

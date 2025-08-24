@@ -9,12 +9,9 @@ import {
     ButtonStyle,
     ContainerBuilder,
     ComponentType,
-} from ('discord.js') // Import Discord.js
-
+} from 'discord.js'; // Import Discord.js
 import guildManager from "../../utils/guildManager.js";
 import global from "../../utils/global.js";
-import { DateTime } from "luxon";
-;
 import mySessionsResponses from "../../utils/responses/mySessionsResponses.js";
 
 

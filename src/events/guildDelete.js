@@ -1,8 +1,7 @@
 // Imports:
 import {  Events, ChannelType, PermissionsBitField  } from "discord.js";
-;
-import global from "../utils/global";
-import guildManager from "../utils/guildManager";
+import global from "../utils/global.js";
+import guildManager from "../utils/guildManager.js";
 import logtail from "../utils/logtail.ts";
 import {  DateTime  } from "luxon";
 

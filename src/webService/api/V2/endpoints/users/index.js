@@ -2,16 +2,13 @@
 import express from "express";
 const router = express.Router();
 import jwt from "jsonwebtoken";
-import {  default: axios, HttpStatusCode  } from "axios";
-;
-import responder from "../../utils/responder";
-import {  frontend_Url  } from "../../../../../utils/global";
-;
-import verifyToken from "../../utils/verifyToken";
-import {  admin, auth  } from "../../../../../utils/firebase";
-;
-import {  Response  } from "express";
-;
+import axios from "axios";
+import responder from "../../utils/responder.ts";
+import global from "../../../../../utils/global.js";
+const frontend_Url = global.frontend_Url;
+import verifyToken from "../../utils/verifyToken.ts";
+import {  admin, auth  } from "../../../../../utils/firebase.js";
+const {  Response  } = express
 import LZString from "lz-string";
 
 
@@ -26,7 +23,7 @@ const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.ko
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
 // Root Call:
 router.get('/', (req, res) => {
-    return responder.errored(res, 'Please provide a valid user id or endpoint', HttpStatusCode.BadRequest);
+    return responder.errored(res, 'Please provide a valid user id or endpoint', 400);
 })
 
 // Discord oAuth2 - /api/v2/users/auth/discord

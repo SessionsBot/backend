@@ -1,10 +1,8 @@
 // ------- [ Variables/Setup: ] -------
-
+import 'dotenv/config'
 import dotenv from "dotenv";
 import { fileURLToPath } from "node:url";
-dotenv.config();
 import {  Client, Collection, GatewayIntentBits  } from "discord.js";
-;
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 import global from "./src/utils/global.js";
 const BOT_TOKEN = process.env['BOT_TOKEN'];

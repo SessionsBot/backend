@@ -14,7 +14,7 @@ import {
 import guildManager from "../guildManager.js";
 import global from "../global.js";
 import {  DateTime  } from "luxon";
-;
+
 
 export default {
     // Bot Responses - Get Contents:

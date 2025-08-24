@@ -13,7 +13,6 @@ import {
 import guildManager from "../../utils/guildManager.js";
 import global from "../../utils/global.js";
 import {  DateTime  } from "luxon";
-;
 
 const responses = {
 
