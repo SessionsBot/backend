@@ -13,8 +13,7 @@ import { // Discord.js:
     MessageFlags,
     SectionBuilder,
     ThreadAutoArchiveDuration,
-    ChannelType,
-    ThumbnailBuilder
+    ChannelType
 } from 'discord.js';
 import logtail from "../utils/logtail.js";
 
@@ -109,12 +108,15 @@ const guilds = (guildId) => {return {
             });
 
             // 3. Save guild leave log:
+            const joinedAtDateString = DateTime.fromMillis(guildBotData?.joinedTimestamp).toLocaleString(DateTime.DATETIME_FULL);
+            const removedAtDateString = DateTime.now().toLocaleString(DateTime.DATETIME_FULL);
             await db.collection('events').doc('removeLogs').collection('guilds').doc(String(guildId)).set({
                 guildId: guildBotData?.id,
                 guildName: guildBotData?.name,
                 guildDesc: guildBotData?.description,
                 memberCount: guildBotData?.memberCount,
-                removedAt: new Date()
+                joinedAt: joinedAtDateString,
+                removedAt: removedAtDateString
             }, { merge: true });
 
             // 4. Delete original
