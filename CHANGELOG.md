@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.4](https://github.com/SessionsBot/backend/compare/v0.3.3...v0.3.4) (2025-08-25)
+
+### ⚡️ Features
+
+* event log ([8ec5e49](https://github.com/SessionsBot/backend/commit/8ec5e497994741775df4d1e193b970f78f1d83a5))
+
+### 🐞 Bug Fixes
+
+* bot invite/welcome msg ([a908a5c](https://github.com/SessionsBot/backend/commit/a908a5c8b42f4754e68e82379a4c081f1912a494))
+* event logging logic ([1e41385](https://github.com/SessionsBot/backend/commit/1e41385a53f251d1ca26368bac244380eebd8815))
+* remove testing flag ([d221d08](https://github.com/SessionsBot/backend/commit/d221d08fd08770942c92a939d193b1439786daa9))
+
 ## [0.3.3](https://github.com/SessionsBot/backend/compare/v0.3.2...v0.3.3) (2025-08-25)
 
 ### 🐞 Bug Fixes
