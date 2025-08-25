@@ -21,6 +21,6 @@ export default {
         logtail.info(`Guild ${guild?.id} has removed Sessions Bot!`, {guildName: guild?.name, memberCount: guild?.memberCount, joinedAt: joinedAtDateString});
 
         // Move guild to archive within database:
-        await guildManager.guilds(guild.id).archiveGuild();
+        await guildManager.guilds(guild.id).archiveGuild(guild);
     }
 }
