@@ -8,7 +8,7 @@ import axios from "axios";
 
 // Dev Testing
 const devTesting = {
-    enabled: true,
+    enabled: false,
     guildId: '1379160686629880028'
 }
 if(devTesting.enabled) console.info('Dev-Testing enabled within scheduleManager.js... please modify settings if this is unexpected.')
