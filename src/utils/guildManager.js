@@ -48,6 +48,16 @@ const guilds = (guildId) => {return {
             // Save new guild to database:
             await db.collection('guilds').doc(String(guildId)).set(defaultGuildData, { merge: true });
 
+            // Save guild join log:
+            const botGuildData = await global.client.guilds.fetch(guildId)
+            await db.collection('events').doc('inviteLogs').collection('guilds').doc(String(guildId)).set({
+                guildId: botGuildData?.id,
+                guildName: botGuildData?.name,
+                guildDesc: botGuildData?.description,
+                memberCount: botGuildData?.memberCount,
+                joinedAt: new Date()
+            }, { merge: true });
+
             // Success:
             console.log(`[+] Successfully added new guild! Id: ${guildId}`);
             const result = { success: true, data: 'Successfully added new guild!' };
@@ -101,7 +111,17 @@ const guilds = (guildId) => {return {
                 archivedAt: new Date()
             });
 
-            // 3. Delete original
+            // 3. Save guild leave log:
+            const botGuildData = await global.client.guilds.fetch(guildId)
+            await db.collection('events').doc('removeLogs').collection('guilds').doc(String(guildId)).set({
+                guildId: botGuildData?.id,
+                guildName: botGuildData?.name,
+                guildDesc: botGuildData?.description,
+                memberCount: botGuildData?.memberCount,
+                removedAt: new Date()
+            }, { merge: true });
+
+            // 4. Delete original
             await guildRef.delete();
 
             console.log(`[-] Guild ${guildId} moved to archive successfully.`);

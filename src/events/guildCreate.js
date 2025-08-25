@@ -8,24 +8,24 @@ import logtail from "../utils/logtail.js";
 export default {
     name: Events.GuildCreate,
     async execute(guild) {
+
         // Debug New Guild:
-        if(global.outputDebug_InDepth) {
-            console.log('guildCreate Event Fired!:')
-            console.log(`guildID: ${guild.id}`)
-        }
+        console.info(`[+] Guild ${guild?.name} (${guild?.id}) has added Sessions Bot!`);
+        logtail.info(`[+] Guild ${guild?.name} (${guild?.id}) has added Sessions Bot!`); logtail.flush();
 
-        logtail.info(`Guild ${guild?.name}(${guild?.id}) has added Sessions Bot!`);
-
+        
         // 1. Add New Guild to Database:
         const addGuildResult = await guildManager.guilds(guild.id).createNewGuild()
         if(!addGuildResult.success){
             // CRITICAL ERROR: Failed to add new guild to database!
-            return console.warn('Failed to add new guild to database!', addGuildResult.data)
+            logtail.error('Failed to add new guild to database!', addGuildResult.data); logtail.flush();
+            console.warn('Failed to add new guild to database!', addGuildResult.data)
+            return
         }
 
         
         // Send Welcome/Setup Message:
-        const welcomeMessage = `👋 Hi! I'm your new bot. Please visit ${global.frontend_Url}/api/guild-setup?guildId=${guild.id}`;
+        const welcomeMessage = `👋 Hi! I'm your new bot. Please visit ${global.frontend_Url}/api/guild-setup?guildId=${guild.id} to get started.`;
 
         // 2. Attempt to send in default system channel:
         if (
@@ -67,7 +67,6 @@ export default {
             logtail.error('No suitable greeting message location for newly joined guild!', {guildId: guild?.id, guildName: guild?.name});
             return console.warn(`{!} CRITICAL ERROR: Failed to send welcome/setup message for ${guild.name}.`);
         }
-        
 
     }
 }

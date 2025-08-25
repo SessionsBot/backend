@@ -9,7 +9,9 @@ export default {
     frontend_Url: 'https://sessionsbot.fyi',
     outputDebug_General: true,
     outputDebug_InDepth: false,
-    /** Main Discord Bot Client for SessionsBot */
+    /** Main Discord Bot Client for SessionsBot 
+     * @type { import('discord.js').Client }
+    */
     client: null,
     colors: {
         success: '#6dc441', // green
