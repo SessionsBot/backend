@@ -21,7 +21,7 @@ This repository contains the **backend and API** for [SessionsBot](https://githu
 
 - **Node.js**  
 - **Express** 
-- **Firebase** (replace with your DB)  
+- **Firebase** 
 - **Discord.js**  
 - **REST API / JWT authentication**  
 

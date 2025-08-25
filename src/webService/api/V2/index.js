@@ -19,6 +19,7 @@ import users from "./endpoints/users/index.js";
 import guilds from "./endpoints/guilds/index.js";
 import sessions from "./endpoints/guilds/sessions.js";
 import schedules from "./endpoints/guilds/schedules.js";
+import system from "./endpoints/system/index.js";
 
 
 
@@ -28,6 +29,7 @@ router.use('/users', users)
 router.use('/guilds', guilds)
 router.use('/guilds/:guildId/sessions', sessions)
 router.use('/guilds/:guildId/schedules', schedules)
+router.use('/system', system)
 
 // Root Call:
 router.get('/', (req, res) => {
