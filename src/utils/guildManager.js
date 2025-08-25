@@ -49,12 +49,12 @@ const guilds = (guildId) => {return {
             await db.collection('guilds').doc(String(guildId)).set(defaultGuildData, { merge: true });
 
             // Save guild join log:
-            const botGuildData = await global.client.guilds.fetch(guildId)
+            const guildBotData = await global.client.guilds.fetch(guildId)
             await db.collection('events').doc('inviteLogs').collection('guilds').doc(String(guildId)).set({
-                guildId: botGuildData?.id,
-                guildName: botGuildData?.name,
-                guildDesc: botGuildData?.description,
-                memberCount: botGuildData?.memberCount,
+                guildId: guildBotData?.id,
+                guildName: guildBotData?.name,
+                guildDesc: guildBotData?.description,
+                memberCount: guildBotData?.memberCount,
                 joinedAt: new Date()
             }, { merge: true });
 
@@ -88,21 +88,18 @@ const guilds = (guildId) => {return {
 
 
     // Move Guild to Archive:
-    archiveGuild: async () => {
+    archiveGuild: async (guildBotData) => {
         const guildRef = db.collection('guilds').doc(guildId);
         const archivedRef = db.collection('archivedGuilds').doc(guildId);
 
         try {
             // 1. Read original doc
             const guildDoc = await guildRef.get();
-
             if (!guildDoc.exists) {
-
                 console.warn(`Guild document ${guildId} does not exist. Failed to archive!`);
-
+                logtail.warn(`Guild document ${guildId} does not exist. Failed to archive!`);
                 return { success: false, error: `Couldn't find existing guild doc to archive!` };
             }
-
             const guildData = guildDoc.data();
 
             // 2. Write to archive
@@ -112,12 +109,11 @@ const guilds = (guildId) => {return {
             });
 
             // 3. Save guild leave log:
-            const botGuildData = await global.client.guilds.fetch(guildId)
             await db.collection('events').doc('removeLogs').collection('guilds').doc(String(guildId)).set({
-                guildId: botGuildData?.id,
-                guildName: botGuildData?.name,
-                guildDesc: botGuildData?.description,
-                memberCount: botGuildData?.memberCount,
+                guildId: guildBotData?.id,
+                guildName: guildBotData?.name,
+                guildDesc: guildBotData?.description,
+                memberCount: guildBotData?.memberCount,
                 removedAt: new Date()
             }, { merge: true });
 
@@ -162,11 +158,6 @@ const guilds = (guildId) => {return {
 
 // Guild Configuration - Nested Functions:
 const guildConfiguration = (guildId) => {return {
-
-    // !!! [NEEDS COMPLETION] - {guildConfiguration}
-    //{*} Remove Specific Session Schedule:
-        // removeSessionSchedule: async (sessionId) => {},
-    // !!!
 
     // -- Top Level Configure Function:
     configureGuild : async (configuration) => {
