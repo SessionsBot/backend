@@ -6,6 +6,14 @@ import {  db  } from "./firebase.js";
 import axios from "axios";
 ; // Import Firebase
 
+// Dev Testing
+const devTesting = {
+    enabled: true,
+    guildId: '1379160686629880028'
+}
+if(devTesting.enabled) console.info('Dev-Testing enabled within scheduleManager.js... please modify settings if this is unexpected.')
+
+
 let currentDailySchedules = {}; // <-- Store node schedules to be replaced each day w/ fresh data
 
 // -------------------------- [ Functions ] -------------------------- \\
@@ -17,7 +25,8 @@ const inDepthDebug = (c) => {if(global.outputDebug_InDepth) console.log(c)}
 // Bot Initialization Fn:
 let alreadyInitialized = false
 async function botInitialize() {
-    if(alreadyInitialized) return console.log(`[!] botInitialize already called, skipping duplicate initialization!`)
+    // Confirm first/only call:
+    if(alreadyInitialized) return console.log(`[!] botInitialize already called, skipping duplicate initialization!`);
     alreadyInitialized = true;
     // Runs Daily @11:59 PM - Loads and schedules all other 'Guild Schedules':
     const dailyInitializeShd = cron.schedule('0 59 23 * * *', async (ctx) => {
@@ -96,11 +105,10 @@ async function dailyInitializeFn() {
             // Store reference to guilds posting schedule:
             currentDailySchedules[doc.id] = guildPostSchedule;
 
-            // // [TESTING] Run 'testing' guild schedule early:
-            // if(doc.id == '1379160686629880028'){
-            //     console.info('RUNNING DEV-TESTING GUILD SCHEDULE EARLY...');
-            //     guildPostSchedule.execute();
-            // }
+            // [TESTING] Run 'dev testing' / guild schedule early:
+            if(devTesting.enabled && doc.id == devTesting.guildId){
+                console.info('RUNNING GUILD SCHEDULE EARLY...'); guildPostSchedule.execute();
+            }
 
         }
 

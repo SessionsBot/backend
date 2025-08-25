@@ -412,7 +412,7 @@ const guildPanel = (guildId) => {return {
         const sessionSignup = async () => {
             
             // Append Each Upcoming Session:
-            for ([sessionId, sessionData] of upcomingSessions) {
+            for (const [sessionId, sessionData] of upcomingSessions) {
                 const contentAttempt = await guildSessions(guildId).getSessionPanelContents(sessionId, sessionData, accentColor);
                 if(contentAttempt.success){
                     // Add this Session to Components:
