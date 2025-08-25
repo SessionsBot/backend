@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.2](https://github.com/SessionsBot/backend/compare/v0.3.1...v0.3.2) (2025-08-25)
+
+### ⚡️ Features
+
+* add status api endpoint ([074c0c3](https://github.com/SessionsBot/backend/commit/074c0c3e6fbdb86cdeed4cb0e2517a6bc1134462))
+
+### ♻️ Refactoring
+
+* minor improvements ([e8c99bb](https://github.com/SessionsBot/backend/commit/e8c99bb7135ffa8789dd6e1392d708a2e48e7444))
+* remove old debug ([8e4d8eb](https://github.com/SessionsBot/backend/commit/8e4d8eba3240367faf5c08c9b66bcc605154ae61))
+
 ## [0.3.1](https://github.com/SessionsBot/backend/compare/v0.3.0...v0.3.1) (2025-08-24)
 
 ### 🐞 Bug Fixes
