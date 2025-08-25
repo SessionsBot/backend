@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.3](https://github.com/SessionsBot/backend/compare/v0.3.2...v0.3.3) (2025-08-25)
+
+### 🐞 Bug Fixes
+
+* schedule/thread logic ([c64049e](https://github.com/SessionsBot/backend/commit/c64049e0451e279fe763b9844158eb2d67a00509))
+
 ## [0.3.2](https://github.com/SessionsBot/backend/compare/v0.3.1...v0.3.2) (2025-08-25)
 
 ### ⚡️ Features
