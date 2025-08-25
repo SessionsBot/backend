@@ -35,7 +35,7 @@ export default {
 		logtail.info(' [✅] Bot Startup', { clientTag: client?.user?.tag, botVersion: global?.botVersion });
 
 		// Set Bot User's Activity:
-		client.user.setActivity('📅 Training Sessions', { type: ActivityType.Watching });
+		client.user.setActivity('🔗 sessionsbot.fyi', { type: ActivityType.Custom });
 
 		// After Startup - Initialize Schedule System::
 		setTimeout(async () => {
