@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.6](https://github.com/SessionsBot/backend/compare/v0.3.5...v0.3.6) (2025-08-26)
+
+### 🐞 Bug Fixes
+
+* api guild fetch - not found ([5a2c88f](https://github.com/SessionsBot/backend/commit/5a2c88fdbe07f4450cf0b8a1a7727d5db2b0b8c3))
+
 ## [0.3.5](https://github.com/SessionsBot/backend/compare/v0.3.4...v0.3.5) (2025-08-26)
 
 ### 🐞 Bug Fixes
