@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.5](https://github.com/SessionsBot/backend/compare/v0.3.4...v0.3.5) (2025-08-26)
+
+### 🐞 Bug Fixes
+
+* api channel create response ([87d2b42](https://github.com/SessionsBot/backend/commit/87d2b42e0b9aa0dfd33370d9141d76bf01d1cbaa))
+* logs ([b331124](https://github.com/SessionsBot/backend/commit/b331124ea75ffe407cc333b7b90e31fa5b4b5386))
+* sch heartbeat/monitor ([4ce982c](https://github.com/SessionsBot/backend/commit/4ce982cf8b0cc4975b0f8a9c67c315690e9b5cdf))
+
+### ♻️ Refactoring
+
+* activity text ([65d4557](https://github.com/SessionsBot/backend/commit/65d455770fbbe388bf6eb385213a93ba4b7cc2f5))
+
 ## [0.3.4](https://github.com/SessionsBot/backend/compare/v0.3.3...v0.3.4) (2025-08-25)
 
 ### ⚡️ Features
