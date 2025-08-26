@@ -119,7 +119,7 @@ router.post('/:guildId/channels/auto-signup', verifyToken, verifyGuildMember, as
     // 2. Attempt Save:
     const creationResults = await createAutoSignupChannel(guildId, actorId)
     if(!creationResults.success) return responder.errored(res, 'Failed to create default signup channel, please try again!', 500);
-    else return responder.succeeded(res, 'Guild signup channel created successfully!');
+    else return responder.succeeded(res, creationResults.data);
 })
 
 //-------------------------------------[ Export Endpoints ]-------------------------------------\\
