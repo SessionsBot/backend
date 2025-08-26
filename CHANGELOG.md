@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.7](https://github.com/SessionsBot/backend/compare/v0.3.6...v0.3.7) (2025-08-26)
+
+### 🐞 Bug Fixes
+
+* api manageable user guilds ([c384e84](https://github.com/SessionsBot/backend/commit/c384e842b6c32c87dd534fd03a633e5a63b6a62a))
+
 ## [0.3.6](https://github.com/SessionsBot/backend/compare/v0.3.5...v0.3.6) (2025-08-26)
 
 ### 🐞 Bug Fixes
