@@ -26,33 +26,23 @@ router.get('/:guildId', async (req, res) => {
     if(!guildId) return responder.errored(res, `Invalid Input - No 'guildId' was provided.`)
     // 2. Fetch Discord Data:
     try {
-        // Get General Guild Data:
-        const discordReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, {
-            headers: {
-                Authorization: `Bot ${BOT_TOKEN}`,
-            },
-        });
-        if (!discordReq.ok) return responder.errored(res, 'Failed to fetch guild data from Discord!', discordReq.status)
-        const guildData = await discordReq.json();
-    
-    
-        // Get Guild Channels Data:
-        const channelsReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
-            headers: {
-                Authorization: `Bot ${BOT_TOKEN}`,
-            },
-        });
-        if (!channelsReq.ok) return responder.errored(res, 'Failed to fetch channel guild data from Discord!', channelsReq.status)
-        const guildChannels = await channelsReq.json();
-    
-    
         // Check if Bot is in Guild:
         const client = global.client;
         if(!client) return responder.errored(res, 'Failed to fetch guild data! Client was inaccessible, please try again later.', 500);
-        const guildsCollection = await client.guilds.fetch(); // Collection of [guildId, guild]
-        const clientGuildIds = Array.from(guildsCollection.keys()); // Array of guild IDs
-        const sessionsBotInGuild = clientGuildIds.includes(String(guildId));
+        const guildsCollection = await client.guilds.fetch();
+        const sessionsBotInGuild = Array.from(guildsCollection.keys()).includes(String(guildId));
+        if(!sessionsBotInGuild) return responder.errored(res, `SessionsBot is not a member of this guild!`, 404)
+
+        // Get General Guild Data:
+        const discordReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}`, { headers: { Authorization: `Bot ${BOT_TOKEN}`} });
+        if (!discordReq.ok) return responder.errored(res, 'Failed to fetch guild data from Discord!', discordReq.status)
+        const guildData = await discordReq.json();
     
+        // Get Guild Channels Data:
+        const channelsReq = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, { headers: { Authorization: `Bot ${BOT_TOKEN}`} });
+        if (!channelsReq.ok) return responder.errored(res, 'Failed to fetch channel guild data from Discord!', channelsReq.status)
+        const guildChannels = await channelsReq.json();
+
         // Get Guild Data from Database:
         let guildDatabaseData;
         const guildDataRetrieval = await guildManager.guilds(String(guildId)).readGuild()
