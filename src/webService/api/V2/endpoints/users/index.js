@@ -104,7 +104,13 @@ router.get('/auth/discord', async (req, res) => {
             return (permissions & BigInt(ADMINISTRATOR)) !== 0n || (permissions & BigInt(MANAGE_GUILD)) !== 0n;
         });
         // Get all manageable guild ids as array:
-        const manageableGuildsIds = manageableGuilds.map(g => (g.id));
+        /** @type {string[]} */
+        const allManageableGuildsIds = manageableGuilds.map(g => (g.id));
+        const botGuilds = await global.client.guilds.fetch()
+        const botGuildsIds = botGuilds.map(g => (g.id))
+        const manageableGuildsIds = allManageableGuildsIds.filter(gId => {
+            return botGuildsIds.includes(gId)
+        })
         
         // Step 5. Create Firebase Auth Token for User:
         const firebaseToken = await admin.auth().createCustomToken(userDiscordId, {
