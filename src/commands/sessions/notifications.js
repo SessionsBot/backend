@@ -60,7 +60,7 @@ async function execute(interaction) {
             embeds: [
                 new EmbedBuilder()
                 .setTitle('⚙️ - Notification Adjusted:')
-                .setDescription(`Below are your currently selected options:`)
+                .setDescription(`Below are your currently selected options: \n *Please note:* Notifications are not yet enabled as we slowly roll out this feature!`)
                 .setColor(global.colors.warning)
                 .addFields(
                     {name: 'Notifications Enabled', value: '`'+userChoice_notificationsEnabled+'`'},
