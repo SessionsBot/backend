@@ -42,8 +42,6 @@ export default {
 			await scheduleManager.botInitialize()
 		}, 1_500);
 
-		setTimeout(()=> sendSignupChannelLandingMsg(), 200)
-
 	},
 };
 
