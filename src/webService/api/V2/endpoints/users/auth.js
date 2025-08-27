@@ -16,8 +16,8 @@ const CLIENT_SECRET = process.env['CLIENT_SECRET'];
 const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
 
 const FRONTEND_URL = global.frontend_Url; // Frontend root url
-// const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app/api/v2/users/auth/discord'; // Public
-const REDIRECT_URI = 'http://localhost:3000/api/v2/users/auth/discord'; // Dev Testing
+const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.koyeb.app/api/v2/users/auth/discord'; // Public
+// const REDIRECT_URI = 'http://localhost:3000/api/v2/users/auth/discord'; // Dev Testing
 
 // Save sign in data - helper fn:
 const saveSignInData = async (userData, refreshToken) => { 
