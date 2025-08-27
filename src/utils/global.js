@@ -23,5 +23,9 @@ export default {
     emojis: {
         sessionsWText: '<:sessionsWText:1381323876176236575>',
         sessions: '<:sessions:1381324009337258056>',
+    },
+    cmdStrings: {
+        mySessions: '</my-sessions:1375234577412653199>',
+        myNotifications: '</my-notifications:1410361146082463818>',
     }
 }
