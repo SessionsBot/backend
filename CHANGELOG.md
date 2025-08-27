@@ -1,5 +1,64 @@
 # Changelog
 
+## [0.3.8](https://github.com/SessionsBot/backend/compare/v0.3.7...v0.3.8) (2025-08-27)
+
+### ⚡️ Features
+
+* **api:** refresh auth token endpoint ([36217ac](https://github.com/SessionsBot/backend/commit/36217acbd1e18a21381266c13305c69645bcca7d))
+* module logger ([035363b](https://github.com/SessionsBot/backend/commit/035363b7ca2a6a649fefd406610a60cc38649fa4))
+
+### 🐞 Bug Fixes
+
+* **api:** delete user logic ([e08a943](https://github.com/SessionsBot/backend/commit/e08a94341f9e1f1578583c2d25282eb47297ff41))
+* **release-pipeline:** config ([202a8a0](https://github.com/SessionsBot/backend/commit/202a8a03be93666c1890603367b8dd40874ad8c0))
+
+### ♻️ Refactoring
+
+* debug cors declines ([b427651](https://github.com/SessionsBot/backend/commit/b42765197525547635204ec831eb98449770b4d8))
+* log docs ([0587817](https://github.com/SessionsBot/backend/commit/0587817f468da25a59658ff720fbc811acd0900c))
+
+## [0.3.7](https://github.com/SessionsBot/backend/compare/v0.3.6...v0.3.7) (2025-08-26)
+
+### 🐞 Bug Fixes
+
+* api manageable user guilds ([c384e84](https://github.com/SessionsBot/backend/commit/c384e842b6c32c87dd534fd03a633e5a63b6a62a))
+
+## [0.3.6](https://github.com/SessionsBot/backend/compare/v0.3.5...v0.3.6) (2025-08-26)
+
+### 🐞 Bug Fixes
+
+* api guild fetch - not found ([5a2c88f](https://github.com/SessionsBot/backend/commit/5a2c88fdbe07f4450cf0b8a1a7727d5db2b0b8c3))
+
+## [0.3.5](https://github.com/SessionsBot/backend/compare/v0.3.4...v0.3.5) (2025-08-26)
+
+### 🐞 Bug Fixes
+
+* api channel create response ([87d2b42](https://github.com/SessionsBot/backend/commit/87d2b42e0b9aa0dfd33370d9141d76bf01d1cbaa))
+* logs ([b331124](https://github.com/SessionsBot/backend/commit/b331124ea75ffe407cc333b7b90e31fa5b4b5386))
+* sch heartbeat/monitor ([4ce982c](https://github.com/SessionsBot/backend/commit/4ce982cf8b0cc4975b0f8a9c67c315690e9b5cdf))
+
+### ♻️ Refactoring
+
+* activity text ([65d4557](https://github.com/SessionsBot/backend/commit/65d455770fbbe388bf6eb385213a93ba4b7cc2f5))
+
+## [0.3.4](https://github.com/SessionsBot/backend/compare/v0.3.3...v0.3.4) (2025-08-25)
+
+### ⚡️ Features
+
+* event log ([8ec5e49](https://github.com/SessionsBot/backend/commit/8ec5e497994741775df4d1e193b970f78f1d83a5))
+
+### 🐞 Bug Fixes
+
+* bot invite/welcome msg ([a908a5c](https://github.com/SessionsBot/backend/commit/a908a5c8b42f4754e68e82379a4c081f1912a494))
+* event logging logic ([1e41385](https://github.com/SessionsBot/backend/commit/1e41385a53f251d1ca26368bac244380eebd8815))
+* remove testing flag ([d221d08](https://github.com/SessionsBot/backend/commit/d221d08fd08770942c92a939d193b1439786daa9))
+
+## [0.3.3](https://github.com/SessionsBot/backend/compare/v0.3.2...v0.3.3) (2025-08-25)
+
+### 🐞 Bug Fixes
+
+* schedule/thread logic ([c64049e](https://github.com/SessionsBot/backend/commit/c64049e0451e279fe763b9844158eb2d67a00509))
+
 ## [0.3.2](https://github.com/SessionsBot/backend/compare/v0.3.1...v0.3.2) (2025-08-25)
 
 ### ⚡️ Features

@@ -2,6 +2,8 @@ name: Deploy to Koyeb
 run-name: Deploy to Koyeb
 
 on:
+  workflow_dispatch:
+    
   push:
     tags:
       - "v*"

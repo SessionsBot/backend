@@ -2,7 +2,8 @@ import {  Events, ActivityType, Collection  } from "discord.js";
 import guildManager from "../utils/guildManager.js";
 import scheduleManager from "../utils/scheduleManager.js";
 import global from "../utils/global.js"; // Import Global Variables
-import logtail from "../utils/logtail.js";
+import logtail from "../utils/logs/logtail.js";
+import guildCreate from "./guildCreate.js";
 
 export default {
 	name: Events.ClientReady,
@@ -34,7 +35,7 @@ export default {
 		logtail.info(' [✅] Bot Startup', { clientTag: client?.user?.tag, botVersion: global?.botVersion });
 
 		// Set Bot User's Activity:
-		client.user.setActivity('📅 Training Sessions', { type: ActivityType.Watching });
+		client.user.setActivity('🔗 sessionsbot.fyi', { type: ActivityType.Custom });
 
 		// After Startup - Initialize Schedule System::
 		setTimeout(async () => {
