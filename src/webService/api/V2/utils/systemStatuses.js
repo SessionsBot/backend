@@ -1,5 +1,5 @@
 import axios from "axios";
-import logtail from "../../../../utils/logtail.js";
+import logtail from "../../../../utils/logs/logtail.js";
 const BETTERSTACK_KEY = process.env?.['BETTERSTACK_KEY'];
 
 

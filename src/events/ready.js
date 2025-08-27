@@ -2,7 +2,7 @@ import {  Events, ActivityType, Collection  } from "discord.js";
 import guildManager from "../utils/guildManager.js";
 import scheduleManager from "../utils/scheduleManager.js";
 import global from "../utils/global.js"; // Import Global Variables
-import logtail from "../utils/logtail.js";
+import logtail from "../utils/logs/logtail.js";
 import guildCreate from "./guildCreate.js";
 
 export default {
