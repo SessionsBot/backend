@@ -6,7 +6,7 @@ import { db } from "./firebase.js";
 import axios from "axios"; // Import Firebase
 // Dev Testing
 const devTesting = {
-    enabled: true,
+    enabled: false,
     guildId: "1379160686629880028",
 };
 if (devTesting.enabled)
