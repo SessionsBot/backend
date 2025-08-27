@@ -12,7 +12,7 @@ import global from "../../utils/global.js";
 
 // Register Command:
 const data = new SlashCommandBuilder()
-    .setName('session-notifications')
+    .setName('my-notifications')
     .setDescription("Toggles session notifications. DMs must be enabled to receive them.")
     .setContexts(InteractionContextType.Guild)
     .addBooleanOption(option =>

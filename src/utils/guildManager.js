@@ -250,7 +250,7 @@ const guildPanel = (guildId) => {return {
         panelContainer.setAccentColor(accentColor);
         
         // Heading:
-        panelContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${global.emojis.sessionsWText} Today's Sessions:`))
+        panelContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`# 📅 Today's Sessions:`))
         panelContainer.addSeparatorComponents(separator) // Separator:
 
 
@@ -259,7 +259,7 @@ const guildPanel = (guildId) => {return {
             .addTextDisplayComponents(
                 [
                     new TextDisplayBuilder().setContent('### 💼 My Sessions:'),
-                    new TextDisplayBuilder().setContent(`-# View your assigned group sessions and related details by using the 'My Sessions' button.`),
+                    new TextDisplayBuilder().setContent(`-# View your assigned group sessions and related details by using ${global.cmdStrings.mySessions}.`),
                 ]
             )
             .setButtonAccessory(new ButtonBuilder()
@@ -277,7 +277,7 @@ const guildPanel = (guildId) => {return {
             .addTextDisplayComponents(
                 [
                     new TextDisplayBuilder().setContent('### 🔔 My Notifications:'),
-                    new TextDisplayBuilder().setContent(`-# View your current session notification preferences by using the 'My Notifications' button.`),
+                    new TextDisplayBuilder().setContent(`-# View your current session notification preferences by using ${global.cmdStrings.myNotifications}.`),
                 ]
             )
             .setButtonAccessory(new ButtonBuilder()
@@ -289,6 +289,8 @@ const guildPanel = (guildId) => {return {
             )
         )
         panelContainer.addSeparatorComponents(separator) // Separator:
+
+        panelContainer.addTextDisplayComponents(new TextDisplayBuilder({content: `-# ${global.emojis.sessionsWText} Powered by [Sessions Bot](https://sessionsbot.fyi)`}))
 
         // Return Panel Container:
         const result = {success: true, data: panelContainer};

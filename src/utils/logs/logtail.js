@@ -8,5 +8,4 @@ const logtail = new Logtail(sourceToken || '', {
   endpoint: ingestingHost,
 });
 
-
 export default logtail
