@@ -4,6 +4,7 @@ import logtail from "./logtail.js"
 export default {
 
     /** ### ℹ️ Info Level Log
+     * `ⓘ This losses trace-ability!`
      * - To be locally logged via `console.log`
      * - To be retained via `logtail.log`
      * @param {string} message General message details of event/log.
@@ -15,6 +16,7 @@ export default {
     },
 
     /** ### ⚠️ Warning Level Log
+     * `ⓘ This losses trace-ability!`
      * - To be locally logged via `console.warn`
      * - To be retained via `logtail.warn`
      * @param {string} message General message details of event/log.
@@ -26,6 +28,7 @@ export default {
     },
 
     /** ### ⛔️ Error Level Log
+     * `ⓘ This losses trace-ability!`
      * - To be locally logged via `console.error`
      * - To be retained via `logtail.error`
      * @param {string} message General message details of event/log.
