@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.4.0](https://github.com/SessionsBot/backend/compare/v0.3.8...v0.4.0) (2025-08-27)
+
+### ⚡️ Features
+
+* manual deploy ([c21b616](https://github.com/SessionsBot/backend/commit/c21b616e794ef466b8633b328fbdc0e822f16025))
+
+### 🐞 Bug Fixes
+
+* **auth:** redirect uri ([2243732](https://github.com/SessionsBot/backend/commit/22437320a596ee0f358679eac7c2bb4deb8c693c))
+* **cors:** www allow ([f56fa26](https://github.com/SessionsBot/backend/commit/f56fa26a9b0586f8262d3d51a1ec2560dcb97081))
+* **esm:** deploy cmds ([483a7b8](https://github.com/SessionsBot/backend/commit/483a7b8a452c1a2d34d7744a8d4b726d875f3533))
+* notification cmd / panel styles ([5785992](https://github.com/SessionsBot/backend/commit/5785992c1e0dbb1da4334d25af5dde6ec4871115))
+* notification cmd response ([f0bee1e](https://github.com/SessionsBot/backend/commit/f0bee1e6e9c4f92ff5aee50a728110c9affa72f6))
+* remove old fn ([6d9b88a](https://github.com/SessionsBot/backend/commit/6d9b88a7c886208288e66ce07fe2656fb575e1fc))
+
+### 🧹 Chores
+
+* **deps:** bump the npm-dependencies group with 13 updates ([abd0a1e](https://github.com/SessionsBot/backend/commit/abd0a1e8a02d241e86b8e664a7ba17ad735e6b05))
+
+### 🎨 Styling
+
+* signup panel styling ([f73f288](https://github.com/SessionsBot/backend/commit/f73f288c611656eb4cb03cf13a2a2b6f797e9e95))
+
+### 🧪 Tests
+
+* remove test flag ([5130b1e](https://github.com/SessionsBot/backend/commit/5130b1e0f2ca020c16badaa1d533a66b3ffd7cb3))
+
 ## [0.3.8](https://github.com/SessionsBot/backend/compare/v0.3.7...v0.3.8) (2025-08-27)
 
 ### ⚡️ Features
