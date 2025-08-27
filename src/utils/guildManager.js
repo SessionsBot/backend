@@ -15,7 +15,7 @@ import { // Discord.js:
     ThreadAutoArchiveDuration,
     ChannelType
 } from 'discord.js';
-import logtail from "../utils/logtail.js";
+import logtail from "./logs/logtail.js";
 
 const inDepthDebug = (c) => { if (global.outputDebug_InDepth) { console.log(`[Guild Manager]: ${c}`) } }
 

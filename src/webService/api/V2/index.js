@@ -16,6 +16,7 @@ const swaggerDocument = YAML.load(join(__dirname, 'docs.yml'));
 
 // Nested Endpoints:
 import users from "./endpoints/users/index.js";
+import auth from "./endpoints/users/auth.js";
 import guilds from "./endpoints/guilds/index.js";
 import sessions from "./endpoints/guilds/sessions.js";
 import schedules from "./endpoints/guilds/schedules.js";
@@ -26,6 +27,7 @@ import system from "./endpoints/system/index.js";
 //------------------------------------[ Exported Endpoints ]------------------------------------\\
 // Endpoints:
 router.use('/users', users)
+router.use('/users/auth', auth)
 router.use('/guilds', guilds)
 router.use('/guilds/:guildId/sessions', sessions)
 router.use('/guilds/:guildId/schedules', schedules)

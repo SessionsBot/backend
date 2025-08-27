@@ -2,7 +2,7 @@
 import {  Events, ChannelType, ButtonBuilder, PermissionsBitField, ContainerBuilder, SeparatorBuilder, SectionBuilder, TextDisplayBuilder, ButtonStyle, MessageFlags, ThumbnailBuilder, ActionRowBuilder  } from "discord.js";
 import global from "../utils/global.js";
 import guildManager from "../utils/guildManager.js";
-import logtail from "../utils/logtail.js";
+import logtail from "../utils/logs/logtail.js";
 
 // Event:
 export default {
