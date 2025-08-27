@@ -4,7 +4,7 @@ const router = express.Router();
 import axios from "axios";
 import responder from "../../utils/responder.js";
 import verifyToken from "../../utils/verifyToken.js";
-import { auth  } from "../../../../../utils/firebase.js";
+import { auth, db  } from "../../../../../utils/firebase.js";
 
 // Secure Variables:
 const BOT_TOKEN = process.env['BOT_TOKEN'];
@@ -51,6 +51,9 @@ router.delete('/:userId', verifyToken, async (req, res) => {
 
     // Delete user from Firebase Auth:
     await auth.deleteUser(deleteId).catch((e) => {return responder.errored(res, e?.message | 'Unknown Error - Internal - Firebase deletion error', 500) })
+
+    // Delete user data fro Firestore:
+    await db.collection('users').doc(deleteId).delete()
 
     // Return Success:
     return responder.succeeded(res, `User ${deleteId} has been successfully deleted!`)
