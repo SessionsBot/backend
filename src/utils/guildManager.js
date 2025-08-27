@@ -816,7 +816,14 @@ const guildSessions = (guildId) => {return {
             return nowUTCSeconds >= sessionDateDiscord
         }
         let sessionButtons = async () => {
-            if(sessionFull()) { // Session Full - Hide Signup:
+            if(!sessionRoles?.length){ // No Session Roles - Hide Signup:
+                return new ActionRowBuilder().addComponents(	
+                    new ButtonBuilder()
+                        .setLabel('🎯 Location')
+                        .setURL(sessionLocation) 
+                        .setStyle(ButtonStyle.Link)
+                );
+            } else if(sessionFull()) { // Session Full - Hide Signup:
                 return new ActionRowBuilder().addComponents(	
                     new ButtonBuilder()
                         .setCustomId(`sessionSignup:${sessionId}`)
@@ -834,7 +841,7 @@ const guildSessions = (guildId) => {return {
                     new ButtonBuilder()
                         .setCustomId(`sessionSignup:${sessionId}`)
                         .setLabel('⌛️ Past Session')
-                        .setStyle(ButtonStyle.Primary)
+                        .setStyle(ButtonStyle.Secondary)
                         .setDisabled(true),
                     
                     new ButtonBuilder()
@@ -880,7 +887,7 @@ const guildSessions = (guildId) => {return {
             const roleUsersMapString = () => {
                 // Past Session & Empty:
                 if(pastSession() && !roleUsers.length){
-                    return `> *Session Concluded*`
+                    return ``
                 }   
                 // Not Empty but Available:
                 if(roleUsers.length >= 1){
@@ -892,17 +899,17 @@ const guildSessions = (guildId) => {return {
 
             // No Users Assigned:
             if(roleUsers.length === 0 && !pastSession()) {
-                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(0/${roleCapacity})* \n` + ` > *Available*  \n`
+                roleString = `### [ ${roleEmoji} ] ${roleName} \n > *\`AVAILABLE 🟢\`*` + ` *\`(0/${roleCapacity})\`* \n`
                 return sessionTextContent += roleString
             }
             
             // Role at Max Capacity or Past Session:
             if(roleFull || pastSession()){
-                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`UNAVAILABLE ⛔️\`***` +  ` *(${roleUsers.length}/${roleCapacity})* \n` + roleUsersMapString() + '\n';
+                roleString = `### [ ${roleEmoji} ] ${roleName} \n > *\`UNAVAILABLE ⛔️\`*` + ` *\`(${roleUsers.length}/${roleCapacity})\`* \n` + roleUsersMapString() + '\n';
                 return sessionTextContent += roleString;
             }else {
             // Role Available:
-                roleString = `### **[ ${roleEmoji} ] ${roleName} : *\`AVAILABLE 🟢\`***` +  ` *(${roleUsers.length}/${roleCapacity})* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
+                roleString = `### [ ${roleEmoji} ] ${roleName} \n > *\`AVAILABLE 🟢\`*` + ` *\`(${roleUsers.length}/${roleCapacity})\`* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
                 return sessionTextContent += roleString;
             }
         })
@@ -918,7 +925,7 @@ const guildSessions = (guildId) => {return {
         container.addSeparatorComponents(separator)
 
         // Add Session Id Subheading:
-        container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ID:  ${String(sessionId).toUpperCase()}`))
+        // container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ID:  ${String(sessionId).toUpperCase()}`))
 
         // Return Full Container:
         return {success: true, data: container}
