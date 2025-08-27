@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.8](https://github.com/SessionsBot/backend/compare/v0.3.7...v0.3.8) (2025-08-27)
+
+### ⚡️ Features
+
+* **api:** refresh auth token endpoint ([36217ac](https://github.com/SessionsBot/backend/commit/36217acbd1e18a21381266c13305c69645bcca7d))
+* module logger ([035363b](https://github.com/SessionsBot/backend/commit/035363b7ca2a6a649fefd406610a60cc38649fa4))
+
+### 🐞 Bug Fixes
+
+* **api:** delete user logic ([e08a943](https://github.com/SessionsBot/backend/commit/e08a94341f9e1f1578583c2d25282eb47297ff41))
+* **release-pipeline:** config ([202a8a0](https://github.com/SessionsBot/backend/commit/202a8a03be93666c1890603367b8dd40874ad8c0))
+
+### ♻️ Refactoring
+
+* debug cors declines ([b427651](https://github.com/SessionsBot/backend/commit/b42765197525547635204ec831eb98449770b4d8))
+* log docs ([0587817](https://github.com/SessionsBot/backend/commit/0587817f468da25a59658ff720fbc811acd0900c))
+
 ## [0.3.7](https://github.com/SessionsBot/backend/compare/v0.3.6...v0.3.7) (2025-08-26)
 
 ### 🐞 Bug Fixes
