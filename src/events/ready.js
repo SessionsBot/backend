@@ -1,9 +1,9 @@
-import {  Events, ActivityType, Collection  } from "discord.js";
+import {  Events, ActivityType  } from "discord.js";
 import guildManager from "../utils/guildManager.js";
 import scheduleManager from "../utils/scheduleManager.js";
 import global from "../utils/global.js"; // Import Global Variables
 import logtail from "../utils/logs/logtail.js";
-import guildCreate from "./guildCreate.js";
+import { sendSignupChannelLandingMsg } from "../utils/tests.js";
 
 export default {
 	name: Events.ClientReady,
@@ -41,6 +41,8 @@ export default {
 		setTimeout(async () => {
 			await scheduleManager.botInitialize()
 		}, 1_500);
+
+		setTimeout(()=> sendSignupChannelLandingMsg(), 200)
 
 	},
 };

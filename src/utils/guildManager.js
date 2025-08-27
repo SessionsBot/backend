@@ -250,7 +250,7 @@ const guildPanel = (guildId) => {return {
         panelContainer.setAccentColor(accentColor);
         
         // Heading:
-        panelContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${global.emojis.sessionsWText} Group Sessions:`))
+        panelContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`# ${global.emojis.sessionsWText} Today's Sessions:`))
         panelContainer.addSeparatorComponents(separator) // Separator:
 
 
@@ -265,7 +265,7 @@ const guildPanel = (guildId) => {return {
             .setButtonAccessory(new ButtonBuilder()
                 .setCustomId('view-my-sessions')
                 .setStyle(ButtonStyle.Secondary)
-                .setEmoji('👤')
+                .setEmoji('💼')
                 .setLabel('My Sessions')
             )
         )
@@ -326,6 +326,7 @@ const guildPanel = (guildId) => {return {
             const panelMessage = await panelChannel.messages.fetch(panelMessageId).catch((e) => {})
             await panelMessage.delete().catch((e) => {logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});})
         }catch(e){
+            console.log(`{!} Failed to delete old guild panel for guild ${guildId}!`, e)
             logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});
         }}
 
@@ -337,14 +338,14 @@ const guildPanel = (guildId) => {return {
         const newPanelMessage = await panelChannel.send({
             components: [panelContentAttempt.data],
             flags: MessageFlags.IsComponentsV2
-        }) // Don't Save this Msg Id... It's the same as the new thread id...
+        }) // Don't save this msg id... It's the same as the new thread id...
 
         // Variables:
         const threadDateString = DateTime.now().setZone(guildTimeZone).toLocaleString({month: 'numeric', day: 'numeric'})
 
         // Create Daily Sessions Thread:
         const thread = await newPanelMessage.startThread({
-            name: `📅 Upcoming Sessions - ${threadDateString}`,
+            name: `📅 Sessions - ${threadDateString}`,
             autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
             type: ChannelType.PublicThread,
             reason: 'Todays Guild Sessions',
@@ -443,7 +444,7 @@ const guildPanel = (guildId) => {return {
         const signupFooter = async () => {
             // Build Footer Container:
             const container = new ContainerBuilder()
-            container.setAccentColor(0x354154) // grey (secondary)
+            container.setAccentColor(0x53545e) // grey (secondary)
             const separator = new SeparatorBuilder()
             // Content:
             // Add Mention Roles:
@@ -824,7 +825,7 @@ const guildSessions = (guildId) => {return {
                         .setDisabled(true),
                     
                     new ButtonBuilder()
-                        .setLabel('🎯 Game Link')
+                        .setLabel('🎯 Location')
                         .setURL(sessionLocation)
                         .setStyle(ButtonStyle.Link)
                 );
@@ -837,7 +838,7 @@ const guildSessions = (guildId) => {return {
                         .setDisabled(true),
                     
                     new ButtonBuilder()
-                        .setLabel('🎯 Game Link')
+                        .setLabel('🎯 Location')
                         .setURL(sessionLocation) 
                         .setStyle(ButtonStyle.Link)
                 );
@@ -849,7 +850,7 @@ const guildSessions = (guildId) => {return {
                         .setStyle(ButtonStyle.Success),
                     
                     new ButtonBuilder()
-                        .setLabel('🎯 Game Link')
+                        .setLabel('🎯 Location')
                         .setURL(sessionLocation)
                         .setStyle(ButtonStyle.Link)
                 );
