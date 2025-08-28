@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1](https://github.com/SessionsBot/backend/compare/v0.4.0...v0.4.1) (2025-08-28)
+
+### ⚡️ Features
+
+* **cmds:** add / remove user to session cmd ([e636875](https://github.com/SessionsBot/backend/commit/e636875bb75229dcfa81bc574eaa92205a81ca8f))
+* **cmds:** setup cmd ([d5c2f9b](https://github.com/SessionsBot/backend/commit/d5c2f9b8ab313816250c67c70b17d890d6531677))
+* feedback cmd and minor refactors ([06c1aa1](https://github.com/SessionsBot/backend/commit/06c1aa1d3ade2cd9037a4786d4a54094c08d3484))
+
 ## [0.4.0](https://github.com/SessionsBot/backend/compare/v0.3.8...v0.4.0) (2025-08-27)
 
 ### ⚡️ Features
