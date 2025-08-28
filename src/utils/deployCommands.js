@@ -1,7 +1,9 @@
 // Env Variables
 import "dotenv/config";
-const botToken = process.env['BOT_TOKEN'];
-const clientId = process.env['CLIENT_ID'];
+
+const deployToDevTester = false;
+const botToken = !deployToDevTester ? process.env['BOT_TOKEN'] : process.env['DEV_BOT_TOKEN'];
+const clientId = !deployToDevTester ? process.env['CLIENT_ID'] : process.env['DEV_CLIENT_ID'];
 
 // Imports
 import { REST, Routes } from "discord.js";
