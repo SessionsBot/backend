@@ -16,7 +16,7 @@ function saveFeedback(interaction, feedback){
     try {
         const dateString = DateTime.now().setZone('America/Chicago').toFormat("MM-dd-yyyy_hh:mm:ss_a");
         db.collection('events').doc('feedback').collection('users').doc(String(interaction.user.id)).set({
-            dateString: {
+            [dateString]: {
                 username: interaction?.user?.username,
                 fromGuild: interaction.guild.name,
                 feedback: feedback
