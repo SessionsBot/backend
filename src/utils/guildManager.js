@@ -290,7 +290,8 @@ const guildPanel = (guildId) => {return {
         )
         panelContainer.addSeparatorComponents(separator) // Separator:
 
-        panelContainer.addTextDisplayComponents(new TextDisplayBuilder({content: `-# ${global.emojis.sessionsWText} Powered by [Sessions Bot](https://sessionsbot.fyi)`}))
+        // Powered By - Footer:
+        panelContainer.addTextDisplayComponents(new TextDisplayBuilder({content: `-# ${global.emojis.sessions} Powered by [Sessions Bot](https://sessionsbot.fyi)`}))
 
         // Return Panel Container:
         const result = {success: true, data: panelContainer};
@@ -461,7 +462,8 @@ const guildPanel = (guildId) => {return {
             const nowUTCSeconds = DateTime.now().toUnixInteger()
             const lastEditedTimestamp = `<t:${nowUTCSeconds}:R>`;
             let lastEditedString = `*Became Available:* ${lastEditedTimestamp}`
-            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${lastEditedString}`))
+            container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${lastEditedString}`));
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `${global.emojis.sessions}`}))
             // Add to Components:
             allComponents.push({type: 'footer', data: container})
         }
