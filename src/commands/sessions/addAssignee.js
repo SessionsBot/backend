@@ -69,8 +69,6 @@ async function execute(interaction) {
 
 /** Autocomplete - Command Input 
  * @param {AutocompleteInteraction} interaction
- * 
- * @issue Fix time-zoning... fetch guild data instead of just sessions
 */
 async function autocomplete(interaction) { try {
     const focusedOption = interaction.options.getFocused(true);
@@ -89,8 +87,6 @@ async function autocomplete(interaction) { try {
         /** @type {[string, import('@sessionsbot/api-types').UpcomingSession][]} */
         const upcomingSessions = Object.entries(guildDataFetch.data.upcomingSessions)
         const guildTimeZone = guildDataFetch.data?.timeZone || 'America/Chicago'
-
-        console.log('Autocomplete data', {upcomingSessions, guildTimeZone});
 
         // Get Tile & Time for Session:
         for (const [sessionId, sessionData] of upcomingSessions) {
