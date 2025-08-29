@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.2](https://github.com/SessionsBot/backend/compare/v0.4.1...v0.4.2) (2025-08-29)
+
+### 🐞 Bug Fixes
+
+* **assign-cmds:** time zone fixes ([f58532c](https://github.com/SessionsBot/backend/commit/f58532cf1b43efce2c7a490b2aa5ab94c3a1cd31))
+* feedback saves ([e770128](https://github.com/SessionsBot/backend/commit/e7701287da1de2af9e9906d00fda21371578c944))
+* **perms:** add perm check to /setup ([53442db](https://github.com/SessionsBot/backend/commit/53442dbcdda42b15d8fb73d1ac3f99342568a5ba))
+* time-zoning ([d3c447f](https://github.com/SessionsBot/backend/commit/d3c447f45f371a107e7bd383b05732e506d2788c))
+
+### 🎨 Styling
+
+* add powered by footer to main panel msgs ([7583d36](https://github.com/SessionsBot/backend/commit/7583d36972c948d5930791352fadbb90005ab446))
+* new signup channel alert / set ([9b796bd](https://github.com/SessionsBot/backend/commit/9b796bd68f3c023fe57551384b80fdbe7beef093))
+
 ## [0.4.1](https://github.com/SessionsBot/backend/compare/v0.4.0...v0.4.1) (2025-08-28)
 
 ### ⚡️ Features
