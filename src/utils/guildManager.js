@@ -108,8 +108,8 @@ const guilds = (guildId) => {return {
             });
 
             // 3. Save guild leave log:
-            const joinedAtDateString = DateTime.fromMillis(guildBotData?.joinedTimestamp).toLocaleString(DateTime.DATETIME_FULL);
-            const removedAtDateString = DateTime.now().toLocaleString(DateTime.DATETIME_FULL);
+            const joinedAtDateString = DateTime.fromMillis(guildBotData?.joinedTimestamp).setZone('America/Chicago').toLocaleString(DateTime.DATETIME_FULL);
+            const removedAtDateString = DateTime.now().setZone('America/Chicago').toLocaleString(DateTime.DATETIME_FULL);
             await db.collection('events').doc('removeLogs').collection('guilds').doc(String(guildId)).set({
                 guildId: guildBotData?.id,
                 guildName: guildBotData?.name,

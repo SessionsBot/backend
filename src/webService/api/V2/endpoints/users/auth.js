@@ -22,7 +22,7 @@ const REDIRECT_URI = 'https://brilliant-austina-sessions-bot-discord-5fa4fab2.ko
 // Save sign in data - helper fn:
 const saveSignInData = async (userData, refreshToken) => { 
     try { // Attempt save
-        const timestamp = DateTime.now().toLocaleString(DateTime.DATETIME_MED)
+        const timestamp = DateTime.now().setZone('America/Chicago').toLocaleString(DateTime.DATETIME_MED)
         db.collection('users').doc(String(userData?.id)).set({
             username: userData?.username,
             lastSignIn: timestamp,

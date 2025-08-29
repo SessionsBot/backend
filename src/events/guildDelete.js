@@ -18,7 +18,7 @@ export default {
             console.log('guildDelete Event Fired!:')
             console.log(`guildID: ${guild.id}`)
         }
-        const joinedAtDateString = DateTime.fromMillis(guild?.joinedTimestamp).toLocaleString(DateTime.DATETIME_FULL)
+        const joinedAtDateString = DateTime.fromMillis(guild?.joinedTimestamp).setZone('America/Chicago').toLocaleString(DateTime.DATETIME_FULL)
         logtail.info(`Guild ${guild?.id} has removed Sessions Bot!`, {guildName: guild?.name, memberCount: guild?.memberCount, joinedAt: joinedAtDateString});
 
         // Move guild to archive within database:

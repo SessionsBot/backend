@@ -83,7 +83,7 @@ async function autocomplete(interaction) { try {
         // Get Tile & Time for Session:
         for (const [sessionId, sessionData] of upcomingSessions) {
             const sessionTitle = sessionData?.title
-            const sessionDateString = DateTime.fromSeconds(Number(sessionData.date?.discordTimestamp)).toFormat("MMM dd, hh:mm a");
+            const sessionDateString = DateTime.fromSeconds(Number(sessionData.date?.discordTimestamp)).setZone('America/Chicago').toFormat("MMM dd, hh:mm a");
             // Confirm roles in session:
             if(!sessionData?.roles?.length) continue
             else choices.push({
