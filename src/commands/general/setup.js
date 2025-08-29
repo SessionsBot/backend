@@ -1,4 +1,4 @@
-import { CommandInteraction, ActionRowBuilder, ButtonBuilder, ContainerBuilder, MessageFlags, SeparatorBuilder, SlashCommandBuilder, TextDisplayBuilder, InteractionContextType, ButtonStyle } from "discord.js";
+import { CommandInteraction, ActionRowBuilder, ButtonBuilder, ContainerBuilder, MessageFlags, SeparatorBuilder, SlashCommandBuilder, TextDisplayBuilder, InteractionContextType, ButtonStyle, PermissionFlagsBits } from "discord.js";
 import guildManager from "../../utils/guildManager.js";
 import global from "../../utils/global.js";
 
@@ -41,6 +41,7 @@ export default {
         .setName('setup')
         .setDescription(`Get your bot's initial setup link, to configure preferences. (not needed once server is setup)`)
         .setContexts(InteractionContextType.Guild)
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild) // Default permission
     ,
 
     /** @param {CommandInteraction} interaction */
