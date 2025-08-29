@@ -1,9 +1,10 @@
 import {  Events, ActivityType  } from "discord.js";
-import guildManager from "../utils/guildManager.js";
 import scheduleManager from "../utils/scheduleManager.js";
 import global from "../utils/global.js"; // Import Global Variables
 import logtail from "../utils/logs/logtail.js";
+import guildManager from "../utils/guildManager.js";
 import tests from "../utils/tests.js";
+import { DateTime } from "luxon";
 
 export default {
 	name: Events.ClientReady,
@@ -13,22 +14,13 @@ export default {
 		global.client = client;
 
 		// Get Startup Timestamp:
-		const startupTimestamp = new Date(client.readyTimestamp);
-		const formattedTimestamp = startupTimestamp.toLocaleString('en-US', {
-			timeZone: 'America/Chicago',
-			hour: '2-digit',
-			minute: '2-digit',
-			second: '2-digit',
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit',
-		});
+		const startupTimestamp = DateTime.now().setZone('America/Chicago').toLocaleString(DateTime.DATETIME_SHORT)
 
 		// Startup Debug:
 		if(global.outputDebug_General) {
 			console.log(`[✅] READY! Logged in as @${client.user.tag}`);
 			console.log(`[📈] Status Page: https://stats.uptimerobot.com/3eCOrtiF8H`);
-			console.log(`[⏰] Timestamp: ${formattedTimestamp}`);
+			console.log(`[⏰] Timestamp: ${startupTimestamp}`);
 		}
 
 		// Testing logtail:
