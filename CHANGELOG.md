@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.4.3](https://github.com/SessionsBot/backend/compare/v0.4.2...v0.4.3) (2025-08-29)
+
+### 🐞 Bug Fixes
+
+* testing env ([b8c6366](https://github.com/SessionsBot/backend/commit/b8c6366f50f81a6a29c9fbec10e257006dca99ea))
+
+### ♻️ Refactoring
+
+* ready.js ([2f07218](https://github.com/SessionsBot/backend/commit/2f07218164f7684b6235e9c7d9aefaeb26c2422a))
+
 ## [0.4.2](https://github.com/SessionsBot/backend/compare/v0.4.1...v0.4.2) (2025-08-29)
 
 ### 🐞 Bug Fixes
