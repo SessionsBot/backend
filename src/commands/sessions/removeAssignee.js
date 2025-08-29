@@ -71,19 +71,22 @@ async function autocomplete(interaction) { try {
 
     // Session Date / Id
     if(focusedOption.name == 'session'){
-        // Get / confirm guild sessions:
-        const guildsSessionsFetch = await guildManager.guildSessions(interaction.guild.id).getSessions()
-        if(!guildsSessionsFetch.success || !Object.entries(guildsSessionsFetch?.data)?.length) {
-            // Failed / no guild sessions:
+        // Get & confirm guild data:
+        const guildDataFetch = await guildManager.guilds(interaction.guild.id).readGuild()
+        if(!guildDataFetch.success || !Object.entries(guildDataFetch.data.upcomingSessions)){
+            // Failed - no guild sessions:
+            console.log('Auto complete found no sessions/data!')
             return interaction.respond([]);
         }
+
         /** @type {[string, import('@sessionsbot/api-types').UpcomingSession][]} */
-        const upcomingSessions = Object.entries(guildsSessionsFetch.data)
+        const upcomingSessions = Object.entries(guildDataFetch.data.upcomingSessions)
+        const guildTimeZone = guildDataFetch.data?.timeZone || 'America/Chicago'
 
         // Get Tile & Time for Session:
         for (const [sessionId, sessionData] of upcomingSessions) {
             const sessionTitle = sessionData?.title
-            const sessionDateString = DateTime.fromSeconds(Number(sessionData.date?.discordTimestamp)).setZone('America/Chicago').toFormat("MMM dd, hh:mm a");
+            const sessionDateString = DateTime.fromSeconds(Number(sessionData.date?.discordTimestamp)).setZone(guildTimeZone).toFormat("MMM dd, hh:mm a");
             // Confirm roles in session:
             if(!sessionData?.roles?.length) continue
             else choices.push({
