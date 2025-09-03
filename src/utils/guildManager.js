@@ -843,7 +843,7 @@ const guildSessions = (guildId) => {return {
                     new ButtonBuilder()
                         .setCustomId(`sessionSignup:${sessionId}`)
                         .setLabel('⛔️ Session Full')
-                        .setStyle(ButtonStyle.Primary)
+                        .setStyle(ButtonStyle.Secondary)
                         .setDisabled(true),
                     
                     new ButtonBuilder()
