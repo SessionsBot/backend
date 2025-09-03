@@ -56,7 +56,7 @@ const responses = {
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ❗️ - Already Assigned Session!`))
 		container.addSeparatorComponents(separator);
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**💼 Current Role:** \`${existingRoleAssigned}\` `))
-		container.addTextDisplayComponents(new TextDisplayBuilder().setContent('*Could not sign up again for this session! To edit your position within this session please use the `/my-sessions` command!* '))
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`To edit your position within this session please use the ${global.cmdStrings.mySessions} command. `))
 		container.addSeparatorComponents(separator);
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
 		
@@ -227,6 +227,7 @@ export default {
 		// Title
 		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('### 💼 Please select a role for this session:'))
 		selectRoleContainer.addSeparatorComponents(separator) // Separator
+		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`> **Title:** <t:${requestedSessionData?.title}:F>`))
 		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`> **Date:** <t:${sessionDateDiscord}:F>`))
 		selectRoleContainer.addSeparatorComponents(separator) // Separator
 
@@ -297,7 +298,7 @@ export default {
 		collector.on('end', (collected, reason) => {
 			if (reason === 'time') {
 				interaction.editReply({
-					content: '⏱️ Time expired. Please click the sign up button again.',
+					content: '⏱️ Time expired. Please click the `Sign Up` button again.',
 					components: [],
 				}).catch(() => {});
 			}

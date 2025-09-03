@@ -66,7 +66,7 @@ async function execute(interaction) {
             });
         } else { // Timeout
             await interaction.followUp({
-                content: "⏰ You took too long to submit feedback.",
+                content: "⏰ You took too long to submit feedback. Try again with `/feedback`.",
                 flags: MessageFlags.Ephemeral,
             });
         }

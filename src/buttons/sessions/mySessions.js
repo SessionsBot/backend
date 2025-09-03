@@ -74,18 +74,19 @@ export default {
 				confirmContainer.addActionRowComponents(
 					new ActionRowBuilder()
 					.setComponents(
-						new ButtonBuilder()
-							.setCustomId(`confirmSessionRemoval:${sessionID}`)
-							.setLabel('REMOVE')
-							.setEmoji('🗑️')
-							.setStyle(ButtonStyle.Danger)
-							.setDisabled(false),
+						
 						new ButtonBuilder()
 							.setCustomId(`cancelSessionRemoval:${sessionID}`)
 							.setLabel('Go Back')
 							.setEmoji('↩️')
-							.setStyle(ButtonStyle.Primary)
-							.setDisabled(false)
+							.setStyle(ButtonStyle.Secondary)
+							.setDisabled(false),
+						new ButtonBuilder()
+							.setCustomId(`confirmSessionRemoval:${sessionID}`)
+							.setLabel('Confirm')
+							.setEmoji('🗑️')
+							.setStyle(ButtonStyle.Danger)
+							.setDisabled(false),
 					)
 				)
 				await interaction.editReply({
@@ -105,7 +106,7 @@ export default {
 					removalResponseContainer.setAccentColor(0x6dc441) // green
 					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - Success ✅'))
 					removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
-					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('*`You have successfully removed yourself as an attendee from this session!`*'))
+					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('You have *successfully* removed yourself as an attendee from this session!'))
 					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# (${sessionID})`))
 					removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
 					removalResponseContainer.addActionRowComponents(
@@ -115,7 +116,7 @@ export default {
 								.setCustomId(`cancelSessionRemoval:${sessionID}`)
 								.setLabel(' -  My Sessions')
 								.setEmoji('📋')
-								.setStyle(ButtonStyle.Primary)
+								.setStyle(ButtonStyle.Secondary)
 						)
 					)
 
@@ -123,7 +124,7 @@ export default {
 					removalResponseContainer.setAccentColor(0xd43f37) // red
 					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - ERROR ⚠️'))
 					removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
-					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("*`An error occurred while trying to remove yourself from this session, are you sure you're assigned it?`*"))
+					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("**An error occurred** while trying to remove yourself from this session. If this issue persists, please contact support."))
 					removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# (${sessionID})`))
 					removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
 					removalResponseContainer.addActionRowComponents(
@@ -133,7 +134,7 @@ export default {
 								.setCustomId(`cancelSessionRemoval:${sessionID}`)
 								.setLabel(' -  My Sessions')
 								.setEmoji('📋')
-								.setStyle(ButtonStyle.Primary)
+								.setStyle(ButtonStyle.Secondary)
 						)
 					)
 

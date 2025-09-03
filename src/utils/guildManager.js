@@ -250,7 +250,7 @@ const guildPanel = (guildId) => {return {
         panelContainer.setAccentColor(accentColor);
         
         // Heading:
-        panelContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`# 📅 Today's Sessions:`))
+        panelContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`# 📅 Today's Sessions`))
         panelContainer.addSeparatorComponents(separator) // Separator:
 
 
@@ -258,7 +258,7 @@ const guildPanel = (guildId) => {return {
         panelContainer.addSectionComponents(new SectionBuilder()
             .addTextDisplayComponents(
                 [
-                    new TextDisplayBuilder().setContent('### 💼 My Sessions:'),
+                    new TextDisplayBuilder().setContent('### 💼 My Sessions'),
                     new TextDisplayBuilder().setContent(`-# View your assigned group sessions and related details by using ${global.cmdStrings.mySessions}.`),
                 ]
             )
@@ -276,7 +276,7 @@ const guildPanel = (guildId) => {return {
         panelContainer.addSectionComponents(new SectionBuilder()
             .addTextDisplayComponents(
                 [
-                    new TextDisplayBuilder().setContent('### 🔔 My Notifications:'),
+                    new TextDisplayBuilder().setContent('### 🔔 My Notifications'),
                     new TextDisplayBuilder().setContent(`-# View your current session notification preferences by using ${global.cmdStrings.myNotifications}.`),
                 ]
             )
@@ -463,7 +463,7 @@ const guildPanel = (guildId) => {return {
             const lastEditedTimestamp = `<t:${nowUTCSeconds}:R>`;
             let lastEditedString = `*Became Available:* ${lastEditedTimestamp}`
             container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# ${lastEditedString}`));
-            container.addTextDisplayComponents(new TextDisplayBuilder({content: `${global.emojis.sessions}`}))
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `-# ${global.emojis.sessions} Powered by [Sessions Bot](https://sessionsbot.fyi)`}))
             // Add to Components:
             allComponents.push({type: 'footer', data: container})
         }
