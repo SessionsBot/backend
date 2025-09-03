@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.0](https://github.com/SessionsBot/backend/compare/v0.4.3...v0.5.0) (2025-09-03)
+
+### ⚡️ Features
+
+* **schedules:** add/checks for daysOfWeek ([6754614](https://github.com/SessionsBot/backend/commit/6754614f22e7ffbf81e301fba00abc5d2df2d1c4))
+
+### 🧹 Chores
+
+* prepare for release ([ccc8150](https://github.com/SessionsBot/backend/commit/ccc81502cbc6901a2697227b462146e0804cdce9))
+
+### 🎨 Styling
+
+* improvements ([02d584a](https://github.com/SessionsBot/backend/commit/02d584a584ed1a7e235f8b4179147bd3afa12b74))
+
 ## [0.4.3](https://github.com/SessionsBot/backend/compare/v0.4.2...v0.4.3) (2025-08-29)
 
 ### 🐞 Bug Fixes
