@@ -6,7 +6,7 @@ import { db } from "./firebase.js";
 import axios from "axios"; // Import Firebase
 // Dev Testing
 const devTesting = {
-    enabled: false,
+    enabled: true,
     guildId: "1379160686629880028",
 };
 if (devTesting.enabled)
@@ -30,10 +30,9 @@ let alreadyInitialized = false;
 async function botInitialize() {
     // Confirm first/only call:
     if (alreadyInitialized)
-        return console.log(
-            `[!] botInitialize already called, skipping duplicate initialization!`
-        );
+        return console.log(`[!] botInitialize already called, skipping duplicate initialization!`);
     alreadyInitialized = true;
+
     // Runs Daily @11:59 PM - Loads and schedules all other 'Guild Schedules':
     const dailyInitializeShd = cron.schedule(
         "0 59 23 * * *",
@@ -111,18 +110,12 @@ async function dailyInitializeFn() {
                     `${minuets} ${hours} * * *`,
                     async (ctx) => {
                         // Create guild sessions for the day:
-                        const sessionCreationResult = await guildManager
-                            .guildSessions(String(doc.id))
-                            .createDailySessions(guildSchedules, timeZone);
-                        if (!sessionCreationResult.success)
-                            return generalDebug(
-                                `{!} FAILED: Guild(${doc.id}) Schedule: ${sessionCreationResult.data}`
-                            );
+                        const sessionCreationResult = await guildManager.guildSessions(String(doc.id)).createDailySessions(guildSchedules, timeZone);
+                        if (!sessionCreationResult.success) 
+                        return generalDebug(`{!} FAILED: Guild(${doc.id}) Schedule: ${sessionCreationResult.data}`);
 
                         // Create/Update guild panel for the day:
-                        const creationResult = await guildManager
-                            .guildPanel(String(doc.id))
-                            .createDailySessionsThreadPanel();
+                        const creationResult = await guildManager.guildPanel(String(doc.id)).createDailySessionsThreadPanel();
                         if (creationResult.success) {
                             generalDebug(
                                 `[i] Guild ${doc.id

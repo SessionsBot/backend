@@ -740,9 +740,20 @@ const guildSessions = (guildId) => {return {
     createDailySessions: async (fullSchedulesObject, timeZone) => { try{
 
         const upcomingSessions = {};
+        const skippedSchedules = []
 
         // For Each Schedule:
-        for(const[scheduleId, scheduleData] of Object.entries(fullSchedulesObject)) {
+        for(const[index, scheduleData] of Object.entries(fullSchedulesObject)) {
+
+            // Check if schedule is scheduled for this day of week:
+            const todaysDayString = DateTime.now().setZone('America/Chicago').weekdayLong.toLowerCase()
+            const scheduledDays = scheduleData?.daysOfWeek || ['sunday' ,'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            const scheduledToday = scheduledDays.includes(todaysDayString);
+            if(!scheduledToday){
+                skippedSchedules.push(scheduleData)
+                continue
+            }
+
             // Session Data:
             const sessionDateDaily = scheduleData?.['sessionDateDaily'];
             const sessionRoles = scheduleData?.['roles'] || [];
