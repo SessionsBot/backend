@@ -2,8 +2,6 @@ import {  Events, ActivityType  } from "discord.js";
 import scheduleManager from "../utils/scheduleManager.js";
 import global from "../utils/global.js"; // Import Global Variables
 import logtail from "../utils/logs/logtail.js";
-import guildManager from "../utils/guildManager.js";
-import tests from "../utils/tests.js";
 import { DateTime } from "luxon";
 
 export default {
@@ -19,11 +17,11 @@ export default {
 		// Startup Debug:
 		if(global.outputDebug_General) {
 			console.log(`[✅] READY! Logged in as @${client.user.tag}`);
-			console.log(`[📈] Status Page: https://stats.uptimerobot.com/3eCOrtiF8H`);
+			console.log(`[📈] Status Page: https://status.sessionsbot.fyi`);
 			console.log(`[⏰] Timestamp: ${startupTimestamp}`);
 		}
 
-		// Testing logtail:
+		// Log Startup:
 		logtail.info(' [✅] Bot Startup', { clientTag: client?.user?.tag, botVersion: global?.botVersion });
 
 		// Set Bot User's Activity:

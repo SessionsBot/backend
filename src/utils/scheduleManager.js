@@ -4,15 +4,14 @@ import global from "./global.js"; // Import Global Variables
 import guildManager from "./guildManager.js";
 import { db } from "./firebase.js";
 import axios from "axios"; // Import Firebase
+
 // Dev Testing
 const devTesting = {
-    enabled: false,
+    enabled: true,
     guildId: "1379160686629880028",
 };
-if (devTesting.enabled)
-    console.info(
-        "Dev-Testing enabled within scheduleManager.js... please modify settings if this is unexpected."
-    );
+
+if (devTesting.enabled) console.info("Dev-Testing enabled within scheduleManager.js... please modify settings if this is unexpected.");
 
 let currentDailySchedules = {}; // <-- Store node schedules to be replaced each day w/ fresh data
 
@@ -25,8 +24,13 @@ const inDepthDebug = (c) => {
     if (global.outputDebug_InDepth) console.log(c);
 };
 
-// Bot Initialization Fn:
 let alreadyInitialized = false;
+
+/** ### Bot Initialization Fn
+ * - *Runs on server* **startup**
+ * - Loads and schedules existing guild schedules
+ * - Creates *"Daily Initialize"* Schedule
+*/
 async function botInitialize() {
     // Confirm first/only call:
     if (alreadyInitialized)
@@ -37,13 +41,9 @@ async function botInitialize() {
     const dailyInitializeShd = cron.schedule(
         "0 59 23 * * *",
         async (ctx) => {
-            generalDebug(
-                `[⏳] Loading All Guild Schedules - ${ctx.triggeredAt.toLocaleString(
-                    "en-US",
-                    { timeZone: "America/Chicago" }
-                )} `
-            );
-            await dailyInitializeFn();
+            // schedule execution
+            generalDebug(`[⏳] Loading All Guild Schedules - ${ctx.triggeredAt.toLocaleString("en-US",{ timeZone: "America/Chicago" })} `);
+            await initializeDailySchedules();
         },
         {
             // schedule options
@@ -55,8 +55,12 @@ async function botInitialize() {
     await dailyInitializeShd.execute();
 }
 
-// Daily Initialization Fn:
-async function dailyInitializeFn() {
+/** ### Initialize Daily Schedules fn
+ * - *Runs each day at `11:59 PM`
+ * - Loads and schedules existing guild schedules
+ *     - Schedules a new 'signup panel post' at the guild's specified `Post Time`.
+*/
+async function initializeDailySchedules() {
     try {
         // Stop and clear all previous schedules
         Object.values(currentDailySchedules).forEach((job) => job.stop());
@@ -117,12 +121,7 @@ async function dailyInitializeFn() {
                         // Create/Update guild panel for the day:
                         const creationResult = await guildManager.guildPanel(String(doc.id)).createDailySessionsThreadPanel();
                         if (creationResult.success) {
-                            generalDebug(
-                                `[i] Guild ${doc.id
-                                } - Schedule Ran - ${ctx.triggeredAt.toLocaleString("en-US", {
-                                    timeZone: "America/Chicago",
-                                })}`
-                            );
+                            generalDebug(`[i] Guild ${doc.id} - Schedule Ran - ${ctx.triggeredAt.toLocaleString("en-US", {timeZone: "America/Chicago"})}`);
                         } else {
                             generalDebug(`{!} FAILED: Guild(${doc.id}) Schedule!`);
                             console.log(creationResult);
@@ -151,14 +150,17 @@ async function dailyInitializeFn() {
         await axios.post("https://uptime.betterstack.com/api/v1/heartbeat/CReNYEQ9a6PZWdSmW5kR21Lf");
        
     } catch (error) { 
-        // Report Failure:
-        try {
+        // Report Schedule's Initialization Failure:
+        try { 
             await axios.post("https://uptime.betterstack.com/api/v1/heartbeat/CReNYEQ9a6PZWdSmW5kR21Lf/fail");
         } catch (e) {
             console.log("{!} Failed to log failed schedule heartbeat/monitor...", e);
         }
     }
 }
+
+
+
 
 // -------------------------- [ Exports ] -------------------------- \\
 export default {
