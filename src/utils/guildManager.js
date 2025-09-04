@@ -255,39 +255,20 @@ const guildPanel = (guildId) => {return {
 
 
         // My Sessions:
-        panelContainer.addSectionComponents(new SectionBuilder()
-            .addTextDisplayComponents(
-                [
-                    new TextDisplayBuilder().setContent('### 💼 My Sessions'),
-                    new TextDisplayBuilder().setContent(`-# View your assigned group sessions and related details by using ${global.cmdStrings.mySessions}.`),
-                ]
-            )
-            .setButtonAccessory(new ButtonBuilder()
-                .setCustomId('view-my-sessions')
-                .setStyle(ButtonStyle.Secondary)
-                .setEmoji('💼')
-                .setLabel('My Sessions')
-            )
-        )
+        panelContainer.addTextDisplayComponents([
+            new TextDisplayBuilder().setContent('### 💼 My Sessions'),
+            new TextDisplayBuilder().setContent(`-# View your assigned group sessions and related details by using ${global.cmdStrings.mySessions}.`),
+        ])
+
         panelContainer.addSeparatorComponents(separator) // Separator:
 
 
         // My Notifications:
-        panelContainer.addSectionComponents(new SectionBuilder()
-            .addTextDisplayComponents(
-                [
-                    new TextDisplayBuilder().setContent('### 🔔 My Notifications'),
-                    new TextDisplayBuilder().setContent(`-# View your current session notification preferences by using ${global.cmdStrings.myNotifications}.`),
-                ]
-            )
-            .setButtonAccessory(new ButtonBuilder()
-                .setCustomId('view-my-notifications')
-                .setStyle(ButtonStyle.Secondary)
-                .setEmoji('🔔')
-                .setLabel('My Notifications')
-                .setDisabled(true)
-            )
-        )
+        panelContainer.addTextDisplayComponents([
+            new TextDisplayBuilder().setContent('### 🔔 My Notifications'),
+            new TextDisplayBuilder().setContent(`-# View your current session notification preferences by using ${global.cmdStrings.myNotifications}.`),
+        ])
+
         panelContainer.addSeparatorComponents(separator) // Separator:
 
         // Powered By - Footer:
