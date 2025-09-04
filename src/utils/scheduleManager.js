@@ -8,7 +8,7 @@ import logtail from "./logs/logtail.js";
 
 // Dev Testing
 const devTesting = {
-    enabled: true,
+    enabled: false,
     guildId: "1379160686629880028",
 };
 
