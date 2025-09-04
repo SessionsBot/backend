@@ -227,7 +227,7 @@ export default {
 		// Title
 		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('### 💼 Please select a role for this session:'))
 		selectRoleContainer.addSeparatorComponents(separator) // Separator
-		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`> **Title:** <t:${requestedSessionData?.title}:F>`))
+		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`> **Title:** \`${requestedSessionData?.title}\``))
 		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`> **Date:** <t:${sessionDateDiscord}:F>`))
 		selectRoleContainer.addSeparatorComponents(separator) // Separator
 
