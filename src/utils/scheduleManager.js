@@ -4,6 +4,7 @@ import global from "./global.js"; // Import Global Variables
 import guildManager from "./guildManager.js";
 import { db } from "./firebase.js";
 import axios from "axios"; // Import Firebase
+import logtail from "./logs/logtail.js";
 
 // Dev Testing
 const devTesting = {
@@ -11,18 +12,25 @@ const devTesting = {
     guildId: "1379160686629880028",
 };
 
+// Logging
+const log = {
+    info: (msg, cnt) => {
+        console.info(msg, cnt ? cnt : '')
+        logtail.info(msg, cnt ? cnt : '')
+    },
+    warn: (msg, cnt) => {
+        console.warn(msg, cnt ? cnt : '')
+        if(!devTesting.enabled)
+        logtail.warn(msg, cnt ? cnt : '')
+    }
+}
+
+
 if (devTesting.enabled) console.info("Dev-Testing enabled within scheduleManager.js... please modify settings if this is unexpected.");
 
 let currentDailySchedules = {}; // <-- Store node schedules to be replaced each day w/ fresh data
 
 // -------------------------- [ Functions ] -------------------------- \\
-
-const generalDebug = (c) => {
-    if (global.outputDebug_General) console.log(c);
-};
-const inDepthDebug = (c) => {
-    if (global.outputDebug_InDepth) console.log(c);
-};
 
 let alreadyInitialized = false;
 
@@ -42,8 +50,10 @@ async function botInitialize() {
         "0 59 23 * * *",
         async (ctx) => {
             // schedule execution
-            generalDebug(`[⏳] Loading All Guild Schedules - ${ctx.triggeredAt.toLocaleString("en-US",{ timeZone: "America/Chicago" })} `);
+            console.log(`[⏳] Loading All Guild Schedules - ${ctx.triggeredAt.toLocaleString("en-US",{ timeZone: "America/Chicago" })} `);
+            logtail.info(`[⏳] Loading All Guild Schedules`);
             await initializeDailySchedules();
+            logtail.flush();
         },
         {
             // schedule options
@@ -83,27 +93,21 @@ async function initializeDailySchedules() {
             const guildData = doc.data();
             const setupCompleted = guildData?.["setupCompleted"];
             const guildSchedules = guildData?.["sessionSchedules"];
-            const dailySignupPostTime =
-                guildData?.["sessionSignup"]?.["dailySignupPostTime"];
+            const dailySignupPostTime = guildData?.["sessionSignup"]?.["dailySignupPostTime"];
 
             // Confirm Bot is in Guild:
-            if (!currentClientGuilds.includes(doc.id))
-                return generalDebug(
-                    `{!} The bot is not in guild ${doc.id}, This guild will not be scheduled or executed!`
-                );
+            if (!currentClientGuilds.includes(doc.id)) { 
+                log.warn(`{!} Bot is not in guild (${doc.id}), skipping execution!`)
+                return
+            }
 
             // Confirm Guild Setup Properly:
-            if (
-                !guildData ||
-                !setupCompleted ||
-                !guildSchedules ||
-                !dailySignupPostTime
-            ) {
-                // NOT SETUP PROPERLY:
-                // Debug:
-                generalDebug(`{!} Guild ${doc.id} is not setup properly!`);
+            if (!guildData || !setupCompleted || !guildSchedules || !dailySignupPostTime) {
+                // NOT SETUP PROPERLY - Log & Return:
+                log.warn(`{!} Guild ${doc.id} is not setup properly!`);
+                return
             } else {
-                // SETUP PROPERLY:
+                // SETUP PROPERLY - Schedule Signup Post:
                 // Get Guild Schedule Data:
                 const hours = Number(dailySignupPostTime?.["hours"] ?? 6);
                 const minuets = Number(dailySignupPostTime?.["minutes"] ?? 0);
@@ -115,16 +119,18 @@ async function initializeDailySchedules() {
                     async (ctx) => {
                         // Create guild sessions for the day:
                         const sessionCreationResult = await guildManager.guildSessions(String(doc.id)).createDailySessions(guildSchedules, timeZone);
-                        if (!sessionCreationResult.success) 
-                        return generalDebug(`{!} FAILED: Guild(${doc.id}) Schedule: ${sessionCreationResult.data}`);
+                        if (!sessionCreationResult.success) {
+                            log.warn(`{!} Failed ${doc.id} during session creation process!`, sessionCreationResult);
+                            return
+                        }
 
                         // Create/Update guild panel for the day:
                         const creationResult = await guildManager.guildPanel(String(doc.id)).createDailySessionsThreadPanel();
                         if (creationResult.success) {
-                            generalDebug(`[i] Guild ${doc.id} - Schedule Ran - ${ctx.triggeredAt.toLocaleString("en-US", {timeZone: "America/Chicago"})}`);
+                            log.info(`[i] Guild ${doc.id} - Schedule Ran - ${ctx.triggeredAt.toLocaleString("en-US", {timeZone: "America/Chicago"})}`); 
                         } else {
-                            generalDebug(`{!} FAILED: Guild(${doc.id}) Schedule!`);
-                            console.log(creationResult);
+                            log.warn(`{!} FAILED: Guild(${doc.id}) Schedule!`, {creationResult});
+                            
                         }
                     },
                     {
