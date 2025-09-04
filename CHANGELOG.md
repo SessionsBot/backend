@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/SessionsBot/backend/compare/v0.5.0...v0.5.1) (2025-09-04)
+
+### 🎨 Styling
+
+* **bot msgs:** fix format strings ([e98f6b5](https://github.com/SessionsBot/backend/commit/e98f6b5a101cb558eecfeb7a6d5242af4854fa1f))
+* **signup:** full style ([eaa0fea](https://github.com/SessionsBot/backend/commit/eaa0fea46b58e666e56b1878a8c556250239c20b))
+
 ## [0.5.0](https://github.com/SessionsBot/backend/compare/v0.4.3...v0.5.0) (2025-09-03)
 
 ### ⚡️ Features
