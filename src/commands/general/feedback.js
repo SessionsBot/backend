@@ -5,7 +5,7 @@ import { SelectMenuBuilder } from "@discordjs/builders";
 
 const data = new SlashCommandBuilder()
     .setName('feedback')
-    .setDescription("Provide your feedback regarding our Discord bot.")
+    .setDescription("Provide your feedback regarding Sessions Bot.")
     .setContexts(InteractionContextType.Guild)
 
 /** Helper fn to save user feedback to database
