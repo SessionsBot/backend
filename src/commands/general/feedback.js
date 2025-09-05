@@ -61,12 +61,12 @@ async function execute(interaction) {
             // Save feedback:
             saveFeedback(interaction, feedback);
             await submitted.reply({
-                content: `✅ Thanks for your feedback: "${feedback}"`,
+                content: `✅ Received | Thanks for your feedback!`,
                 flags: MessageFlags.Ephemeral,
             });
         } else { // Timeout
             await interaction.followUp({
-                content: "⏰ You took too long to submit feedback. Try again with `/feedback`.",
+                content: "⏰ Timeout | You took too long to submit feedback. Try again with `/feedback`.",
                 flags: MessageFlags.Ephemeral,
             });
         }
