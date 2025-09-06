@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.0](https://github.com/SessionsBot/backend/compare/v0.5.3...v0.6.0) (2025-09-06)
+
+### 🐞 Bug Fixes
+
+* auto channel create response ([3f2c1f9](https://github.com/SessionsBot/backend/commit/3f2c1f965e55bfea357e5abd1fbbe89f8697e486))
+* permission checking ([b9937a7](https://github.com/SessionsBot/backend/commit/b9937a7b1104b23be019a9205efa4e1f850284ab))
+
+### 🎨 Styling
+
+* improve signup panels ([a10ce94](https://github.com/SessionsBot/backend/commit/a10ce9436934fc44bd8c1b9f88fa9034086aae7e))
+
 ## [0.5.3](https://github.com/SessionsBot/backend/compare/v0.5.2...v0.5.3) (2025-09-06)
 
 ### 🐞 Bug Fixes
