@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.5.2](https://github.com/SessionsBot/backend/compare/v0.5.1...v0.5.2) (2025-09-06)
+
+### ⚡️ Features
+
+* **cmds:** add /help and /dashboard ([b5d536d](https://github.com/SessionsBot/backend/commit/b5d536dcb473abc46a70f452520d68e9699f2dfc))
+* missing permissions checks ([8cc264a](https://github.com/SessionsBot/backend/commit/8cc264ac0f70800c6ed655b77f6dd6b2972b40f1))
+* permission denied alert helper ([4068b5f](https://github.com/SessionsBot/backend/commit/4068b5fe93dd0d4089ac2515ba7e19b8ce70e6d0))
+
+### 🐞 Bug Fixes
+
+* **cmds:** feedback response ([b7c9878](https://github.com/SessionsBot/backend/commit/b7c9878422dc2b6c902b55e0b918a17edfd8352a))
+* **scheduleManager:** logging ([1590ba0](https://github.com/SessionsBot/backend/commit/1590ba05e34c1bd5e58b7725578e8aacc2908b3d))
+
+### 🎨 Styling
+
+* main panel msg ([9d7225e](https://github.com/SessionsBot/backend/commit/9d7225ef675d5622b9a1896886257838b086789e))
+
+### ♻️ Refactoring
+
+* general improvements ([f78bbfd](https://github.com/SessionsBot/backend/commit/f78bbfd8131a64ba22cce56da31cb3aa63549ff5))
+* minor improvements ([db0f3f4](https://github.com/SessionsBot/backend/commit/db0f3f4f3dafc141a6c0565befe0b7346963e121))
+
 ## [0.5.1](https://github.com/SessionsBot/backend/compare/v0.5.0...v0.5.1) (2025-09-04)
 
 ### 🎨 Styling
