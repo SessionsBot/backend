@@ -242,35 +242,22 @@ const guildPanel = (guildId) => {return {
         if(!panelChannelId) return { success: false, data: `No 'panelChannelId' provided, cannot create new panel!` };
         const accentColor = Number(guildData['accentColor'] || 0x9b42f5);
 
-        // Create Panel Container:
+        // Create 'Main' Panel Container:
         const panelContainer = new ContainerBuilder()
         const separator = new SeparatorBuilder()
-
-        // Accent:
-        panelContainer.setAccentColor(accentColor);
-        
-        // Heading:
-        panelContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`# 📅 Today's Sessions`))
-        panelContainer.addSeparatorComponents(separator) // Separator:
-
-
+        // Heading & Accent:
+        panelContainer.addTextDisplayComponents(new TextDisplayBuilder({content: `## 📅 Today's Sessions`}))
+        panelContainer.addTextDisplayComponents(new TextDisplayBuilder({content: `-# You can view today's upcoming sessions within the thread below!`}))
+        panelContainer.setAccentColor(accentColor)
+        // Separator
+        panelContainer.addSeparatorComponents(separator)
         // My Sessions:
         panelContainer.addTextDisplayComponents([
-            new TextDisplayBuilder().setContent('### 💼 My Sessions'),
-            new TextDisplayBuilder().setContent(`-# View your assigned group sessions and related details by using ${global.cmdStrings.mySessions}.`),
+            new TextDisplayBuilder({content:`### 💼 My Sessions`}),
+            new TextDisplayBuilder({content: `-# View your assigned sessions and modify assigned roles by using ${global.cmdStrings.mySessions}.`}),
         ])
-
-        panelContainer.addSeparatorComponents(separator) // Separator:
-
-
-        // My Notifications:
-        panelContainer.addTextDisplayComponents([
-            new TextDisplayBuilder().setContent('### 🔔 My Notifications'),
-            new TextDisplayBuilder().setContent(`-# View your current session notification preferences by using /my-notifications. *(coming soon)*`),
-        ])
-
-        panelContainer.addSeparatorComponents(separator) // Separator:
-
+        // Separator
+        panelContainer.addSeparatorComponents(separator)
         // Powered By - Footer:
         panelContainer.addTextDisplayComponents(new TextDisplayBuilder({content: `-# ${global.emojis.sessions} Powered by [Sessions Bot](https://sessionsbot.fyi)`}))
 
@@ -852,40 +839,37 @@ const guildSessions = (guildId) => {return {
             } else if(sessionFull()) { // Session Full - Hide Signup:
                 return new ActionRowBuilder().addComponents(	
                     new ButtonBuilder()
+                        .setLabel('🎯 Location')
+                        .setURL(sessionLocation)
+                        .setStyle(ButtonStyle.Link),
+                    new ButtonBuilder()
                         .setCustomId(`sessionSignup:${sessionId}`)
                         .setLabel('⛔️ Session Full')
                         .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(true),
-                    
-                    new ButtonBuilder()
-                        .setLabel('🎯 Location')
-                        .setURL(sessionLocation)
-                        .setStyle(ButtonStyle.Link)
+                        .setDisabled(true)
                 );
             } else if(pastSession()) { // Past Session - Hide Signup:
                 return new ActionRowBuilder().addComponents(	
                     new ButtonBuilder()
+                        .setLabel('🎯 Location')
+                        .setURL(sessionLocation) 
+                        .setStyle(ButtonStyle.Link),
+                    new ButtonBuilder()
                         .setCustomId(`sessionSignup:${sessionId}`)
                         .setLabel('⌛️ Past Session')
                         .setStyle(ButtonStyle.Secondary)
-                        .setDisabled(true),
-                    
-                    new ButtonBuilder()
-                        .setLabel('🎯 Location')
-                        .setURL(sessionLocation) 
-                        .setStyle(ButtonStyle.Link)
+                        .setDisabled(true)
                 );
             } else { // Session NOT Full - Show Signup:
                 return new ActionRowBuilder().addComponents(
                     new ButtonBuilder()
-                        .setCustomId(`sessionSignup:${sessionId}`)
-                        .setLabel('📝 Sign Up')
-                        .setStyle(ButtonStyle.Success),
-                    
-                    new ButtonBuilder()
                         .setLabel('🎯 Location')
                         .setURL(sessionLocation)
-                        .setStyle(ButtonStyle.Link)
+                        .setStyle(ButtonStyle.Link),
+                    new ButtonBuilder()
+                        .setCustomId(`sessionSignup:${sessionId}`)
+                        .setLabel('📝 Sign Up')
+                        .setStyle(ButtonStyle.Success)
                 );
             }
         }
@@ -900,7 +884,7 @@ const guildSessions = (guildId) => {return {
         // Get Session Text Content:
         let sessionTextContent = '';
         // Session Date:
-        sessionTextContent += `### **[ ⏰ ] <t:${sessionData['date']['discordTimestamp']}:F>** \n > <t:${sessionData['date']['discordTimestamp']}:R> \n` 
+        sessionTextContent += `### ** ⏰ <t:${sessionData['date']['discordTimestamp']}:t>** \n > <t:${sessionData['date']['discordTimestamp']}:R> \n` 
         // Session Role(s):
         sessionRoles.forEach(role => {
             const roleName = role['roleName'];
@@ -918,24 +902,24 @@ const guildSessions = (guildId) => {return {
                 // Not Empty but Available:
                 if(roleUsers.length >= 1){
                     // Users in Role:
-                    return roleUsers.map(id => `> <@${id}>`).join('\n')
+                    return roleUsers.map(id => `> <@${id}>`).join('\n') + '\n'
                 }
                 
             }
 
             // No Users Assigned:
             if(roleUsers.length === 0 && !pastSession()) {
-                roleString = `### [ ${roleEmoji} ] ${roleName} \n > *\`AVAILABLE 🟢\`*` + ` *\`(0/${roleCapacity})\`* \n`
+                roleString = `### ${roleEmoji} ${roleName} \n > *\`AVAILABLE 🟢\`*` + ` *\`(0/${roleCapacity})\`* \n`
                 return sessionTextContent += roleString
             }
             
             // Role at Max Capacity or Past Session:
             if(roleFull || pastSession()){
-                roleString = `### [ ${roleEmoji} ] ${roleName} \n > *\`UNAVAILABLE ⛔️\`*` + ` *\`(${roleUsers.length}/${roleCapacity})\`* \n` + roleUsersMapString() + '\n';
+                roleString = `### ${roleEmoji} ${roleName} \n > *\`UNAVAILABLE ⛔️\`*` + ` *\`(${roleUsers.length}/${roleCapacity})\`* \n` + roleUsersMapString();
                 return sessionTextContent += roleString;
             }else {
             // Role Available:
-                roleString = `### [ ${roleEmoji} ] ${roleName} \n > *\`AVAILABLE 🟢\`*` + ` *\`(${roleUsers.length}/${roleCapacity})\`* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
+                roleString = `### ${roleEmoji} ${roleName} \n > *\`AVAILABLE 🟢\`*` + ` *\`(${roleUsers.length}/${roleCapacity})\`* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n \n';
                 return sessionTextContent += roleString;
             }
         })

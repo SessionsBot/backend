@@ -121,7 +121,7 @@ const createAutoSignupChannel = async (guildId, adminId) => {
     return result;
   } catch (e) { // Creation Error:
     // Debug:
-    // logtail.error(`Failed to create an 'Auto Signup Channel' - Guild:${guildId}`, {guildId, rawError: e})
+    logtail.error(`Failed to create an 'Auto Signup Channel' - Guild:${guildId}`, {guildId, rawError: e})
     console.warn(`Failed to create an 'Auto Signup Channel' - Guild:${guildId}`, {guildId, rawError: e})
     // Catch Permission Errors:
     if(e?.code === 50013) { // Permission Error

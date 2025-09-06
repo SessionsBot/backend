@@ -29,7 +29,7 @@ export default {
 
 		// After Startup - Initialize Schedule System::
 		setTimeout(async () => {
-			// await scheduleManager.botInitialize();
+			await scheduleManager.botInitialize();
 		}, 1_500);
 
 	},

@@ -4,17 +4,24 @@ import guildManager from "./guildManager.js";
 import { createAutoSignupChannel } from "../webService/events/createAutoSignupChannel.js";
 
 const guildId = '1379160686629880028';
-const adminId = '252949527143645185';
-const channelId = '1410318136393076900';
+const channelId = '1413653266931122186';
+
+const accentColor = 0x00000;
+
 
 export default {
-    runNewAutoChannel: async () => {
-        const botClient = global.client
-        const guild = botClient.guilds.fetch(guildId)
 
-        const createResult = await createAutoSignupChannel(guildId, adminId);
-        if(!createResult.success){
-            console.log(`{!} Failed to run creation test:`, createResult);
-        }
-    }
+    // Template
+    // testFunc: async () => { try {
+
+    // }catch(e) {
+
+    // }}
+
+    testFunc: async () => { try {
+
+    }catch(e) {
+
+    }}
+
 }
