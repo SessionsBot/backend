@@ -71,7 +71,7 @@ export default {
 		if (interaction.isStringSelectMenu()) {
 
 			if(interaction) return; // DISABLED - NO STAND ALONE SELECT MENU INTERACTIONS
-			// ## THE FOLLOWING CODE WILL NOT EXECUTE: ##
+			// ## THE FOLLOWING CODE WILL NOT EXECUTE ##
 			// Parse interaction.customId data:
 			const interactionData = interaction.customId.split(':');
 			const interactionCustomId = interactionData[0];
@@ -95,7 +95,7 @@ export default {
 					await interaction.reply({ content: 'There was an error while executing this select menu!', flags: MessageFlags.Ephemeral });
 				}
 			}
-			// ## THE ABOVE CODE WILL NOT EXECUTE: ##
+			// ## THE ABOVE CODE WILL NOT EXECUTE ##
 		}
 		
 	},

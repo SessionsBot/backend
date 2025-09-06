@@ -86,14 +86,14 @@ const createAutoSignupChannel = async (guildId, adminId) => {
               `Each day Session's Bot will update/post your server's daily *Signup Panels* according to your guild's configuration within this new channel.`
             )
           )
-          .addActionRowComponents(new ActionRowBuilder()
-            .addComponents(new ButtonBuilder()
-              .setCustomId('deleteSignupChannelMsg')
-              .setLabel('❌ Dismiss')
-              .setStyle(ButtonStyle.Secondary)
+          .addActionRowComponents(
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId("deleteSignupChannelMsg")
+                .setLabel("❌ Dismiss")
+                .setStyle(ButtonStyle.Secondary)
             )
-          )
-          
+          ),
       ],
       flags: MessageFlags.IsComponentsV2,
     });
@@ -115,6 +115,10 @@ const createAutoSignupChannel = async (guildId, adminId) => {
 
     return result;
   } catch (e) {
+    // Catch Permission Errors:
+    if(e?.code === 50013) { // Permission Error
+      sendPermsDeniedAlert(interaction?.guildId, 'Auto Create Signup Channel');
+    }
     // Return Error:
     const result = {
       success: false,

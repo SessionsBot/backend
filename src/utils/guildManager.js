@@ -16,6 +16,7 @@ import { // Discord.js:
     ChannelType
 } from 'discord.js';
 import logtail from "./logs/logtail.js";
+import { sendPermsDeniedAlert } from "./responses/permissionDenied.js";
 
 const inDepthDebug = (c) => { if (global.outputDebug_InDepth) { console.log(`[Guild Manager]: ${c}`) } }
 
@@ -135,7 +136,6 @@ const guilds = (guildId) => {return {
 
     // Updating Guild Doc's Specific Field:
     updateDocField: async (fieldPath, fieldValue) => {
-        
         try {
             // Attempt to save new guild data to database:
             await db.collection('guilds').doc(String(guildId)).update({
@@ -301,14 +301,28 @@ const guildPanel = (guildId) => {return {
         const guildData = guildRetrieval.data;
         const panelChannelId = guildData?.['sessionSignup']?.['panelChannelId'];
         const panelMessageId = guildData?.['sessionSignup']?.['signupThreadId'];
-        const panelChannel = await global.client.channels.fetch(panelChannelId).catch((e) => {})
+        const panelChannel = await global.client.channels.fetch(panelChannelId).catch((e) => {
+            if(e.code == 50013){ // permission error:
+                sendPermsDeniedAlert(guildId, 'Create Signup Thread');
+                return null;
+            }
+        })
         const guildTimeZone = guildData?.['timeZone'] || 'America/Chicago';
         if(!panelChannelId || !panelChannel) return { success: false, data: `Cannot get guild's required panel channel for daily thread creation!`};
 
         // Delete Existing Panel:
         if(panelMessageId){ try{
-            const panelMessage = await panelChannel.messages.fetch(panelMessageId).catch((e) => {})
-            await panelMessage.delete().catch((e) => {logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});})
+            const panelMessage = await panelChannel.messages.fetch(panelMessageId).catch((e) => {
+                if(e.code == 50013){ // permission error:
+                    sendPermsDeniedAlert(guildId, 'Read Signup Panel Message');
+                    return null;
+                }
+            })
+            if(!panelMessage) throw 'Panel message not found for deletion, possible permission issue.';
+            await panelMessage.delete().catch((e) => {
+                console.warn(`Failed to delete old guild panel for guild ${guildId}!`, e);
+                logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});
+            })
         }catch(e){
             console.log(`{!} Failed to delete old guild panel for guild ${guildId}!`, e)
             logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});
@@ -351,6 +365,9 @@ const guildPanel = (guildId) => {return {
         return { success: true, data: `Created Daily Sessions Thread!.`, threadId: thread.id };
 
     } catch(e){
+        if(e?.code === 50013) { // Permission Error
+            sendPermsDeniedAlert(guildId, 'Create Signup Thread/Message');
+        }
         // Log Error:
         console.log(`{!} Failed to Create Daily Sessions Thread:`, e)
         logtail.error(`Failed to create daily thread for guild ${guildId}!`);
@@ -360,7 +377,7 @@ const guildPanel = (guildId) => {return {
 
 
     // Send Sessions Signup Contents in Daily Thread:
-    sendSignupThreadContents: async (signupThread, optional_guildData) => {
+    sendSignupThreadContents: async (signupThread, optional_guildData) => { try {
         // Check for Guild Data:
         let guildData = null;
         if(!optional_guildData) {
@@ -478,7 +495,17 @@ const guildPanel = (guildId) => {return {
 
         // Success - Result:
         return { success: true, data: 'Daily Signup Thread Content Success', sessionMessageMap: sentSignupMessages };
-    },
+
+    }catch(e) { // Error Occurred
+        if(e?.code === 50013) { // Permission Error
+            sendPermsDeniedAlert(guildId, 'Send Signup Thread/Message');
+        }
+        // Log Error:
+        logtail.error(`Failed to send 'SignupThreadContents' for guild!`, {guildId, rawError: e});
+        console.warn(`Failed to send signup thread contents! Guild: ${guildId}`, e);
+        // Failure - Result:
+        return { success: false, data: 'Failed to send signup thread contents!', rawError: e };
+    }},
 
 }}
 
@@ -774,9 +801,7 @@ const guildSessions = (guildId) => {return {
 
         // Save all Session to Upcoming Sessions:
         const saveResult = await guilds(guildId).updateDocField('upcomingSessions', upcomingSessions);
-        if(saveResult.success){
-            // ...
-        }
+        if(!saveResult.success) throw `Failed to create/save new upcoming sessions for guild (${guildId})`
 
         // Creation Success:
         const result = { success: true, data: `Successfully created guilds sessions from schedules! Id: ${guildId}` };
@@ -929,7 +954,7 @@ const guildSessions = (guildId) => {return {
 
     
     // Refresh Daily Session Signup Panel by Session Id:
-    updateSessionSignup: async (sessionId, optional_guildData) => {
+    updateSessionSignup: async (sessionId, optional_guildData) => { try {
         // Check for Guild Data:
         let guildData = null;
         if(!optional_guildData) {
@@ -968,7 +993,15 @@ const guildSessions = (guildId) => {return {
             components: [contentAttempt.data],
             flags: MessageFlags.IsComponentsV2
         })
-    },  
+    }catch(err){ // Error occurred:
+        // Permission Errors:
+        if(e?.code === 50013) {
+            sendPermsDeniedAlert(guildId, 'Delete Message');
+        }
+        // Log error:
+        console.warn(`Failed to update session signup!`,{guildId}, e);
+        logtail.error(`Failed to update session signup!`, {guildId, rawError: e});
+    }},  
 
 }}
 

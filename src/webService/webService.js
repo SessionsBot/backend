@@ -32,7 +32,7 @@ import RateLimit from "express-rate-limit";
 const limiter = RateLimit({
   windowMs: 60 * 1000 * 10, // 10 min(s)
   max: 100, // max requests
-  message: 'Too many requests, please try again later.',
+  message: 'Too many requests, try again later.',
   standardHeaders: 'draft-6'
 });
 
@@ -51,5 +51,5 @@ app.use('/api/v2', apiV2)
 // Initialize Port:
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`[🌐 Web Server]: Alive - Running on port ${PORT}`);
+  console.log(`[🌐 Web Server] Running on port ${PORT}`);
 });
