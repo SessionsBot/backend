@@ -266,7 +266,7 @@ const guildPanel = (guildId) => {return {
         // My Notifications:
         panelContainer.addTextDisplayComponents([
             new TextDisplayBuilder().setContent('### 🔔 My Notifications'),
-            new TextDisplayBuilder().setContent(`-# View your current session notification preferences by using ${global.cmdStrings.myNotifications}.`),
+            new TextDisplayBuilder().setContent(`-# View your current session notification preferences by using /my-notifications. *(coming soon)*`),
         ])
 
         panelContainer.addSeparatorComponents(separator) // Separator:
