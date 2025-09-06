@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3](https://github.com/SessionsBot/backend/compare/v0.5.2...v0.5.3) (2025-09-06)
+
+### 🐞 Bug Fixes
+
+* perms denied alert content ([4654e7f](https://github.com/SessionsBot/backend/commit/4654e7ff9b522cd86334f25462227733c8f46f79))
+* remove broken notifications cmd ([7d2bede](https://github.com/SessionsBot/backend/commit/7d2bede7e7b3d4c3ffbd28bfc0e27f6f2b98b12c))
+
 ## [0.5.2](https://github.com/SessionsBot/backend/compare/v0.5.1...v0.5.2) (2025-09-06)
 
 ### ⚡️ Features
