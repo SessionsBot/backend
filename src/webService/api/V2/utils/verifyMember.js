@@ -45,10 +45,10 @@ const verifyGuildMember = async (req, res, next) => {
         next();
         
     } catch (err) {
-        if (err.code === 10007) return responder.errored(res, `Invalid Permission - You're not a member of this guild.`)
-        if (err.code === 10004) return responder.errored(res, `Unknown Guild - Sessions Bot isn't a member of this guild.`)
-        if (err.code === 50013) { // Permission Error:
-            sendPermsDeniedAlert(guildId, 'Verify Guild Member - API');
+        if (err?.code === 10007) return responder.errored(res, `Invalid Permission - You're not a member of this guild.`)
+        if (err?.code === 10004) return responder.errored(res, `Unknown Guild - Sessions Bot isn't a member of this guild.`)
+        if (err?.code === 50013) { // Permission Error:
+            await sendPermsDeniedAlert(guildId, 'Verify Guild Member - API');
             return responder.errored(res, `Permission Error - Please re-configure the right permissions to your Bot ASAP.`);
         }
         console.log('API verifyMember Error:', err, {originalReg: req?.originalUrl})

@@ -301,9 +301,9 @@ const guildPanel = (guildId) => {return {
         const guildData = guildRetrieval.data;
         const panelChannelId = guildData?.['sessionSignup']?.['panelChannelId'];
         const panelMessageId = guildData?.['sessionSignup']?.['signupThreadId'];
-        const panelChannel = await global.client.channels.fetch(panelChannelId).catch((e) => {
-            if(e.code == 50013){ // permission error:
-                sendPermsDeniedAlert(guildId, 'Create Signup Thread');
+        const panelChannel = await global.client.channels.fetch(panelChannelId).catch(async (e) =>{
+            if(e?.code == 50013){ // permission error:
+                await sendPermsDeniedAlert(guildId, 'Create Signup Thread (Fetch Channels)');
                 return null;
             }
         })
@@ -311,22 +311,27 @@ const guildPanel = (guildId) => {return {
         if(!panelChannelId || !panelChannel) return { success: false, data: `Cannot get guild's required panel channel for daily thread creation!`};
 
         // Delete Existing Panel:
-        if(panelMessageId){ try{
-            const panelMessage = await panelChannel.messages.fetch(panelMessageId).catch((e) => {
-                if(e.code == 50013){ // permission error:
-                    sendPermsDeniedAlert(guildId, 'Read Signup Panel Message');
+        if(panelMessageId){
+            // Fetch old panel
+            const panelMessage = await panelChannel.messages.fetch(panelMessageId).catch(async (e) => {
+                // error fetching
+                if(e?.code == 50013){ // permission error:
+                    await sendPermsDeniedAlert(guildId, 'Read Signup Panel Message');
                     return null;
                 }
             })
             if(!panelMessage) throw 'Panel message not found for deletion, possible permission issue.';
-            await panelMessage.delete().catch((e) => {
+            // Delete old panel
+            await panelMessage.delete().catch(async (e) => {
+                // error deleting
                 console.warn(`Failed to delete old guild panel for guild ${guildId}!`, e);
                 logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});
+                if(e?.code == 50013){ // permission error:
+                    await sendPermsDeniedAlert(guildId, 'Delete Signup Panel Message');
+                    return null;
+                }
             })
-        }catch(e){
-            console.log(`{!} Failed to delete old guild panel for guild ${guildId}!`, e)
-            logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});
-        }}
+        }
 
         // Get Panel Contents:
         const panelContentAttempt = await guildPanel(guildId).mainPanelMessageContents(guildData)
@@ -366,11 +371,11 @@ const guildPanel = (guildId) => {return {
 
     } catch(e){
         if(e?.code === 50013) { // Permission Error
-            sendPermsDeniedAlert(guildId, 'Create Signup Thread/Message');
+            await sendPermsDeniedAlert(guildId, 'Create Signup Thread/Message');
         }
         // Log Error:
         console.log(`{!} Failed to Create Daily Sessions Thread:`, e)
-        logtail.error(`Failed to create daily thread for guild ${guildId}!`);
+        logtail.error(`Failed to create daily thread for guild ${guildId}!`, {rawError: e});
         // Return Success Result:
         return { success: false, data: `Failed to Create Daily Sessions Thread`, rawError: e };
     }},
@@ -498,7 +503,7 @@ const guildPanel = (guildId) => {return {
 
     }catch(e) { // Error Occurred
         if(e?.code === 50013) { // Permission Error
-            sendPermsDeniedAlert(guildId, 'Send Signup Thread/Message');
+            await sendPermsDeniedAlert(guildId, 'Send Signup Thread/Message');
         }
         // Log Error:
         logtail.error(`Failed to send 'SignupThreadContents' for guild!`, {guildId, rawError: e});
@@ -995,8 +1000,8 @@ const guildSessions = (guildId) => {return {
         })
     }catch(err){ // Error occurred:
         // Permission Errors:
-        if(e?.code === 50013) {
-            sendPermsDeniedAlert(guildId, 'Delete Message');
+        if(err?.code === 50013) {
+            await sendPermsDeniedAlert(guildId, 'Delete Message');
         }
         // Log error:
         console.warn(`Failed to update session signup!`,{guildId}, e);

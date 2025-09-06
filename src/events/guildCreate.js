@@ -72,7 +72,7 @@ export default {
             } catch (err) {
                 console.warn('Failed to send to system channel:', err);
                 if(err?.code === 50013) // Permission Error
-                    return sendPermsDeniedAlert(interaction?.guildId, 'Send Welcome Message');
+                    return await sendPermsDeniedAlert(interaction?.guildId, 'Send Welcome Message');
                 
             }
         }
@@ -94,7 +94,7 @@ export default {
             } catch (err) {
                 console.warn(`Failed to send to fallback channel (${fallbackChannel.name}):`, err);
                 if(err?.code === 50013) // Permission Error
-                    return sendPermsDeniedAlert(interaction?.guildId, 'Send Welcome Message');
+                    return await sendPermsDeniedAlert(interaction?.guildId, 'Send Welcome Message');
             }
         }
 

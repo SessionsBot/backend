@@ -17,7 +17,7 @@ export default {
         }catch(e) {
             // Failed to delete:
             if(e?.code === 50013) { // Permission Error
-                sendPermsDeniedAlert(interaction?.guildId, 'Delete Message');
+                await sendPermsDeniedAlert(interaction?.guildId, 'Delete Message');
             }
             console.log(`{!} Failed to delete new signup channel msg:`, e, {guildId: interaction.guild.id, actor: interaction.user.username})
             interaction.reply({
