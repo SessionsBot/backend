@@ -7,10 +7,13 @@ import {
   SeparatorBuilder,
   SectionBuilder,
   ActionRowBuilder,
+  ButtonBuilder,
   ButtonStyle,
+  ComponentType,
 } from "discord.js";
 import global from "../../utils/global.js";
-import { ButtonBuilder } from "@discordjs/builders";
+import { sendPermsDeniedAlert } from "../../utils/responses/permissionDenied.js";
+import logtail from "../../utils/logs/logtail.js";
 
 const createAutoSignupChannel = async (guildId, adminId) => {
   try {
@@ -26,10 +29,14 @@ const createAutoSignupChannel = async (guildId, adminId) => {
           id: guild.roles.everyone,
           deny: [
             PermissionFlagsBits.ViewChannel,
-            PermissionFlagsBits.ManageChannels,
-            PermissionFlagsBits.ManageWebhooks,
           ],
         },
+        {
+          id: guild.roles.botRoleFor(global.client.user).id,
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+          ]
+        }
       ],
     });
 
@@ -43,27 +50,18 @@ const createAutoSignupChannel = async (guildId, adminId) => {
           id: guild.roles.everyone,
           deny: [
             PermissionFlagsBits.ViewChannel,
-            PermissionFlagsBits.ManageWebhooks,
-            PermissionFlagsBits.CreateInstantInvite,
             PermissionFlagsBits.SendMessages,
             PermissionFlagsBits.SendMessagesInThreads,
-            PermissionFlagsBits.CreatePrivateThreads,
-            PermissionFlagsBits.EmbedLinks,
-            PermissionFlagsBits.AttachFiles,
-            PermissionFlagsBits.AddReactions,
-            PermissionFlagsBits.UseExternalEmojis,
-            PermissionFlagsBits.UseExternalStickers,
-            PermissionFlagsBits.MentionEveryone,
-            PermissionFlagsBits.ManageMessages,
-            PermissionFlagsBits.ManageThreads,
-            PermissionFlagsBits.SendTTSMessages,
-            PermissionFlagsBits.SendVoiceMessages,
-            PermissionFlagsBits.SendPolls,
-            PermissionFlagsBits.UseApplicationCommands,
-            PermissionFlagsBits.UseEmbeddedActivities,
-            PermissionFlagsBits.UseExternalApps,
-          ],
+          ]
         },
+        {
+          id: guild.roles.botRoleFor(global.client.user).id,
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.SendMessagesInThreads,
+          ]
+        }
       ],
     });
 
@@ -78,22 +76,29 @@ const createAutoSignupChannel = async (guildId, adminId) => {
           )
           .addSeparatorComponents(new SeparatorBuilder())
           .addTextDisplayComponents(
-            new TextDisplayBuilder().setContent(`-# <@${adminId}>`)
+            new TextDisplayBuilder().setContent(
+              `> 🥳  Each day Session's Bot will update & post your server's daily *Signup Panels* according to your servers configuration within this new channel.`
+              + ` \ \n \n`
+              + `> ☝️ Keep in mind: By default, **this channel is private**, you or a server mod will have to configure access permissions manually!`
+              + ` \ \n \n`
+            )
           )
           .addSeparatorComponents(new SeparatorBuilder())
-          .addTextDisplayComponents(
-            new TextDisplayBuilder().setContent(
-              `Each day Session's Bot will update/post your server's daily *Signup Panels* according to your guild's configuration within this new channel.`
+
+          .addSectionComponents(
+            new SectionBuilder()
+            .addTextDisplayComponents(new TextDisplayBuilder({content: `-# Initiated by: <@${adminId}>`}))
+            .setButtonAccessory(
+              new ButtonBuilder()
+              .setCustomId('deleteSignupChannelMsg')
+              .setLabel('Dismiss')
+              .setEmoji({name: '❌'})
+              .setStyle(ButtonStyle.Secondary)
+              
             )
           )
-          .addActionRowComponents(
-            new ActionRowBuilder().addComponents(
-              new ButtonBuilder()
-                .setCustomId("deleteSignupChannelMsg")
-                .setLabel("❌ Dismiss")
-                .setStyle(ButtonStyle.Secondary)
-            )
-          ),
+
+          .addSeparatorComponents(new SeparatorBuilder())
       ],
       flags: MessageFlags.IsComponentsV2,
     });
@@ -114,10 +119,13 @@ const createAutoSignupChannel = async (guildId, adminId) => {
     };
 
     return result;
-  } catch (e) {
+  } catch (e) { // Creation Error:
+    // Debug:
+    // logtail.error(`Failed to create an 'Auto Signup Channel' - Guild:${guildId}`, {guildId, rawError: e})
+    console.warn(`Failed to create an 'Auto Signup Channel' - Guild:${guildId}`, {guildId, rawError: e})
     // Catch Permission Errors:
     if(e?.code === 50013) { // Permission Error
-      sendPermsDeniedAlert(interaction?.guildId, 'Auto Create Signup Channel');
+      await sendPermsDeniedAlert(guildId, 'Auto Create Signup Channel');
     }
     // Return Error:
     const result = {
