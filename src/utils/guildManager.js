@@ -356,7 +356,7 @@ const guildPanel = (guildId) => {return {
         return { success: true, data: `Created Daily Sessions Thread!.`, threadId: thread.id };
 
     } catch(e){
-        if(e?.code === 50013) { // Permission Error
+        if(e?.code == 50013 || e?.code == 50001 ) { // Permission Error
             await sendPermsDeniedAlert(guildId, 'Create Signup Thread/Message');
         }
         // Log Error:
