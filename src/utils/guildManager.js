@@ -307,9 +307,8 @@ const guildPanel = (guildId) => {return {
                     return null;
                 }
             })
-            if(!panelMessage) throw 'Panel message not found for deletion, possible permission issue.';
             // Delete old panel
-            await panelMessage.delete().catch(async (e) => {
+            if(panelMessage) await panelMessage.delete().catch(async (e) => {
                 // error deleting
                 console.warn(`Failed to delete old guild panel for guild ${guildId}!`, e);
                 logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});
