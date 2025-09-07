@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.6.1](https://github.com/SessionsBot/backend/compare/v0.6.0...v0.6.1) (2025-09-07)
+
+### 🐞 Bug Fixes
+
+* panel delete throw logic ([ecbb8b4](https://github.com/SessionsBot/backend/commit/ecbb8b487f3e1a092341ba27271c76d93cca4167))
+
+### 🧪 Tests
+
+* enable early run for test guild ([c35d210](https://github.com/SessionsBot/backend/commit/c35d21008759f370948c039af0b97f1d26d4f5c3))
+
 ## [0.6.0](https://github.com/SessionsBot/backend/compare/v0.5.3...v0.6.0) (2025-09-06)
 
 ### 🐞 Bug Fixes
