@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/SessionsBot/backend/compare/v0.6.1...v0.6.2) (2025-09-08)
+
+### 🐞 Bug Fixes
+
+* add extra perm err check ([3da28ef](https://github.com/SessionsBot/backend/commit/3da28ef1388d81a770e2d5346d0b64dd44743a34))
+* remove old adminIds prop ([67ef427](https://github.com/SessionsBot/backend/commit/67ef427981b0c096721c0fec55a940fabcf5fe1b))
+
 ## [0.6.1](https://github.com/SessionsBot/backend/compare/v0.6.0...v0.6.1) (2025-09-07)
 
 ### 🐞 Bug Fixes
