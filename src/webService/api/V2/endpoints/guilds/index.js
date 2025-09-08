@@ -5,10 +5,10 @@ const router = express.Router()
 import responder from "../../utils/responder.js";
 import { HttpStatusCode  } from "axios";
 import verifyToken from "../../utils/verifyToken.js";
-import verifyGuildMember from "../../utils/verifyMember.js";
 import guildManager from "../../../../../utils/guildManager.js";
 import {  createAutoSignupChannel  } from "../../../../events/createAutoSignupChannel.js";
 import global from "../../../../../utils/global.js";
+import verifyGuildAdmin from "../../utils/verifyGuildAdmin.js";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -75,7 +75,7 @@ router.get('/:guildId', async (req, res) => {
 
 
 // DELETE/REMOVE - Archive Guild:
-router.delete('/:guildId', verifyToken, verifyGuildMember, async (req, res) => {
+router.delete('/:guildId', verifyToken, verifyGuildAdmin, async (req, res) => {
     const deleteId = req.params.guildId
     if(!deleteId) return responder.errored(res, `invalid "guildId" provided`)
     const actingUser = req?.user
@@ -88,7 +88,7 @@ router.delete('/:guildId', verifyToken, verifyGuildMember, async (req, res) => {
 
 
 // PATCH/UPDATE - Configure Guild:
-router.patch('/:guildId/configuration', verifyToken, verifyGuildMember, async (req, res) => {
+router.patch('/:guildId/configuration', verifyToken, verifyGuildAdmin, async (req, res) => {
     // 1. Verify Params:
     const guildId = req.params?.guildId;
     const configurationSetup = req.body?.configuration;
@@ -101,7 +101,7 @@ router.patch('/:guildId/configuration', verifyToken, verifyGuildMember, async (r
 
 
 // POST/CREATE - Auto Signup Channel:
-router.post('/:guildId/channels/auto-signup', verifyToken, verifyGuildMember, async (req, res) => {
+router.post('/:guildId/channels/auto-signup', verifyToken, verifyGuildAdmin, async (req, res) => {
     // 1. Verify Params:
     const guildId = req.params?.guildId;
     const actorId = req?.user?.id

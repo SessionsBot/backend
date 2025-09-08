@@ -44,7 +44,3 @@ const verifyToken = (req, res, next) => {
 
 // Export:
 export default verifyToken
-
-// export interface AuthenticatedRequest extends Request {
-//   user?: any // ? DecodedUserData; 
-// }

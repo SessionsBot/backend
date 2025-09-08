@@ -2,8 +2,6 @@
 import global from "../../../../utils/global.js";
 import { sendPermsDeniedAlert } from "../../../../utils/responses/permissionDenied.js";
 import responder from "./responder.js";
-// import type { DecodedUserData } from "@sessionsbot/api-types";
-import { Client } from "discord.js";
 
 
 /** __Utility function used to verify the *authorized user* is a member of the requested guild.__
@@ -56,5 +54,4 @@ const verifyGuildMember = async (req, res, next) => {
     }
 }
 
-// Export:
-export default verifyGuildMember
+export default verifyGuildMember;

@@ -6,7 +6,8 @@ import {  HttpStatusCode  } from "axios";
 import guildManager from "../../../../../utils/guildManager.js";
 
 import verifyToken from "../../utils/verifyToken.js";
-import verifyGuildMember from "../../utils/verifyMember.js";
+import verifyGuildMember from "../../utils/verifyGuildMember.js";
+import verifyGuildAdmin from "../../utils/verifyGuildAdmin.js";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -16,7 +17,7 @@ router.get('/', (req, res) => {
 })
 
 // GET/FETCH - Read Schedule:
-router.get('/:scheduleId', verifyToken, verifyGuildMember, async (req, res) => { try {
+router.get('/:scheduleId', verifyToken, verifyGuildAdmin, async (req, res) => { try {
     // 1. Get parameters:
     const scheduleId = req.params?.scheduleId
     const guildId = req.params?.guildId
@@ -40,7 +41,7 @@ router.get('/:scheduleId', verifyToken, verifyGuildMember, async (req, res) => {
 }})
 
 // POST/ADD - Add Schedule:
-router.post('/', verifyToken, verifyGuildMember, async (req, res) => { try {
+router.post('/', verifyToken, verifyGuildAdmin, async (req, res) => { try {
     // 1. Get parameters:
     const guildId = req.params?.guildId
     const scheduleData = req.body?.scheduleData
@@ -63,7 +64,7 @@ router.post('/', verifyToken, verifyGuildMember, async (req, res) => { try {
 }})
 
 // PATCH/UPDATE - Update Schedule:
-router.patch('/:scheduleId', verifyToken, verifyGuildMember, async (req, res) => { try {
+router.patch('/:scheduleId', verifyToken, verifyGuildAdmin, async (req, res) => { try {
     // 1. Get parameters:
     const scheduleId = req.params?.scheduleId
     const guildId = req.params?.guildId
@@ -88,7 +89,7 @@ router.patch('/:scheduleId', verifyToken, verifyGuildMember, async (req, res) =>
 }})
 
 // DELETE/REMOVE - Remove Schedule:
-router.delete('/:scheduleId', verifyToken, verifyGuildMember, async (req, res) => { try {
+router.delete('/:scheduleId', verifyToken, verifyGuildAdmin, async (req, res) => { try {
     // 1. Get parameters:
     const scheduleId = req.params?.scheduleId
     const guildId = req.params?.guildId
