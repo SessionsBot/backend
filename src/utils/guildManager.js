@@ -33,7 +33,6 @@ const guilds = (guildId) => {return {
         const defaultGuildData = {
             setupCompleted: false,
             accentColor: '0x9b42f5',
-            adminRoleIds: [],
             sessionSchedules: {},
             upcomingSessions: {},
             sessionSignup: {
@@ -169,7 +168,6 @@ const guildConfiguration = (guildId) => {return {
         try {
             await db.collection('guilds').doc(String(guildId)).set({
                 ['accentColor']: configuration.accentColor,
-                ['adminRoleIds']: configuration.adminRoleIds,
                 ['sessionSchedules']: configuration.allGuildSchedules,
                 ['sessionSignup']: {
                     'panelChannelId': configuration.panelChannelId,
@@ -194,11 +192,6 @@ const guildConfiguration = (guildId) => {return {
     // Updating Accent Color:
     setAccentColor : async (hexNumber) => {
         return await guilds(guildId).updateDocField('accentColor', hexNumber)
-    },
-
-    // Updating Admin Role Ids:
-    setAdminRoleIds : async (roleIdsArray) => {
-        return await guilds(guildId).updateDocField('adminRoleIds', roleIdsArray)
     },
 
     // Update Daily Session Signup Post Time:

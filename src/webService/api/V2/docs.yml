@@ -55,14 +55,6 @@ components:
               type: string
               description: Accent color used within guild.
               example: "#ff5733"
-            adminRoleIds:
-              type: array
-              description: Array of guild role IDs granted admin permissions.
-              items:
-                type: string
-              example:
-                - "123456789012345678"
-                - "987654321098765432"
             sessionSchedules:
               type: array
               description: All session configurations currently scheduled for guild.
