@@ -92,6 +92,7 @@ const deleteAllThreads = async (threads) => {
     function delay(ms){ return new Promise(resolve => setTimeout(resolve, ms)) }
     // Attempt to delete:
     for (const thread of threads) {
+        console.log('Deleting Thread:', thread?.name || thread?.id,)
         await thread.delete();
         await delay(1500); // Wait 1500ms before next deletion
     }
