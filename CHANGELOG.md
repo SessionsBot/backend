@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.1](https://github.com/SessionsBot/backend/compare/v0.7.0...v0.7.1) (2025-09-09)
+
+### 🐞 Bug Fixes
+
+* **API:** increase deletion delay ([7abe47d](https://github.com/SessionsBot/backend/commit/7abe47db3d4f3ef9de1eda73d15c86e14d06a2b3))
+
+### ♻️ Refactoring
+
+* remove dev logs ([d73921a](https://github.com/SessionsBot/backend/commit/d73921ab4a8a4558f7118db5d82acf1c727191d5))
+
 ## [0.7.0](https://github.com/SessionsBot/backend/compare/v0.6.2...v0.7.0) (2025-09-09)
 
 ### ⚡️ Features
