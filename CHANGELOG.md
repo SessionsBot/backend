@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.0](https://github.com/SessionsBot/backend/compare/v0.6.2...v0.7.0) (2025-09-09)
+
+### ⚡️ Features
+
+* **API:** post early and delete thread endpoints ([d53489a](https://github.com/SessionsBot/backend/commit/d53489a7eb162cdb50e57371e0b927d0afc78c25))
+
+### 🐞 Bug Fixes
+
+* **API:** improve security ([2902f18](https://github.com/SessionsBot/backend/commit/2902f18987e849a8df350d4ad93a68d0e38f9862))
+* prepare for release ([75b5d97](https://github.com/SessionsBot/backend/commit/75b5d977944622322a1bf629baf8c7be4811e6c4))
+
 ## [0.6.2](https://github.com/SessionsBot/backend/compare/v0.6.1...v0.6.2) (2025-09-08)
 
 ### 🐞 Bug Fixes
