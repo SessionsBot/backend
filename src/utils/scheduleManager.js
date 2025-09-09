@@ -8,7 +8,7 @@ import logtail from "./logs/logtail.js";
 
 // Dev Testing
 const devTesting = {
-    enabled: true,
+    enabled: false,
     guildId: "1379160686629880028",
 };
 
@@ -28,7 +28,11 @@ const log = {
 
 if (devTesting.enabled) console.info("Dev-Testing enabled within scheduleManager.js... please modify settings if this is unexpected.");
 
-let currentDailySchedules = {}; // <-- Store node schedules to be replaced each day w/ fresh data
+/** Object containing the **currently scheduled guild's** for their daily session thread/signup creation.
+ * - Indexed by: `guildId`
+ * @type { Record<string, import("node-cron").ScheduledTask> }
+ */
+let currentDayGuildSchedules = {}; // <-- Store node schedules to be replaced each day w/ fresh data
 
 // -------------------------- [ Functions ] -------------------------- \\
 
@@ -73,8 +77,8 @@ async function botInitialize() {
 async function initializeDailySchedules() {
     try {
         // Stop and clear all previous schedules
-        Object.values(currentDailySchedules).forEach((job) => job.stop());
-        currentDailySchedules = {};
+        Object.values(currentDayGuildSchedules).forEach((job) => job.stop());
+        currentDayGuildSchedules = {};
 
         // Get current guilds bot resides:
         let currentClientGuilds = [];
@@ -142,12 +146,13 @@ async function initializeDailySchedules() {
                 );
 
                 // Store reference to guilds posting schedule:
-                currentDailySchedules[doc.id] = guildPostSchedule;
+                currentDayGuildSchedules[doc.id] = guildPostSchedule;
 
                 // [TESTING] Run 'dev testing' / guild schedule early:
                 if (devTesting.enabled && doc.id == devTesting.guildId) {
                     console.info("RUNNING GUILD SCHEDULE EARLY...");
                     guildPostSchedule.execute();
+                    guildPostSchedule.destroy();
                 }
             }
         });
@@ -171,4 +176,5 @@ async function initializeDailySchedules() {
 // -------------------------- [ Exports ] -------------------------- \\
 export default {
     botInitialize,
+    currentDayGuildSchedules
 };

@@ -48,7 +48,6 @@ router.get('/:sessionId', verifyToken, verifyGuildMember, async (req, res) => { 
 }})
 
 
-// ! FINISH
 // PATCH/UPDATE Run Post Schedule Early:
 router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
     // Get req data:
@@ -93,9 +92,7 @@ const deleteAllThreads = async (threads) => {
     function delay(ms){ return new Promise(resolve => setTimeout(resolve, ms)) }
     // Attempt to delete:
     for (const thread of threads) {
-        console.log('Deleting thread', thread?.id);
         await thread.delete();
-        console.log('Thread deleted', thread?.id);
         await delay(500); // Wait 500ms before next deletion
     }
 }
