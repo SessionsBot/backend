@@ -93,7 +93,7 @@ const deleteAllThreads = async (threads) => {
     // Attempt to delete:
     for (const thread of threads) {
         await thread.delete();
-        await delay(500); // Wait 500ms before next deletion
+        await delay(1500); // Wait 1500ms before next deletion
     }
 }
 
