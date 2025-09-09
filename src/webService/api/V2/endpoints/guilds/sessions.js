@@ -6,7 +6,9 @@ import {  HttpStatusCode  } from "axios";
 import guildManager from "../../../../../utils/guildManager.js";
 import {  checkIfUserInGuild  } from "../../utils/checkGuildMember.js";
 import verifyToken from "../../utils/verifyToken.js";
-import verifyGuildMember from "../../utils/verifyMember.js";
+import verifyGuildMember from "../../utils/verifyGuildMember.js";
+import verifyGuildAdmin from "../../utils/verifyGuildAdmin.js";
+import global from "../../../../../utils/global.js";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -14,6 +16,8 @@ import verifyGuildMember from "../../utils/verifyMember.js";
 router.get('/', (req, res) => {
     return responder.errored(res, 'Please provide a valid endpoint', HttpStatusCode.MultipleChoices)
 })
+
+// ------ { Guild Sessions } ------
 
 // GET/FETCH Session:
 router.get('/:sessionId', verifyToken, verifyGuildMember, async (req, res) => { try {
@@ -44,11 +48,96 @@ router.get('/:sessionId', verifyToken, verifyGuildMember, async (req, res) => { 
 }})
 
 
+// ! FINISH
+// PATCH/UPDATE Run Post Schedule Early:
+router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
+    // Get req data:
+    const guildId = req.params?.guildId;
+    if(!guildId) return responder.errored(res, `Invalid Input - Missing required 'guildId'.`, 400)
+    // Attempt to post / run daily schedule for guild early:
+    try { 
+        // Get Guild Data:
+        const guildDataAttempt = await guildManager.guilds(guildId).readGuild()
+        if(!guildDataAttempt?.success) return responder.errored(res, `Failed to read guild data for guild(${guildId}).`, 500);
+        
+        const guildData = guildDataAttempt.data
+        const setupCompleted = guildData?.["setupCompleted"];
+        const guildSchedules = guildData?.["sessionSchedules"];
+        const dailySignupPostTime = guildData?.["sessionSignup"]?.["dailySignupPostTime"];
+        const timeZone = guildData?.["timeZone"] || "America/Chicago";
+
+        // Confirm Guild Setup Properly:
+        if (!guildData || !setupCompleted || !guildSchedules || !dailySignupPostTime) return responder.errored(res, `Failed to post sessions - Guild is not setup properly! (${guildId})`, 400);
+
+        // Create guild sessions for the day:
+        const sessionsCreationAttempt = await guildManager.guildSessions(guildId).createDailySessions(guildSchedules, timeZone);
+        if (!sessionsCreationAttempt.success) return responder.errored(res, `Failed to create sessions for guild(${guildId})! Please try again.`, 500);
+
+        // Create/Update guild panel for the day:
+        const panelThreadCreationAttempt = await guildManager.guildPanel(guildId).createDailySessionsThreadPanel();
+        if (!panelThreadCreationAttempt.success) return responder(res, `Failed to create signup panel/thread for guild(${guildId})! Please try again.`, 500);
+
+        // If all processes succeeded - Return Success:
+        return responder.succeeded(res, `Successfully posted guild sessions schedules early for guild(${guildId})!`);
+
+    }catch(e){
+        // Error Occurred - Return Errored Response:
+        console.warn(`{!}[API Call] Failed to post sessions early for guild: ${guildId}:`, e)
+        responder.errored(res, `Failed to post sessions early for guild(${guildId})!`, 500);
+    }
+})
+
+// DELETE/REMOVE All Signup/Session Panel Threads:
+const deleteAllThreads = async (threads) => {
+    // Delay helper fn:
+    function delay(ms){ return new Promise(resolve => setTimeout(resolve, ms)) }
+    // Attempt to delete:
+    for (const thread of threads) {
+        console.log('Deleting thread', thread?.id);
+        await thread.delete();
+        console.log('Thread deleted', thread?.id);
+        await delay(500); // Wait 500ms before next deletion
+    }
+}
+
+router.delete('/signup-threads', verifyToken, verifyGuildAdmin, async (req, res) => {try{
+    // Get guild id/data from req:
+    const guildId = req.params?.guildId;
+    if(!guildId) return responder.errored(res, `Invalid Input - Missing required 'guildId'.`, 400)
+    const guildDataAttempt = await guildManager.guilds(guildId).readGuild()
+    if(!guildDataAttempt.success) return responder.errored(res, `Internal Error/Bad Request - Failed to read guild data.`, 500);
+    const guildData = guildDataAttempt.data
+    
+    // Get guild 'signup channel' for thread deletion:
+    const signupChannelId = guildData?.sessionSignup?.panelChannelId
+    if(!signupChannelId) return responder.errored(res, `Internal Error/Bad Request - Failed to get panel/signup channel id.`, 500);
+    // Load signup channel with bot client
+    const fetchedChanel = await global.client.channels.fetch(signupChannelId);
+    if(!fetchedChanel) return responder.errored(res, `Internal Error/Bad Request - Failed to fetch panel/signup channel.`, 500);
+
+    // CONTINUE HERE - Deleting fetched threads...
+    /** @type {import("discord.js").FetchedThreadsMore} */
+    const threads = await fetchedChanel.threads.fetch({archived: true, limit: 50}, {force: true})
+    console.log('Fetched threads', threads?.threads);
+    if(!threads) return responder.errored(res, `Internal Error/Bad Request - Failed to fetch any threads from signup channel`, 500)
+
+    deleteAllThreads(threads?.threads);
+
+    // Return success:
+    return responder.succeeded(res, {message: 'Deletion process has started...', threads});
+
+
+}catch(e){ // Error occurred
+    const guildId = req.params?.guildId;
+    console.warn(`Failed to delete signup threads for guild(${guildId}):`, e);
+}})
+
+
 // ------ { Session Roles } ------
 
 
 // PATCH/UPDATE Session Role - Add User to Role:
-router.patch('/:sessionId/roles', verifyToken, verifyGuildMember, async (req, res) => { try {
+router.patch('/:sessionId/roles', verifyToken, verifyGuildAdmin, async (req, res) => { try {
     // 1. Get parameters:
     const sessionId = req.params?.sessionId
     const guildId = req.params?.guildId
@@ -96,7 +185,7 @@ router.patch('/:sessionId/roles', verifyToken, verifyGuildMember, async (req, re
 
 
 // DELETE/REMOVE Session Role - Remove User from Role:
-router.delete('/:sessionId/roles', verifyToken, verifyGuildMember, async (req, res) => { try {
+router.delete('/:sessionId/roles', verifyToken, verifyGuildAdmin, async (req, res) => { try {
     // 1. Get parameters:
     const sessionId = req.params?.sessionId
     const guildId = req.params?.guildId
