@@ -115,7 +115,6 @@ router.delete('/signup-threads', verifyToken, verifyGuildAdmin, async (req, res)
     // CONTINUE HERE - Deleting fetched threads...
     /** @type {import("discord.js").FetchedThreadsMore} */
     const threads = await fetchedChanel.threads.fetch({archived: true, limit: 50}, {force: true})
-    console.log('Fetched threads', threads?.threads);
     if(!threads) return responder.errored(res, `Internal Error/Bad Request - Failed to fetch any threads from signup channel`, 500)
 
     deleteAllThreads(threads?.threads);
