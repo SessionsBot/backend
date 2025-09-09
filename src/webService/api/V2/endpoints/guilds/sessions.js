@@ -87,15 +87,21 @@ router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
 })
 
 // DELETE/REMOVE All Signup/Session Panel Threads:
-const deleteAllThreads = async (threads) => {
+let busyForGuilds = new Set()
+const deleteAllThreads = async (guildId, threads) => {
+    // Check for previous deletion req:
+    if(busyForGuilds.has(guildId)) return console.warn(`{!} Ignoring thread deletion req... Already processing previous req.`);
+    busyForGuilds.add(guildId)
     // Delay helper fn:
     function delay(ms){ return new Promise(resolve => setTimeout(resolve, ms)) }
     // Attempt to delete:
-    for (const thread of threads) {
-        console.log('Deleting Thread:', thread?.name || thread?.id,)
+    for (const thread of threads.values()) {
+        // console.log('Deleting Thread:', thread?.name || thread?.id,)
         await thread.delete();
-        await delay(1500); // Wait 1500ms before next deletion
+        await delay(750); // Wait 1500ms before next deletion
     }
+    // Remove guild from busy list:
+    busyForGuilds.delete(guildId)
 }
 
 router.delete('/signup-threads', verifyToken, verifyGuildAdmin, async (req, res) => {try{
@@ -115,13 +121,13 @@ router.delete('/signup-threads', verifyToken, verifyGuildAdmin, async (req, res)
 
     // CONTINUE HERE - Deleting fetched threads...
     /** @type {import("discord.js").FetchedThreadsMore} */
-    const threads = await fetchedChanel.threads.fetch({archived: true, limit: 50}, {force: true})
+    const threads = await fetchedChanel.threads.fetch({archived: {limit: 25}});
     if(!threads) return responder.errored(res, `Internal Error/Bad Request - Failed to fetch any threads from signup channel`, 500)
 
-    deleteAllThreads(threads?.threads);
+    deleteAllThreads(guildId, threads?.threads);
 
     // Return success:
-    return responder.succeeded(res, {message: 'Deletion process has started...', threads});
+    return responder.succeeded(res, {message: 'Deletion process has started...', inDeleteQueue: threads?.threads});
 
 
 }catch(e){ // Error occurred
