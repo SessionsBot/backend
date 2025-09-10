@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/SessionsBot/backend/compare/v0.7.1...v0.7.2) (2025-09-10)
+
+### 🐞 Bug Fixes
+
+* **API:** switch auth redirect uri ([6c6b4ec](https://github.com/SessionsBot/backend/commit/6c6b4ec52e1a1108613776c2d5f61dfafdde984c))
+* **API:** thread del logic ([acc4d43](https://github.com/SessionsBot/backend/commit/acc4d43a3b4243d865b5078226e0bb27ffcc4b7b))
+
 ## [0.7.1](https://github.com/SessionsBot/backend/compare/v0.7.0...v0.7.1) (2025-09-09)
 
 ### 🐞 Bug Fixes
