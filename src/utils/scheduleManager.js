@@ -108,7 +108,7 @@ async function initializeDailySchedules() {
             // Confirm Guild Setup Properly:
             if (!guildData || !setupCompleted || !guildSchedules || !dailySignupPostTime) {
                 // NOT SETUP PROPERLY - Log & Return:
-                log.warn(`{!} Guild ${doc.id} is not setup properly!`);
+                log.info(`[i] Guild ${doc.id} has not completed setup! - Skipping Schedules`);
                 return
             } else {
                 // SETUP PROPERLY - Schedule Signup Post:
