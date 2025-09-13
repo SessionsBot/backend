@@ -87,6 +87,7 @@ router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
 })
 
 // DELETE/REMOVE All Signup/Session Panel Threads:
+// - ! Disabled !
 let busyForGuilds = new Set()
 const deleteAllThreads = async (guildId, threads) => {
     // Check for previous deletion req:
@@ -103,8 +104,8 @@ const deleteAllThreads = async (guildId, threads) => {
     // Remove guild from busy list:
     busyForGuilds.delete(guildId)
 }
-
 router.delete('/signup-threads', verifyToken, verifyGuildAdmin, async (req, res) => {try{
+    return responder.errored(res, 'This endpoint is currently out of service, check back later...', 423)
     // Get guild id/data from req:
     const guildId = req.params?.guildId;
     if(!guildId) return responder.errored(res, `Invalid Input - Missing required 'guildId'.`, 400)
