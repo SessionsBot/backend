@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.8.0](https://github.com/SessionsBot/backend/compare/v0.7.2...v0.8.0) (2025-09-13)
+
+### ⚡️ Features
+
+* **api:** replace/upgrade docs ([fe5c87e](https://github.com/SessionsBot/backend/commit/fe5c87e7c46b327b9c82c0ec704d9e4092fabe6f))
+
+### 🐞 Bug Fixes
+
+* **api:** lock delete thread endpoint ([653c69e](https://github.com/SessionsBot/backend/commit/653c69e287dc28fa94e2a2911d07e7cce3c431eb))
+* correct logs ([8d0eeaf](https://github.com/SessionsBot/backend/commit/8d0eeafb2b3286626f21b1285bdf78db8d57fe4a))
+
+### 🧹 Chores
+
+* update deps ([4f33a4c](https://github.com/SessionsBot/backend/commit/4f33a4cd2adb75f8b9fe80fb9258759a97f06bb4))
+
 ## [0.7.2](https://github.com/SessionsBot/backend/compare/v0.7.1...v0.7.2) (2025-09-10)
 
 ### 🐞 Bug Fixes
