@@ -4,15 +4,11 @@ const router = express.Router();
 import responder from "./utils/responder.js";
 import {  HttpStatusCode  } from "axios";
 
-import swaggerUi from "swagger-ui-express";
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-import YAML from 'yamljs';
+import path, { dirname, join } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url); // equivalent of __filename
 const __dirname = dirname(__filename);            // equivalent of __dirname
-
-const swaggerDocument = YAML.load(join(__dirname, 'docs.yml'));
 
 // Nested Endpoints:
 import users from "./endpoints/users/index.js";
@@ -39,7 +35,7 @@ router.get('/', (req, res) => {
 })
 
 // Serve API docs:
-router.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+router.use('/docs', express.static(path.join(__dirname, 'docs/dist')))
 
 // Router:
 export default router

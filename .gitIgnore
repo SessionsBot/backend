@@ -3,3 +3,6 @@
 node_modules/
 private*
 *.private*
+
+# API Docs Build:
+src/webService/api/V2/docs/build/
