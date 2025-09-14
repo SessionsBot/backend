@@ -74,7 +74,7 @@ router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
 
         // Create/Update guild panel for the day:
         const panelThreadCreationAttempt = await guildManager.guildPanel(guildId).createDailySessionsThreadPanel();
-        if (!panelThreadCreationAttempt.success) return responder(res, `Failed to create signup panel/thread for guild(${guildId})! Please try again.`, 500);
+        if (!panelThreadCreationAttempt.success) return responder.errored(res, `Failed to create signup panel/thread for guild(${guildId})! Please try again.`, 500);
 
         // If all processes succeeded - Return Success:
         return responder.succeeded(res, `Successfully posted guild sessions schedules early for guild(${guildId})!`);
