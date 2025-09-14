@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.1](https://github.com/SessionsBot/backend/compare/v0.8.0...v0.8.1) (2025-09-14)
+
+### 🐞 Bug Fixes
+
+* **api:** post early logic ([b12439f](https://github.com/SessionsBot/backend/commit/b12439fd456c29c1e6b1ed3e54b7052ec6fda1ef))
+
 ## [0.8.0](https://github.com/SessionsBot/backend/compare/v0.7.2...v0.8.0) (2025-09-13)
 
 ### ⚡️ Features
