@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.8.2](https://github.com/SessionsBot/backend/compare/v0.8.1...v0.8.2) (2025-09-14)
+
+### 🐞 Bug Fixes
+
+* **sessions:** check for no schedules today ([ad0d955](https://github.com/SessionsBot/backend/commit/ad0d95527d1f9bb3a60779d26918ff39672fbbbc))
+
+### 🧹 Chores
+
+* **deps:** bump the npm-dependencies group across 1 directory with 33 updates ([58dccb6](https://github.com/SessionsBot/backend/commit/58dccb651df540967b4b6df36412d03d634902a2))
+
 ## [0.8.1](https://github.com/SessionsBot/backend/compare/v0.8.0...v0.8.1) (2025-09-14)
 
 ### 🐞 Bug Fixes
