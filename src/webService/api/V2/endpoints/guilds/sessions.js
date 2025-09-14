@@ -71,6 +71,7 @@ router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
         // Create guild sessions for the day:
         const sessionsCreationAttempt = await guildManager.guildSessions(guildId).createDailySessions(guildSchedules, timeZone);
         if (!sessionsCreationAttempt.success) return responder.errored(res, `Failed to create sessions for guild(${guildId})! Please try again.`, 500);
+        if (sessionsCreationAttempt.emptyDay) return responder.errored(res, `Failed to create sessions for guild(${guildId})! There are no sessions scheduled for today!`, 400);
 
         // Create/Update guild panel for the day:
         const panelThreadCreationAttempt = await guildManager.guildPanel(guildId).createDailySessionsThreadPanel();

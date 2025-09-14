@@ -128,6 +128,11 @@ async function initializeDailySchedules() {
                             return
                         }
 
+                        // If no sessions scheduled for today:
+                        if (sessionCreationResult.emptyDay){
+                            return log.info(`[i] Guild ${doc.id} - Schedule Ran - NO SCHEDULES TODAY - ${ctx.triggeredAt.toLocaleString("en-US", {timeZone: "America/Chicago"})}`); 
+                        }
+
                         // Create/Update guild panel for the day:
                         const creationResult = await guildManager.guildPanel(String(doc.id)).createDailySessionsThreadPanel();
                         if (creationResult.success) {

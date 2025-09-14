@@ -731,6 +731,7 @@ const guildSessions = (guildId) => {return {
     // Create Todays Sessions from Schedules:
     createDailySessions: async (fullSchedulesObject, timeZone) => { try{
 
+        /** @type {Record<string, any>} */
         const upcomingSessions = {};
         const skippedSchedules = []
 
@@ -783,17 +784,22 @@ const guildSessions = (guildId) => {return {
             }
         }
 
+        // If no schedules for the day:
+        const upcomingSessionsLength = Object.entries(upcomingSessions)?.length || 0
+        if(upcomingSessionsLength <= 0) return { success: true, emptyDay: true, data: `No sessions scheduled for today!`}
+
         // Save all Session to Upcoming Sessions:
         const saveResult = await guilds(guildId).updateDocField('upcomingSessions', upcomingSessions);
         if(!saveResult.success) throw `Failed to create/save new upcoming sessions for guild (${guildId})`
 
         // Creation Success:
-        const result = { success: true, data: `Successfully created guilds sessions from schedules! Id: ${guildId}` };
+        const result = { success: true, emptyDay: false, data: `Successfully created guilds sessions from schedules! Id: ${guildId}` };
         return result;
+
     } catch(e){
         // Error Occurred:
         logtail.error(`Failed to create guilds sessions from schedules ${guildId}!`);
-        const result = { success: false, data: `Failed to create guilds sessions from schedules! Id: ${guildId}`, rawError: e };
+        const result = { success: false, emptyDay: false, data: `Failed to create guilds sessions from schedules! Id: ${guildId}`, rawError: e };
         return result;
     }},
 
