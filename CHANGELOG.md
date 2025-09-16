@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.3](https://github.com/SessionsBot/backend/compare/v0.8.2...v0.8.3) (2025-09-16)
+
+### 🐞 Bug Fixes
+
+* logs and perm checks ([ebd0fb7](https://github.com/SessionsBot/backend/commit/ebd0fb765588f0777130fb3f8d81de3cd78008f0))
+
 ## [0.8.2](https://github.com/SessionsBot/backend/compare/v0.8.1...v0.8.2) (2025-09-14)
 
 ### 🐞 Bug Fixes
