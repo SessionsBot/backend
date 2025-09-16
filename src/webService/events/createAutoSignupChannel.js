@@ -124,7 +124,7 @@ const createAutoSignupChannel = async (guildId, adminId) => {
     logtail.error(`Failed to create an 'Auto Signup Channel' - Guild:${guildId}`, {guildId, rawError: e})
     console.warn(`Failed to create an 'Auto Signup Channel' - Guild:${guildId}`, {guildId, rawError: e})
     // Catch Permission Errors:
-    if(e?.code === 50013) { // Permission Error
+    if(e?.code === 50013 || e?.code == 50001 || e?.code == 50007) { // Permission Error
       await sendPermsDeniedAlert(guildId, 'Auto Create Signup Channel');
     }
     // Return Error:

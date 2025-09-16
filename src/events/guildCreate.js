@@ -10,7 +10,7 @@ export default {
     /** @param {import('discord.js').Guild} guild */
     async execute(guild) {
 
-        // Debug New Guild:
+        // Log New Guild:
         console.info(`[+] Guild ${guild?.name} (${guild?.id}) has added Sessions Bot!`);
         logtail.info(`[+] Guild ${guild?.name} (${guild?.id}) has added Sessions Bot!`); logtail.flush();
 
@@ -71,7 +71,7 @@ export default {
                 return;
             } catch (err) {
                 console.warn('Failed to send to system channel:', err);
-                if(err?.code === 50013) // Permission Error
+                if(err?.code === 50013 || err?.code == 50001 || err?.code == 50007) // Permission Error
                     return await sendPermsDeniedAlert(interaction?.guildId, 'Send Welcome Message');
                 
             }
@@ -93,7 +93,7 @@ export default {
                 return;
             } catch (err) {
                 console.warn(`Failed to send to fallback channel (${fallbackChannel.name}):`, err);
-                if(err?.code === 50013) // Permission Error
+                if(err?.code === 50013 || err?.code == 50001 || err?.code == 50007) // Permission Error
                     return await sendPermsDeniedAlert(interaction?.guildId, 'Send Welcome Message');
             }
         }

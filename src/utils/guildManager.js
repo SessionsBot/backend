@@ -58,7 +58,6 @@ const guilds = (guildId) => {return {
             }, { merge: true });
 
             // Success:
-            console.log(`[+] Successfully added new guild! Id: ${guildId}`);
             const result = { success: true, data: 'Successfully added new guild!' };
             return result;
         } catch (error) {
@@ -108,8 +107,8 @@ const guilds = (guildId) => {return {
             });
 
             // 3. Save guild leave log:
-            const joinedAtDateString = DateTime.fromMillis(guildBotData?.joinedTimestamp).setZone('America/Chicago').toLocaleString(DateTime.DATETIME_FULL);
-            const removedAtDateString = DateTime.now().setZone('America/Chicago').toLocaleString(DateTime.DATETIME_FULL);
+            const joinedAtDateString = DateTime.fromMillis(guildBotData?.joinedTimestamp).setZone('America/Chicago').toJSDate()
+            const removedAtDateString = DateTime.now().setZone('America/Chicago').toJSDate()
             await db.collection('events').doc('removeLogs').collection('guilds').doc(String(guildId)).set({
                 guildId: guildBotData?.id,
                 guildName: guildBotData?.name,
@@ -282,7 +281,7 @@ const guildPanel = (guildId) => {return {
         const panelChannelId = guildData?.['sessionSignup']?.['panelChannelId'];
         const panelMessageId = guildData?.['sessionSignup']?.['signupThreadId'];
         const panelChannel = await global.client.channels.fetch(panelChannelId).catch(async (e) =>{
-            if(e?.code == 50013){ // permission error:
+            if(e?.code == 50013 || e?.code == 50001 || e?.code == 50007){ // permission error:
                 await sendPermsDeniedAlert(guildId, 'Create Signup Thread (Fetch Channels)');
                 return null;
             }
@@ -295,7 +294,7 @@ const guildPanel = (guildId) => {return {
             // Fetch old panel
             const panelMessage = await panelChannel.messages.fetch(panelMessageId).catch(async (e) => {
                 // error fetching
-                if(e?.code == 50013){ // permission error:
+                if(e?.code == 50013 || e?.code == 50001 || e?.code == 50007){ // permission error:
                     await sendPermsDeniedAlert(guildId, 'Read Signup Panel Message');
                     return null;
                 }
@@ -305,7 +304,7 @@ const guildPanel = (guildId) => {return {
                 // error deleting
                 console.warn(`Failed to delete old guild panel for guild ${guildId}!`, e);
                 logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});
-                if(e?.code == 50013){ // permission error:
+                if(e?.code == 50013 || e?.code == 50001 || e?.code == 50007){ // permission error:
                     await sendPermsDeniedAlert(guildId, 'Delete Signup Panel Message');
                     return null;
                 }
@@ -481,7 +480,7 @@ const guildPanel = (guildId) => {return {
         return { success: true, data: 'Daily Signup Thread Content Success', sessionMessageMap: sentSignupMessages };
 
     }catch(e) { // Error Occurred
-        if(e?.code === 50013) { // Permission Error
+        if(e?.code === 50013 || e?.code == 50001 || e?.code == 50007) { // Permission Error
             await sendPermsDeniedAlert(guildId, 'Send Signup Thread/Message');
         }
         // Log Error:
@@ -982,7 +981,7 @@ const guildSessions = (guildId) => {return {
         })
     }catch(err){ // Error occurred:
         // Permission Errors:
-        if(err?.code === 50013) {
+        if(err?.code === 50013 || e?.code == 50001 || e?.code == 50007) {
             await sendPermsDeniedAlert(guildId, 'Delete Message');
         }
         // Log error:
