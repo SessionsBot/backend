@@ -3,6 +3,7 @@ import scheduleManager from "../utils/scheduleManager.js";
 import global from "../utils/global.js"; // Import Global Variables
 import logtail from "../utils/logs/logtail.js";
 import { DateTime } from "luxon";
+import tests from "../utils/tests.js";
 
 export default {
 	name: Events.ClientReady,
