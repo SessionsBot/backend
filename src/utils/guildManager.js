@@ -177,6 +177,7 @@ const guildConfiguration = (guildId) => {return {
                 ['setupCompleted']: true
             }, { merge: true });
             // Success:
+            logtail.info(`[i] GUILD SETUP - ${guildId} - Completed at ${DateTime.now().toLocaleString(DateTime.DATETIME_SHORT)}`);
             return {success: true, data: 'Saved new guild configuration to database!'}
 
         } catch (e) {
