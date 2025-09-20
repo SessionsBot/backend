@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.0](https://github.com/SessionsBot/backend/compare/v0.8.3...v0.9.0) (2025-09-20)
+
+### ⚡️ Features
+
+* add setup log ([96f897b](https://github.com/SessionsBot/backend/commit/96f897bae22e4c92a25dffdec1861c3df2fc0636))
+
+### 🐞 Bug Fixes
+
+* **api:** response - no schs day ([229356e](https://github.com/SessionsBot/backend/commit/229356e276686a7bdb241dda618b0f633c47eed7))
+
+### 🧹 Chores
+
+* prepare for release ([a5f3c80](https://github.com/SessionsBot/backend/commit/a5f3c808d5c9aec89c8e0d4033d434e5e823570b))
+
 ## [0.8.3](https://github.com/SessionsBot/backend/compare/v0.8.2...v0.8.3) (2025-09-16)
 
 ### 🐞 Bug Fixes
