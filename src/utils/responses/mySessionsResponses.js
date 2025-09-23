@@ -65,9 +65,6 @@ export default {
             if (!guildSessions || !typeof guildSessions === 'object' ) { // Invalid Sessions:
                 // Respond:
                 respond(interaction).commandError('Could not find any upcoming sessions for this guild, if this is incorrect please contact an administrator.')
-                // Log Error:
-                console.log(`{?} [/${interaction.commandName}] Invalid/No Sessions Received for Command Interaction:`)
-                console.log(guildSessions)
             }
             for(const [sessionId, sessionData] of Object.entries(guildSessions)) { // Check each session for user assigned a role:
                 const sessionRoles = sessionData?.['roles'];

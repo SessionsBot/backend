@@ -11,6 +11,7 @@ import { DateTime } from "luxon";
 import verifyToken from "../../utils/verifyToken.js";
 
 // Secure Variables:
+const ENVIRONMENT = process.env['ENVIRONMENT'];
 const CLIENT_ID = process.env['CLIENT_ID'];
 const CLIENT_SECRET = process.env['CLIENT_SECRET'];
 const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
@@ -58,7 +59,7 @@ router.get('/discord', async (req, res) => {
 
     // Check for errors/access code provided from Discord:
     if (error || !code) {
-        console.error('Error during redirect process:', error, 'Code provided:', code);
+        // console.error('Error during redirect process:', error, 'Code provided:', code);
         // Redirect to Frontend:
         return redirects.redirectAuthError(res)
     }
@@ -145,14 +146,14 @@ router.get('/discord', async (req, res) => {
         const encodedTokens = LZString.compressToEncodedURIComponent(payload);
 
         // Log authentication:
-        log.info(`User Authenticated: ${userData?.username}`)
+        log.info(`[👤] User Authenticated: ${userData?.username}`)
 
         // Step 10. Redirect User back to Frontend w/ token(s):
         return redirects.redirectAuthSuccess(res, encodedTokens);
 
     } catch (err) {
         // Error Occurred - OAuth2 process:
-        console.error('{!}[OAuth2] Error Occurred:', err.response?.data || err.message);
+        // console.error('{!}[OAuth2] Error Occurred:', err.response?.data || err.message);
         // Redirect to Homepage - FAILED sign in page:
         return redirects.redirectAuthError(res);
     }
@@ -248,14 +249,14 @@ router.get('/refresh', verifyToken, async (req, res) => {
         const encodedTokens = LZString.compressToEncodedURIComponent(payload);
 
         // Log authentication:
-        log.info(`User Refreshed Token: ${userData?.username}`);
+        log.info(`[👤] User Refreshed Token: ${userData?.username}`);
 
 
         // 8. Return tokens directly (no redirect here, since it's a background refresh)
         return responder.succeeded(res, {encodedTokens}, 201)
 
     } catch (err) {
-        console.error("[!] Token refresh failed:", err.response?.data || err.message);
+        // console.error("[!] Token refresh failed:", err.response?.data || err.message);
         return res.status(401).json({ success: false, error: err.message || "Refresh failed" });
     }
 });

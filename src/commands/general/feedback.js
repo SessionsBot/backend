@@ -37,7 +37,6 @@ async function execute(interaction) {
 
 
     } catch(err) { // Error Occurred
-        console.warn('Failed to execute `/feedback` cmd for user', {rawError: err});
         logtail.warn('Failed to execute `/feedback` cmd for user', {rawError: err});
     }
 }

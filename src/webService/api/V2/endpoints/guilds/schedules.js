@@ -8,6 +8,7 @@ import guildManager from "../../../../../utils/guildManager.js";
 import verifyToken from "../../utils/verifyToken.js";
 import verifyGuildMember from "../../utils/verifyGuildMember.js";
 import verifyGuildAdmin from "../../utils/verifyGuildAdmin.js";
+import logtail from "../../../../../utils/logs/logtail.js";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -35,7 +36,7 @@ router.get('/:scheduleId', verifyToken, verifyGuildAdmin, async (req, res) => { 
     if(err?.message) { // Known Error:
         return responder.errored(res, err.message, err?.code || 400)
     } else { // Unknown Error:
-        console.warn('{!}[API] Failed to read schedule data:', JSON.stringify(err, null, 2))
+        logtail.warn('{!}[API] Failed to read schedule data:', {err});
         return responder.errored(res, 'An internal API error has occurred, please try again.', 500)
     }
 }})
@@ -58,7 +59,7 @@ router.post('/', verifyToken, verifyGuildAdmin, async (req, res) => { try {
     if(err?.message) { // Known Error:
         return responder.errored(res, err.message, err?.code || 400)
     } else { // Unknown Error:
-        console.warn('{!}[API] Failed to add schedule to guild:', JSON.stringify(err, null, 2))
+        logtail.warn('{!}[API] Failed to add schedule to guild:', {err})
         return responder.errored(res, 'An internal API error has occurred, please try again.', 500)
     }
 }})
@@ -83,7 +84,7 @@ router.patch('/:scheduleId', verifyToken, verifyGuildAdmin, async (req, res) => 
     if(err?.message) { // Known Error:
         return responder.errored(res, err.message, err?.code || 400)
     } else { // Unknown Error:
-        console.warn('{!}[API] Failed to add schedule to guild:', JSON.stringify(err, null, 2))
+        logtail.warn('{!}[API] Failed to add schedule to guild:', {err})
         return responder.errored(res, 'An internal API error has occurred, please try again.', 500)
     }
 }})
@@ -107,7 +108,7 @@ router.delete('/:scheduleId', verifyToken, verifyGuildAdmin, async (req, res) =>
     if(err?.message) { // Known Error:
         return responder.errored(res, err.message, err?.code || 400)
     } else { // Unknown Error:
-        console.warn('{!}[API] Failed to read schedule data:', JSON.stringify(err, null, 2))
+        logtail.warn('{!}[API] Failed to read schedule data:', {err})
         return responder.errored(res, 'An internal API error has occurred, please try again.', 500)
     }
 }})

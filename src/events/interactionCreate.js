@@ -1,4 +1,5 @@
 import {  Events, MessageFlags  } from "discord.js";
+import logtail from "../utils/logs/logtail.js";
 
 export default {
 	name: Events.InteractionCreate,
@@ -8,14 +9,14 @@ export default {
 			const command = interaction.client.commands.get(interaction.commandName);
 
 			if (!command) {
-				console.error(`No command matching ${interaction.commandName} was found.`);
+				logtail.warn(`No command matching ${interaction.commandName} was found.`);
 				return;
 			}
 
 			try {
 				await command.execute(interaction);
 			} catch (error) {
-				console.error(error);
+				logtail.warn('Command Interaction Error', {error});
 				if (interaction.replied || interaction.deferred) {
 					await interaction.followUp({ content: 'There was an error while executing this command!', flags: MessageFlags.Ephemeral });
 				} else {
@@ -34,7 +35,6 @@ export default {
 
 			// Confirm button:
 			if (!button) {
-				// console.error(`[!] No button matching ${interactionCustomId} was found.`);
 				return;
 			}
 
@@ -42,7 +42,7 @@ export default {
 				await button.execute(interaction);
 
 			} catch (error) {
-				console.error(error);
+				logtail.warn('Button Interaction Error', {error});
 				if (interaction.replied || interaction.deferred) {
 					await interaction.followUp({ content: 'There was an error while executing this button!', flags: MessageFlags.Ephemeral });
 				} else {
@@ -56,14 +56,13 @@ export default {
 			const command = interaction.client.commands.get(interaction.commandName);
 
 			if (!command) {
-				console.error(`No command matching ${interaction.commandName} was found.`);
 				return;
 			}
 
 			try {
 				await command.autocomplete(interaction);
 			} catch (error) {
-				console.error(error);
+				logtail.warn('Auto-complete Interaction Error', {error});
 			}
 		}
 
@@ -80,7 +79,6 @@ export default {
 
 			// Confirm select menu::
 			if (!selectMenu) {
-				// console.error(`No selectMenu matching ${interactionCustomId} was found.`);
 				return;
 			}
 
@@ -88,7 +86,7 @@ export default {
 				await selectMenu.execute(interaction);
 
 			} catch (error) {
-				console.error(error);
+				logtail.warn('Select Menu Interaction Error', {error});
 				if (interaction.replied || interaction.deferred) {
 					await interaction.followUp({ content: 'There was an error while executing this select menu!', flags: MessageFlags.Ephemeral });
 				} else {

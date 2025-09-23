@@ -11,7 +11,6 @@ export default {
     async execute(guild) {
 
         // Log New Guild:
-        console.info(`[+] Guild ${guild?.name} (${guild?.id}) has added Sessions Bot!`);
         logtail.info(`[+] Guild ${guild?.name} (${guild?.id}) has added Sessions Bot!`); logtail.flush();
 
         
@@ -20,7 +19,6 @@ export default {
         if(!addGuildResult.success){
             // CRITICAL ERROR: Failed to add new guild to database!
             logtail.error('Failed to add new guild to database!', addGuildResult.data); logtail.flush();
-            console.warn('Failed to add new guild to database!', addGuildResult.data)
             return
         }
 
@@ -72,7 +70,7 @@ export default {
             } catch (err) {
                 console.warn('Failed to send to system channel:', err);
                 if(err?.code === 50013 || err?.code == 50001 || err?.code == 50007) // Permission Error
-                    return await sendPermsDeniedAlert(interaction?.guildId, 'Send Welcome Message');
+                    return // await sendPermsDeniedAlert(interaction?.guildId, 'Send Welcome Message');
                 
             }
         }
@@ -108,8 +106,8 @@ export default {
             return;
         } catch (err) {
             console.warn('Failed to DM the guild owner:', err);
-            logtail.error('No suitable greeting message location for newly joined guild!', {guildId: guild?.id, guildName: guild?.name});
-            return console.warn(`{!} CRITICAL ERROR: Failed to send welcome/setup message for ${guild.name}.`);
+            logtail.error('{!} CRITICAL ERROR: No suitable greeting message location for newly joined guild!', {guildId: guild?.id, guildName: guild?.name});
+            return 
         }
 
     }

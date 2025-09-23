@@ -80,7 +80,6 @@ async function autocomplete(interaction) { try {
         const guildDataFetch = await guildManager.guilds(interaction.guild.id).readGuild()
         if(!guildDataFetch.success || !Object.entries(guildDataFetch.data.upcomingSessions)){
             // Failed - no guild sessions:
-            console.log('Auto complete found no sessions/data!')
             return interaction.respond([]);
         }
 
@@ -146,7 +145,7 @@ async function autocomplete(interaction) { try {
 
     }
 } catch(err) { // Autocomplete Error:
-    console.log('{!} Autocomplete error!', {user: interaction?.user?.username, cmd: interaction?.command?.name}, err);
+    logtail.warn('{!} Autocomplete error!', {user: interaction?.user?.username, cmd: interaction?.command?.name, errDetails: err});
 }}
 
 

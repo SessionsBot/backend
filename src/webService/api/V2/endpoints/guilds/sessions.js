@@ -9,6 +9,7 @@ import verifyToken from "../../utils/verifyToken.js";
 import verifyGuildMember from "../../utils/verifyGuildMember.js";
 import verifyGuildAdmin from "../../utils/verifyGuildAdmin.js";
 import global from "../../../../../utils/global.js";
+import logtail from "../../../../../utils/logs/logtail.js";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -82,7 +83,7 @@ router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
 
     }catch(e){
         // Error Occurred - Return Errored Response:
-        console.warn(`{!}[API Call] Failed to post sessions early for guild: ${guildId}:`, e)
+        logtail.warn(`{!}[API Call] Failed to post sessions early for guild: ${guildId}:`, {details: e})
         responder.errored(res, `Failed to post sessions early for guild(${guildId})!`, 500);
     }
 })
@@ -167,8 +168,6 @@ router.patch('/:sessionId/roles', verifyToken, verifyGuildAdmin, async (req, res
     if(reqRoleIndex == -1) throw {message: `Not Found - Cannot find role "${roleName}" in session(${sessionId}).`, code: 404};
     // Verify User in Guild:
     const checkMemberResults = await checkIfUserInGuild(guildId, userId)
-    console.log('CHECK MEMBER RESULTS:')
-    console.log(JSON.stringify(checkMemberResults, null, 2))
     if(!checkMemberResults.found) throw {message: `Bad Request - User ${userId} is not a member of guild(${guildId}).`, code: 400};
 
     // 4. Attempt Role Assign:

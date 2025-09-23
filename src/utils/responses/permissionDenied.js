@@ -62,7 +62,6 @@ export const sendPermsDeniedAlert = async (guildId, actionTitle) => { try {
     const guild = await botClient.guilds.fetch(guildId);
 
     // 2. Debug:
-    console.info(`[!] Guild is missing required perms for ${actionTitle}!`, {guildId});
     logtail.info(`[!] Guild is missing required perms for ${actionTitle}!`, {guildId});
 
     // 3. Attempt to send in default system channel:
@@ -74,7 +73,8 @@ export const sendPermsDeniedAlert = async (guildId, actionTitle) => { try {
             })
             return trackNewAlert(guildId);
         } catch (err) {
-            console.warn(`{!} Failed to send permission alert to system channel - guildId: ${guildId}`, err);
+            // logtail.warn(`{!} Failed to send permission alert to system channel - guildId: ${guildId}`, err);
+            return
         }
     }
 
@@ -93,7 +93,7 @@ export const sendPermsDeniedAlert = async (guildId, actionTitle) => { try {
             })
             return trackNewAlert(guildId);
         } catch (err) {
-            console.warn(`{!} Failed to send permission alert to fallback channel - guildId: ${guildId}`, err);
+            logtail.warn(`{!} Failed to send permission alert to fallback channel - guildId: ${guildId}`, err);
         }
     }
 
@@ -106,14 +106,12 @@ export const sendPermsDeniedAlert = async (guildId, actionTitle) => { try {
         })
         return trackNewAlert(guildId);
     } catch (err) {
-        console.warn(`{!} Failed to send permission alert to guild owner - guildId: ${guildId}`, err);
-        logtail.error(`{!} No suitable permission alert message location for guild! - guildId: ${guildId}`, {guildId: guild?.id, guildName: guild?.name, ownerId: guild.ownerId});
+        logtail.error(`{!} No suitable permission alert message location for guild! - guildId: ${guildId}`, {guildId: guild?.id, guildName: guild?.name, ownerId: guild.ownerId, errDetails: err});
         return
     }
 
 } catch (err) {
     // Failed - Log Error:
-    console.warn(`{!} Failed to send permissions denied alert within guild(${guildId}).`, err);
     logtail.warn(`{!} Failed to send permissions denied alert within guild(${guildId}).`, {errorDetails: err});
 }}
     

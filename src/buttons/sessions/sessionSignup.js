@@ -39,9 +39,7 @@ const responses = {
 		setTimeout(async () => {
 			try {
 				await interaction.deleteReply();
-			} catch (err) {
-				console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
-			}
+			} catch (err) {return}
 		}, 15_000);
 
 	},
@@ -70,9 +68,7 @@ const responses = {
 		setTimeout(async () => {
 			try {
 				await interaction.deleteReply();
-			} catch (err) {
-				console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
-			}
+			} catch (err) {return}
 		}, 15_000);
 
 	},
@@ -100,9 +96,7 @@ const responses = {
 		setTimeout(async () => {
 			try {
 				await interaction.deleteReply();
-			} catch (err) {
-				console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
-			}
+			} catch (err) {return}
 		}, 15_000);
 	},
 
@@ -129,9 +123,7 @@ const responses = {
 		setTimeout(async () => {
 			try {
 				await interaction.deleteReply();
-			} catch (err) {
-				console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
-			}
+			} catch (err) {return}
 		}, 15_000);
 	},
 
@@ -158,9 +150,7 @@ const responses = {
 		setTimeout(async () => {
 			try {
 				await interaction.deleteReply();
-			} catch (err) {
-				console.warn('[!] Failed to delete reply (likely already deleted or ephemeral):', err.message);
-			}
+			} catch (err) {return}
 		}, 15_000);
 	},
 
