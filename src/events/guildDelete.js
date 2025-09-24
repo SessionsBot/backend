@@ -14,10 +14,6 @@ export default {
     /** @param {import('discord.js').Guild} guild */
     async execute(guild) {
         // Debug - Leaving Guild:
-        if(global.outputDebug_InDepth) {
-            console.log('guildDelete Event Fired!:')
-            console.log(`guildID: ${guild.id}`)
-        }
         const removedAtDateString = DateTime.fromMillis(guild?.joinedTimestamp).setZone('America/Chicago').toLocaleString(DateTime.DATETIME_FULL)
         logtail.info(`[-] Guild ${guild?.name} (${guild?.id}) has removed Sessions Bot!`, {guildName: guild?.name, memberCount: guild?.memberCount, removedAt: removedAtDateString});
 

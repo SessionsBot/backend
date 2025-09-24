@@ -1,5 +1,5 @@
 // -------------------------- [ Imports/Variables ] -------------------------- \\
-import cron from "node-cron";
+import cron, { schedule } from "node-cron";
 import global from "./global.js"; // Import Global Variables
 import guildManager from "./guildManager.js";
 import { db } from "./firebase.js";
@@ -7,23 +7,14 @@ import axios from "axios"; // Import Firebase
 import logtail from "./logs/logtail.js";
 
 // Dev Testing
+const ENVIRONMENT = process.env['ENVIRONMENT'];
 const devTesting = {
     enabled: false,
     guildId: "1379160686629880028",
 };
 
 // Logging
-const log = {
-    info: (msg, cnt) => {
-        console.info(msg, cnt ? cnt : '')
-        logtail.info(msg, cnt ? cnt : '')
-    },
-    warn: (msg, cnt) => {
-        console.warn(msg, cnt ? cnt : '')
-        if(!devTesting.enabled)
-        logtail.warn(msg, cnt ? cnt : '')
-    }
-}
+const log = logtail
 
 
 if (devTesting.enabled) console.info("Dev-Testing enabled within scheduleManager.js... please modify settings if this is unexpected.");
@@ -46,7 +37,7 @@ let alreadyInitialized = false;
 async function botInitialize() {
     // Confirm first/only call:
     if (alreadyInitialized)
-        return console.log(`[!] botInitialize already called, skipping duplicate initialization!`);
+        return logtail.warn(`[!] botInitialize already called, skipping duplicate initialization!`);
     alreadyInitialized = true;
 
     // Runs Daily @11:59 PM - Loads and schedules all other 'Guild Schedules':
@@ -54,7 +45,6 @@ async function botInitialize() {
         "0 59 23 * * *",
         async (ctx) => {
             // schedule execution
-            console.log(`[⏳] Loading All Guild Schedules - ${ctx.triggeredAt.toLocaleString("en-US",{ timeZone: "America/Chicago" })} `);
             logtail.info(`[⏳] Loading All Guild Schedules`);
             await initializeDailySchedules();
             logtail.flush();
@@ -75,6 +65,9 @@ async function botInitialize() {
  *     - Schedules a new 'signup panel post' at the guild's specified `Post Time`.
 */
 async function initializeDailySchedules() {
+    // Compressed Logs:
+    const setupGuilds = [];
+    const unsetupGuilds = [];
     try {
         // Stop and clear all previous schedules
         Object.values(currentDayGuildSchedules).forEach((job) => job.stop());
@@ -84,7 +77,10 @@ async function initializeDailySchedules() {
         let currentClientGuilds = [];
         const fetchedGuilds = await global.client.guilds.fetch();
         fetchedGuilds.forEach((guild) => {
-            currentClientGuilds.push(guild.id);
+            currentClientGuilds.push({
+                id: guild.id,
+                name: guild.name,
+            });
         });
 
         // Get all guilds in database:
@@ -98,17 +94,22 @@ async function initializeDailySchedules() {
             const setupCompleted = guildData?.["setupCompleted"];
             const guildSchedules = guildData?.["sessionSchedules"];
             const dailySignupPostTime = guildData?.["sessionSignup"]?.["dailySignupPostTime"];
+            const clientGuildInfo = currentClientGuilds.find((itm) => itm.id == doc.id);
 
             // Confirm Bot is in Guild:
-            if (!currentClientGuilds.includes(doc.id)) { 
-                log.warn(`{!} Bot is not in guild (${doc.id}), skipping execution!`)
+            if (!clientGuildInfo) { 
+                if(ENVIRONMENT == 'development') return;
+                 log.warn(
+                    `{!} Bot is not in guild? (${doc.id}), skipping execution!`, 
+                    {details: 'It possible the system failed to archive this guild previously, checks required.'}
+                )
                 return
             }
 
             // Confirm Guild Setup Properly:
             if (!guildData || !setupCompleted || !guildSchedules || !dailySignupPostTime) {
                 // NOT SETUP PROPERLY - Log & Return:
-                log.info(`[i] Guild ${doc.id} has not completed setup! - Skipping Schedules`);
+                unsetupGuilds.push({name: clientGuildInfo?.name, id: clientGuildInfo?.id})
                 return
             } else {
                 // SETUP PROPERLY - Schedule Signup Post:
@@ -152,25 +153,28 @@ async function initializeDailySchedules() {
 
                 // Store reference to guilds posting schedule:
                 currentDayGuildSchedules[doc.id] = guildPostSchedule;
+                setupGuilds.push({name: clientGuildInfo?.name, id: clientGuildInfo?.id})
 
-                // [TESTING] Run 'dev testing' / guild schedule early:
-                if (devTesting.enabled && doc.id == devTesting.guildId) {
-                    console.info("RUNNING GUILD SCHEDULE EARLY...");
+                // [DEV - ENVIRONMENT] Run 'dev testing' / guild schedule early:
+                if (ENVIRONMENT == 'development' && devTesting.enabled && doc.id == devTesting.guildId) {
+                    logtail.info("[🛠️] RUNNING GUILD SCHEDULE EARLY...");
                     guildPostSchedule.execute();
                     guildPostSchedule.destroy();
                 }
             }
         });
 
-        // Report Completion
-        await axios.post("https://uptime.betterstack.com/api/v1/heartbeat/CReNYEQ9a6PZWdSmW5kR21Lf");
+        // Report Completion & Debug:
+        logtail.info(`[⌛️] Loaded All Guild Schedules!`, {scheduled: setupGuilds, NOT_scheduled: unsetupGuilds});
+        if (ENVIRONMENT != 'development') await axios.post("https://uptime.betterstack.com/api/v1/heartbeat/CReNYEQ9a6PZWdSmW5kR21Lf");
        
     } catch (error) { 
         // Report Schedule's Initialization Failure:
+        logtail.error(`[!] CRITICAL | Failed to initialize scheduling system! Bot restart required...`, {details: error})
         try { 
-            await axios.post("https://uptime.betterstack.com/api/v1/heartbeat/CReNYEQ9a6PZWdSmW5kR21Lf/fail");
+            if (ENVIRONMENT != 'development') await axios.post("https://uptime.betterstack.com/api/v1/heartbeat/CReNYEQ9a6PZWdSmW5kR21Lf/fail");
         } catch (e) {
-            console.log("{!} Failed to log failed schedule heartbeat/monitor...", e);
+            logtail.warn("{!} Failed to log failed schedule heartbeat/monitor...", {details: e});
         }
     }
 }

@@ -1,81 +1,43 @@
-import { ModalBuilder, CommandInteraction, SlashCommandBuilder, TextInputBuilder, TextInputStyle, InteractionContextType, MessageFlags, ActionRowBuilder, ModalSubmitInteraction } from "discord.js";
+import { ModalBuilder, ContainerBuilder, CommandInteraction, SlashCommandBuilder, TextInputBuilder, TextInputStyle, InteractionContextType, MessageFlags, ActionRowBuilder, ModalSubmitInteraction, SeparatorBuilder, TextDisplayBuilder, ButtonStyle } from "discord.js";
 import { db } from "../../utils/firebase.js";
 import { DateTime } from "luxon";
-import { SelectMenuBuilder } from "@discordjs/builders";
+import logtail from "../../utils/logs/logtail.js";
+import global from "../../utils/global.js";
+import { ButtonBuilder } from "@discordjs/builders";
 
 const data = new SlashCommandBuilder()
     .setName('feedback')
     .setDescription("Provide your feedback regarding Sessions Bot.")
     .setContexts(InteractionContextType.Guild)
 
-/** Helper fn to save user feedback to database
- * @param {CommandInteraction} interaction 
- * @param {string} feedback 
- */
-function saveFeedback(interaction, feedback){
-    try {
-        const dateString = DateTime.now().setZone('America/Chicago').toFormat("MM-dd-yyyy_hh:mm:ss_a");
-        db.collection('events').doc('feedback').collection('users').doc(String(interaction.user.id)).set({
-            [dateString]: {
-                username: interaction?.user?.username,
-                fromGuild: interaction.guild.name,
-                feedback: feedback
-            }
-        }, {merge: true})
-    } catch (err) {
-        console.log(`{!} Failed to save user feedback to database!`, err);
-    }
-}
 /** @param {CommandInteraction} interaction */
 async function execute(interaction) {
     try {
-        // Send feedback model:
-        const modal = new ModalBuilder()
-            .setTitle('🤖 Sessions Bot Feedback')
-            .setCustomId('botFeedbackModal')
-
-        // Add feedback text input:
-        const feedbackText = new TextInputBuilder()
-            .setStyle(TextInputStyle.Paragraph)
-            .setCustomId('userFeedback')
-            .setLabel('Your Feedback:')
-            .setPlaceholder('I love this application...')
-            .setRequired(true)
-
-        modal.addComponents(
-            new ActionRowBuilder().addComponents(feedbackText)
+        // Build response message
+        const feedbackUrl = 'https://sessionsbot.fyi/feedback';
+        const container = new ContainerBuilder();
+        const separator = new SeparatorBuilder();
+        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### 🙏 Thank you for using <@${global.client.user.id}>! \ \n-# Please take a short amount of time to complete a usage survey regarding *Sessions Bot* and it's features.`}))
+        container.addSeparatorComponents(separator);
+        container.addActionRowComponents(
+            new ActionRowBuilder().addComponents(
+                new ButtonBuilder()
+                .setURL(feedbackUrl)
+                .setStyle(ButtonStyle.Link)
+                .setLabel(`📝 Leave Feedback`)
+            )
         )
+        container.addSeparatorComponents(separator);
 
-        // Show/send feedback modal:
-        await interaction.showModal(modal)
+        // Response
+        await interaction.reply({
+            components: [container],
+            flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
+        })
 
-        // Await submission:
-        const submitted = await interaction.awaitModalSubmit({
-            time: 180_000,
-            filter: (i) => i.customId === "botFeedbackModal" && i.user.id === interaction.user.id,
-        }).catch(() => null);
-
-        // Check submission:
-        if(submitted){ // Success
-            const feedback = submitted.fields.getTextInputValue("userFeedback");
-            // Save feedback:
-            saveFeedback(interaction, feedback);
-            await submitted.reply({
-                content: `✅ Received | Thanks for your feedback!`,
-                flags: MessageFlags.Ephemeral,
-            });
-        } else { // Timeout
-            await interaction.followUp({
-                content: "⏰ Timeout | You took too long to submit feedback. Try again with `/feedback`.",
-                flags: MessageFlags.Ephemeral,
-            });
-        }
-        
-
-        
 
     } catch(err) { // Error Occurred
-        console.log(`{!} Failed to execute /feedback cmd`, err);
+        logtail.warn('Failed to execute `/feedback` cmd for user', {rawError: err});
     }
 }
 

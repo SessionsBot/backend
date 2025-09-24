@@ -1,6 +1,7 @@
 import { AutocompleteInteraction, CommandInteraction, ContainerBuilder, InteractionContextType, MessageFlags, PermissionFlagsBits, SeparatorBuilder, SlashCommandBuilder, TextDisplayBuilder } from "discord.js";
 import guildManager from "../../utils/guildManager.js";
 import { DateTime } from "luxon";
+import logtail from "../../utils/logs/logtail.js";
 
 // Define Command:
 const data = new SlashCommandBuilder()
@@ -75,7 +76,6 @@ async function autocomplete(interaction) { try {
         const guildDataFetch = await guildManager.guilds(interaction.guild.id).readGuild()
         if(!guildDataFetch.success || !Object.entries(guildDataFetch.data.upcomingSessions)){
             // Failed - no guild sessions:
-            console.log('Auto complete found no sessions/data!')
             return interaction.respond([]);
         }
 
@@ -105,7 +105,7 @@ async function autocomplete(interaction) { try {
     }
 
 } catch(err) { // Autocomplete Error:
-    console.log('{!} Autocomplete error!', {user: interaction?.user?.username, cmd: interaction?.command?.name}, err);
+    logtail.warn('{!} Autocomplete error!', {user: interaction?.user?.username, cmd: interaction?.command?.name, errDetails: err});
 }}
 
 

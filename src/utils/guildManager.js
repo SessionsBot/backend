@@ -18,8 +18,6 @@ import { // Discord.js:
 import logtail from "./logs/logtail.js";
 import { sendPermsDeniedAlert } from "./responses/permissionDenied.js";
 
-const inDepthDebug = (c) => { if (global.outputDebug_InDepth) { console.log(`[Guild Manager]: ${c}`) } }
-
 
 // -------------------------- [ Functions ] -------------------------- \\
 
@@ -63,7 +61,6 @@ const guilds = (guildId) => {return {
         } catch (error) {
             // Error:
             logtail.error('Error adding newly added guild to database!', {guildId})
-            console.warn('[!] Error adding new guild document: ', error);
             const result = { success: false, data: `An error occurred when trying to save this guild! (${guildId})` };
             return result;
         }
@@ -78,7 +75,6 @@ const guilds = (guildId) => {return {
             const guildData = guildRef.data();
             return { success: true, data: guildData };
         } catch (e) {
-            console.warn('[!] Error reading guild document: ', e);
             logtail.error('Error reading guild from database!', {guildId})
             return { success: false, data: 'An error occurred when trying to read this guild!', rawError: e};
         }
@@ -94,7 +90,6 @@ const guilds = (guildId) => {return {
             // 1. Read original doc
             const guildDoc = await guildRef.get();
             if (!guildDoc.exists) {
-                console.warn(`Guild document ${guildId} does not exist. Failed to archive!`);
                 logtail.warn(`Guild document ${guildId} does not exist. Failed to archive!`);
                 return { success: false, error: `Couldn't find existing guild doc to archive!` };
             }
@@ -121,11 +116,9 @@ const guilds = (guildId) => {return {
             // 4. Delete original
             await guildRef.delete();
 
-            console.log(`[-] Guild ${guildId} moved to archive successfully.`);
             return { success: true };
 
         } catch (e) {
-            console.error(`Failed to move guild ${guildId} to archive:`, err);
             logtail.error('Error archiving guild that recently removed Sessions Bot!', {guildId})
             return { success: false, data: `Failed to move guild ${guildId} to archive:`, rawError: e };
         }
@@ -141,12 +134,10 @@ const guilds = (guildId) => {return {
             });
 
             // Success:
-            inDepthDebug(`Successfully updated guild doc! Id: ${guildId}`);
             const result = { success: true, data: `Successfully updated guild doc! Id: ${guildId}` };
             return result;
         } catch (e) {
             // Error:
-            console.warn('[!] Error updating guild document: ', e);
             logtail.error('Error updating guild docField within database!', {guildId, fieldPath, fieldValue})
             const result = { success: false, data: 'An error occurred when trying to update a guild field!', rawError: e  };
             return result;
@@ -182,9 +173,7 @@ const guildConfiguration = (guildId) => {return {
 
         } catch (e) {
             // Error:
-            console.log(`{!} Failed to save new guild configuration:`)
-            logtail.error('Error saving guild configuration to database!', {guildId, configuration})
-            console.log(e)
+            logtail.error('Error saving guild configuration to database!', {guildId, configuration, details: e})
             return {success: false, data: 'Failed to save new guild configuration to database!', rawError: e}
         }
     },
@@ -261,8 +250,7 @@ const guildPanel = (guildId) => {return {
     } catch (e) {
         // Failed to Create Guild Panel - Return:
         const result = {success: false, data: 'Error - Failed to Create Guild Panel', rawError: e};
-        logtail.error(`Failed to create guild panel for guild ${guildId}!`);
-        console.log(result.data + ': ' + e);
+        logtail.error(`Failed to create guild panel for guild ${guildId}!`, {details: e});
         return result;
     }},
 
@@ -303,7 +291,6 @@ const guildPanel = (guildId) => {return {
             // Delete old panel
             if(panelMessage) await panelMessage.delete().catch(async (e) => {
                 // error deleting
-                console.warn(`Failed to delete old guild panel for guild ${guildId}!`, e);
                 logtail.error(`Failed to delete old guild panel for guild ${guildId}!`, {rawError: e});
                 if(e?.code == 50013 || e?.code == 50001 || e?.code == 50007){ // permission error:
                     await sendPermsDeniedAlert(guildId, 'Delete Signup Panel Message');
@@ -353,7 +340,6 @@ const guildPanel = (guildId) => {return {
             await sendPermsDeniedAlert(guildId, 'Create Signup Thread/Message');
         }
         // Log Error:
-        console.log(`{!} Failed to Create Daily Sessions Thread:`, e)
         logtail.error(`Failed to create daily thread for guild ${guildId}!`, {rawError: e});
         // Return Success Result:
         return { success: false, data: `Failed to Create Daily Sessions Thread`, rawError: e };
@@ -417,7 +403,7 @@ const guildPanel = (guildId) => {return {
                     // Add this Session to Components:
                     allComponents.push({type: 'session', id: sessionId, data: contentAttempt.data});
                 }else{
-                    console.log('{!} Failed to get sessions panel contents for thread!');
+                    logtail.warn('{!} Failed to get sessions panel contents for thread!', {details: contentAttempt});
                     continue;
                 }
             }
@@ -463,7 +449,7 @@ const guildPanel = (guildId) => {return {
             if(componentObj.type === 'session'){
                 // Confirm Session Exists:
                 if (!unsortedSessions[String(componentObj.id)]) {
-                    console.log(`{!} Cannot find Session ID ${sessionId} to store session signup panel msg id!`);
+                    logtail.warn(`{!} Cannot find Session ID ${sessionId} to store session signup panel msg id!`);
                     continue; // Skip this sessionId
                 }else{
                     // Update Session Data:
@@ -486,7 +472,6 @@ const guildPanel = (guildId) => {return {
         }
         // Log Error:
         logtail.error(`Failed to send 'SignupThreadContents' for guild!`, {guildId, rawError: e});
-        console.warn(`Failed to send signup thread contents! Guild: ${guildId}`, e);
         // Failure - Result:
         return { success: false, data: 'Failed to send signup thread contents!', rawError: e };
     }},
@@ -644,13 +629,12 @@ const guildSessions = (guildId) => {return {
             });
 
             // Success:
-            if (global.outputDebug_InDepth) {console.log(`Session created for: ${sessionId}`)}
             const result = { success: true, data: `Successfully updated guild doc! Id: ${guildId}` };
             return result;
 
         } catch (error) {
             // Error:
-            console.error("Error creating session: ", error);
+            logtail.error("Error creating session: ", {details: error});
             const result = { success: false, data: `An error occurred when adding the session ${sessionId} to database!` };
             return result;
         }
@@ -986,7 +970,6 @@ const guildSessions = (guildId) => {return {
             await sendPermsDeniedAlert(guildId, 'Delete Message');
         }
         // Log error:
-        console.warn(`Failed to update session signup!`,{guildId}, e);
         logtail.error(`Failed to update session signup!`, {guildId, rawError: e});
     }},  
 

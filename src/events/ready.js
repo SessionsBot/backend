@@ -3,7 +3,7 @@ import scheduleManager from "../utils/scheduleManager.js";
 import global from "../utils/global.js"; // Import Global Variables
 import logtail from "../utils/logs/logtail.js";
 import { DateTime } from "luxon";
-import tests from "../utils/tests.js";
+
 
 export default {
 	name: Events.ClientReady,
@@ -15,15 +15,8 @@ export default {
 		// Get Startup Timestamp:
 		const startupTimestamp = DateTime.now().setZone('America/Chicago').toLocaleString(DateTime.DATETIME_SHORT)
 
-		// Startup Debug:
-		if(global.outputDebug_General) {
-			console.log(`[✅] READY! Logged in as @${client.user.tag}`);
-			console.log(`[📈] Status Page: https://status.sessionsbot.fyi`);
-			console.log(`[⏰] Timestamp: ${startupTimestamp}`);
-		}
-
 		// Log Startup:
-		logtail.info(' [✅] Bot Startup', { clientTag: client?.user?.tag, botVersion: global?.botVersion });
+		logtail.info('[✅] Bot Startup', { timestamp: startupTimestamp, clientTag: client?.user?.tag, botVersion: global?.botVersion });
 
 		// Set Bot User's Activity:
 		client.user.setActivity('🔗 sessionsbot.fyi', { type: ActivityType.Custom });
@@ -35,6 +28,3 @@ export default {
 
 	},
 };
-
-
-		

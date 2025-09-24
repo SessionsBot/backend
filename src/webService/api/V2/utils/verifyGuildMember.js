@@ -1,5 +1,6 @@
 // Imports
 import global from "../../../../utils/global.js";
+import logtail from "../../../../utils/logs/logtail.js";
 import { sendPermsDeniedAlert } from "../../../../utils/responses/permissionDenied.js";
 import responder from "./responder.js";
 
@@ -49,7 +50,7 @@ const verifyGuildMember = async (req, res, next) => {
             await sendPermsDeniedAlert(guildId, 'Verify Guild Member - API');
             return responder.errored(res, `Permission Error - Please re-configure the right permissions to your Bot ASAP.`);
         }
-        console.log('API verifyMember Error:', err, {originalReg: req?.originalUrl})
+        logtail.warn('API verifyMember Error:', {err, originalReg: req?.originalUrl})
         return responder.errored(res, `Internal Error - Couldn't verify actors(ID: ${actorUserId}) guild membership within guild ${guildId}.`, 500)
     }
 }

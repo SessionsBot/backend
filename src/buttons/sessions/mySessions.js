@@ -13,6 +13,7 @@ import {
 import guildManager from "../../utils/guildManager.js";
 import global from "../../utils/global.js";
 import mySessionsResponses from "../../utils/responses/mySessionsResponses.js";
+import logtail from '../../utils/logs/logtail.js';
 
 
 export default {
@@ -25,17 +26,14 @@ export default {
 		const userId = interaction.user.id
 		// Defer Response:
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral }).catch((err) => { // Error Deferring:
-			console.log(`{!} Couldn't defer /my-sessions response:`)
-			console.log(err)
+			logtail.warn(`{!} Couldn't defer /my-sessions response:`, {details: err});
 		});
 
 		// Send Session List:
 		const guildRetrieval = await guildManager.guilds(interaction.guild.id).readGuild()
 		if(guildRetrieval.success){ // Retrieval Success:
-			if(global.outputDebug_InDepth) { console.log('Retrieval Success:'); console.log(guildRetrieval); }
 			await mySessionsResponses.respond(interaction).userSessionsList(guildRetrieval.data)
 		}else{ // Retrieval Error:
-			if(global.outputDebug_InDepth) { console.log('Retrieval Error:'); console.log(guildRetrieval); }
 			await mySessionsResponses.respond(interaction).commandError(guildRetrieval.data)
 		}
 
@@ -49,8 +47,7 @@ export default {
 		collector.on('collect', async (collectorInteraction) => {
 			// Defer Collector Response:
 			await collectorInteraction.deferUpdate().catch((err) => { // Defer Response:
-				console.log(`{!} Error Deferring: - /${interaction.commandName}:`)
-				console.log(err)
+				logtail.warn(`{!} Couldn't defer /my-sessions collector response:`, {details: err});
 			});
 
 			// Parse Interaction Data:
@@ -151,10 +148,8 @@ export default {
 				// Send Session List:
 				const guildRetrieval = await guildManager.guilds(interaction.guild.id).readGuild()
 				if(guildRetrieval.success){ // Retrieval Success:
-					if(global.outputDebug_InDepth) { console.log('Retrieval Success:'); console.log(guildRetrieval); }
 					await mySessionsResponses.respond(interaction).userSessionsList(guildRetrieval.data)
 				}else{ // Retrieval Error:
-					if(global.outputDebug_InDepth) { console.log('Retrieval Error:'); console.log(guildRetrieval); }
 					await mySessionsResponses.respond(interaction).commandError(guildRetrieval.data)
 				}
 			}
@@ -182,7 +177,7 @@ export default {
 		})
 
 		// Log Error:
-		console.log(`{!} [/${interaction.commandName}] An error occurred:`)
-		console.log(e)
+		logtail.warn(`{!} [/${interaction.commandName}] An error occurred:`, {details: e});
+
 	}}
 }

@@ -87,8 +87,11 @@ if(debugFileLoader) {
 
 // ------- [ Login (via Token): ] -------
 
-client.login(BOT_TOKEN);
-// client.login(DEV_BOT_TOKEN);
+if(process.env['ENVIRONMENT'] == 'development') {
+	client.login(DEV_BOT_TOKEN);
+} else {
+	client.login(BOT_TOKEN);
+}
 
 
 // ------- [ Web Service (prevents inactivity): ] -------

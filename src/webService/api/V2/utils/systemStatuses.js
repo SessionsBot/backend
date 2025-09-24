@@ -57,8 +57,7 @@ export async function checkSystemStatuses() {
 
     } catch(e){ // Error occurred:
         // Debug & Store Log:
-        console.log('{!} Failed to fetch system statuses:', e.response?.data || e.message);
-        logtail.error(`Failed to fetch system statuses!`, {fetchAttemptData: e.response?.data || e.message});
+        logtail.error(`Failed to fetch system statuses!`, {fetchAttemptData: e.response?.data || e.message || e});
         return {success: false, data: {message: e.response?.data || e.message}}
     }
 }

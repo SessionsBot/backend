@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.0](https://github.com/SessionsBot/backend/compare/v0.9.0...v1.0.0) (2025-09-24)
+
+### ⚡️ Features
+
+* env client login ([735a2aa](https://github.com/SessionsBot/backend/commit/735a2aa50b755add1a44830d6b2deb6c6e090161))
+* improved multi-sourced logs ([3ac18b3](https://github.com/SessionsBot/backend/commit/3ac18b39eba4198d39aafe9714bf21691ac96345))
+* updated feedback cmd ([8ffd0a6](https://github.com/SessionsBot/backend/commit/8ffd0a69fc7fba9e8faff55feb53e39b2c8e6d38))
+
 ## [0.9.0](https://github.com/SessionsBot/backend/compare/v0.8.3...v0.9.0) (2025-09-20)
 
 ### ⚡️ Features

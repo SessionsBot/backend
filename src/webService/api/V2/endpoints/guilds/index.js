@@ -68,7 +68,7 @@ router.get('/:guildId', async (req, res) => {
     } catch (err) {
         if (err?.response?.data?.code === 10007) return responder.errored(res, `Invalid Permission - You're not a member of this guild.`)
         if (err?.response?.data?.code === 10004) return responder.errored(res, `Unknown Guild - Sessions Bot isn't a member of this guild.`)
-        console.log('{!}[API] Guild READ/GET Error:', err);
+        logtail.warn('{!}[API] Guild READ/GET Error:', {err});
         return responder.errored(res, 'Failed to fetch guild data, please try again.', 500)
     }
 })
