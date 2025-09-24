@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.1](https://github.com/SessionsBot/backend/compare/v1.0.0...v1.0.1) (2025-09-24)
+
+### 🐞 Bug Fixes
+
+* sch logs ([30dd56d](https://github.com/SessionsBot/backend/commit/30dd56da292860faa366b45129e476dad3e1cc16))
+
+### 🧹 Chores
+
+* **deps:** bump the npm-dependencies group with 30 updates ([568c043](https://github.com/SessionsBot/backend/commit/568c043df1a8cb249ee468017e05ace76ab6d5bc))
+
 ## [1.0.0](https://github.com/SessionsBot/backend/compare/v0.9.0...v1.0.0) (2025-09-24)
 
 ### ⚡️ Features
