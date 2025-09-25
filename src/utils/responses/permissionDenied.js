@@ -62,7 +62,7 @@ export const sendPermsDeniedAlert = async (guildId, actionTitle) => { try {
     const guild = await botClient.guilds.fetch(guildId);
 
     // 2. Debug:
-    logtail.info(`[!] Guild is missing required perms for ${actionTitle}!`, {guildId});
+    logtail.warn(`[!] Guild is missing required perms for ${actionTitle}!`, {guildId});
 
     // 3. Attempt to send in default system channel:
     if ( guild?.systemChannel?.viewable && guild.systemChannel.permissionsFor(guild.members.me).has(PermissionsBitField.Flags.SendMessages)){
