@@ -18,24 +18,26 @@ const permissionMessage = new ContainerBuilder({
         new TextDisplayBuilder({content: `## ⚠️ Uh oh! I'm missing my required permissions!`}),
         new TextDisplayBuilder({content: `It appears somewhere along the way my default **permissions have been altered**. This will interfere with my functionality!`}),
         new SeparatorBuilder(),
-        new TextDisplayBuilder({content: `### *To solve this you can either..* `}),
+        new TextDisplayBuilder({content: `### *You can easily..* `}),
         new SeparatorBuilder(),
-        new TextDisplayBuilder({content: `**🔄 Re-Invite the Bot:** \nYou can easily refresh the internal role/permissions Sessions Bot needs for your server by re-inviting the bot. \n-# **NOTE: DO NOT REMOVE/KICK THE BOT: Doing so will DELETE your bot configuration** and break any existing sessions/schedules! Simply re-invite the bot while its already a member within this server.`}),
+        new TextDisplayBuilder({content: `> **🔄 Re-Invite the Bot:** \nYou can quickly refresh the internal role/permissions Sessions Bot needs for your server by re-inviting the bot. \n-# **NOTE: DO NOT REMOVE/KICK THE BOT: Doing so will DELETE your bot configuration** and break any existing sessions/schedules! Simply re-invite the bot while its already a member within this server.`}),
         new SeparatorBuilder(),
-        new TextDisplayBuilder({content: `**🔧 Manually Fix Permissions:** \nRe-assign Sessions Bot its required permissions by accessing: \n**\`Server Settings > Roles > Sessions > Edit > Permissions\`** \nSee documentation for ***each required permission*** and confirm it's enabled.\ \n-# Feeling lazy? You can grant **all permissions** to Sessions Bot with the 'Administrator' permission.`}),
+        new TextDisplayBuilder({content: `### *But also...* `}),
         new SeparatorBuilder(),
-        new TextDisplayBuilder({content: `> ☝️ Also make sure the bot has **view/send access to any designated signup channels!**`}),
+        new TextDisplayBuilder({content: `> **🧐 MAKE SURE** <@1137768181604302848> has **ALL** of its required permission within **ANY SIGNUP CHANNELS** you've setup! \n-# Check individual channel/category permission overrides that may be causing issues... \n-# **NOTE:** Re-inviting the bot will ***NOT*** resolve this issue.`}),
+        new SeparatorBuilder(),
+        new TextDisplayBuilder({content: `> **🔧 Manually Fixing Permissions:** \nTo manually re-assign Sessions Bot its required permissions check: \n1. **\`Server Settings > Roles > Sessions > Edit > Permissions\`** \n2. **\`[SIGNUP CHANNEL] > Edit Channel > Permissions > Sessions \`** \nSee documentation for ***required permissions*** and confirm each are granted.\ \n-# Feeling lazy? You can grant **all permissions** to Sessions Bot with the 'Administrator' permission.`}),
         new SeparatorBuilder(),
         new ActionRowBuilder({
             components: [
                 new ButtonBuilder()
-                .setLabel("✅ Re-invite Bot")
+                .setLabel("🔄 Re-invite Bot")
                 .setStyle(ButtonStyle.Link)
                 .setURL(global.reInvite_Url),
                 new ButtonBuilder()
                 .setLabel("📃 See Documentation")
                 .setStyle(ButtonStyle.Link)
-                .setURL('https://docs.sessionsbot.fyi'),
+                .setURL('https://docs.sessionsbot.fyi/getting-started#required-bot-permissions'),
             ]
         }),
         new SeparatorBuilder(),
