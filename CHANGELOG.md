@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2](https://github.com/SessionsBot/backend/compare/v1.0.1...v1.0.2) (2025-09-29)
+
+### 🐞 Bug Fixes
+
+* improve perm denied alert ([db20fd8](https://github.com/SessionsBot/backend/commit/db20fd8e73dc450753a2e9fa2b19628e994a8362))
+* switch log type ([04c790a](https://github.com/SessionsBot/backend/commit/04c790a9d32181d52e0a6c288a26c019a271e095))
+* test system ([e840327](https://github.com/SessionsBot/backend/commit/e840327b1fb64e0899640ab7779e881bf64ab093))
+
 ## [1.0.1](https://github.com/SessionsBot/backend/compare/v1.0.0...v1.0.1) (2025-09-24)
 
 ### 🐞 Bug Fixes
