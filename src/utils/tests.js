@@ -9,19 +9,15 @@ const channelId = '1413653266931122186';
 const accentColor = 0x00000;
 
 
+
 export default {
-
-    // Template
-    // testFunc: async () => { try {
-
-    // }catch(e) {
-
-    // }}
-
-    testFunc: async () => { try {
-
-    }catch(e) {
-
-    }}
-
+    init: async () => { try{
+        if(process.env['ENVIRONMENT'] == 'development'){
+            console.info('[i] Running Development Tests!')
+            
+        }
+    }catch(e){ 
+        console.warn('[!] Failed to initialize tests:', e)
+    }},
 }
+
