@@ -12,12 +12,15 @@ const accentColor = 0x00000;
 
 
 export default {
-    init: async () => { try{
+    init: async () => { try {
         if(process.env['ENVIRONMENT'] == 'development'){
             console.info('--- \n[i] Running Development Tests!');
-            sendPermsDeniedAlert('1379160686629880028');
+
+            // sendPermsDeniedAlert('1379160686629880028');
+
+            console.info('[i] Development Tests Completed! \n---');
         }
-    }catch(e){ 
+    }catch(e) { 
         console.warn('[!] Failed to initialize tests:', e)
     }},
 }
