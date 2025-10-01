@@ -3,33 +3,7 @@ import logtail from "../../../../utils/logs/logtail.js";
 const BETTERSTACK_KEY = process.env?.['BETTERSTACK_KEY'];
 
 
-/** Utility function to retrieve current system status(es) from Better Stack.
- * 
- * @example ```json
- * {
-        "success": true,
-        "data": [
-            {
-                "id": "8608779",
-                "name": "sessionsbot.fyi | Website",
-                "status": "degraded"
-            },
-            {
-                "id": "8608780",
-                "name": "Discord Bot | Backend",
-                "status": "downtime"
-            },
-            {
-                "id": "8609073",
-                "name": "Hosting Service | Koyeb",
-                "status": "operational"
-            }
-        ],
-        "error": null
-    }
- * 
- * ```
- */
+/** Utility function to retrieve current system status(es) from Better Stack. */
 export async function checkSystemStatuses() { 
     try {
         // Send HTTP request
@@ -39,11 +13,12 @@ export async function checkSystemStatuses() {
             }
         })
         // Confirm response data
-        if (!results.data) throw {message: `No response data received!`};
+        if (!results.data) throw {message: `No response/status data received!`};
         const resources = results.data?.data; // Array of resources data
         if(!resources) throw {message: `Couldn't find status page resources! Please try again... | ${results?.data}`};
 
         let statuses = [];
+        let allSystemsOperational = true
         // Extract resource/status data from each:
         resources.forEach(resource => {
             let newStatus = {
@@ -51,9 +26,12 @@ export async function checkSystemStatuses() {
                 name: resource?.attributes?.public_name,
                 status: resource?.attributes?.status
             }
+            if(newStatus.status != 'operational') {
+                allSystemsOperational = false;
+            }
             statuses.push(newStatus);
         });
-        return {success: true, data: statuses}
+        return {success: true, data: {allSystemsOperational ,statuses}}
 
     } catch(e){ // Error occurred:
         // Debug & Store Log:
