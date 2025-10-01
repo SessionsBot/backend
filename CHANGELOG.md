@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.3](https://github.com/SessionsBot/backend/compare/v1.0.2...v1.0.3) (2025-10-01)
+
+### 🐞 Bug Fixes
+
+* improve api system response ([9ab18b1](https://github.com/SessionsBot/backend/commit/9ab18b1e0261283e99a67c873e0dfd84baa577e8))
+
+### ♻️ Refactoring
+
+* copilot instructions ([60166f0](https://github.com/SessionsBot/backend/commit/60166f0161ea7c7f9299ded88f97fe986162fb91))
+
 ## [1.0.2](https://github.com/SessionsBot/backend/compare/v1.0.1...v1.0.2) (2025-09-29)
 
 ### 🐞 Bug Fixes
