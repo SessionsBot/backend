@@ -36,7 +36,10 @@ async function execute(interaction) {
 
         // Send Session List:
         const guildRetrieval = await guildManager.guilds(interaction.guild.id).readGuild()
+        /** @type {import('@sessionsbot/api-types').FirebaseGuildDoc | undefined} */
+		let guildData;
         if(guildRetrieval.success){ // Retrieval Success:
+            guildData = guildRetrieval?.data;
             await mySessionsResponses.respond(interaction).userSessionsList(guildRetrieval.data)
         }else{ // Retrieval Error:
             await mySessionsResponses.respond(interaction).commandError(guildRetrieval.data)
@@ -62,31 +65,32 @@ async function execute(interaction) {
             if(interactionID == 'startLeaveSessionRole') { // Session Role Removal Confirmation
             
                 const [interactionID, sessionID, roleString] = collectorInteraction.customId.split(':');
-                const sessionDate = guildRetrieval.data['upcomingSessions']?.[sessionID]?.['date']?.['discordTimestamp'] || 'Unknown Date'
+                const sessionDate = guildData?.upcomingSessions?.[sessionID]?.date?.discordTimestamp || 'Unknown Date'
+                const sessionTitle = guildData?.upcomingSessions?.[sessionID]?.title || 'Unknown Title'
 
                 // Ask for Confirmation:
                 const confirmContainer = new ContainerBuilder()
                 confirmContainer.setAccentColor(0xfc9d03) // orange
-                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Please Confirm:'))
+                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Please Confirm'))
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
                 confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('Are you sure you would like to ***unassign*** yourself from this role?')) 
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
-                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⏰:  <t:${sessionDate}:F>` + '\n\n### 💼:  **`'+ roleString +'`** \n '))
+                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🔠 - Title:** \n> **\`${sessionTitle}\`**` + `\n\n**⏰ - Time:** \n> **<t:${sessionDate}:t>**` + `\n\n**💼 - Role:** \n> **\`${roleString}\`** \n`))
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
                 confirmContainer.addActionRowComponents(
                     new ActionRowBuilder()
                     .setComponents(
                         new ButtonBuilder()
-                            .setCustomId(`confirmSessionRemoval:${sessionID}`)
-                            .setLabel('REMOVE')
-                            .setEmoji('🗑️')
-                            .setStyle(ButtonStyle.Danger)
-                            .setDisabled(false),
-                        new ButtonBuilder()
                             .setCustomId(`cancelSessionRemoval:${sessionID}`)
                             .setLabel('Go Back')
                             .setEmoji('↩️')
-                            .setStyle(ButtonStyle.Primary)
+                            .setStyle(ButtonStyle.Secondary)
+                            .setDisabled(false),
+                        new ButtonBuilder()
+                            .setCustomId(`confirmSessionRemoval:${sessionID}`)
+                            .setLabel('Remove')
+                            .setEmoji('❌')
+                            .setStyle(ButtonStyle.Secondary)
                             .setDisabled(false)
                     )
                 )
@@ -105,37 +109,37 @@ async function execute(interaction) {
                 const removalResponseContainer = new ContainerBuilder()
                 if (removalAttempt.success) { // Role Removal Success:
                     removalResponseContainer.setAccentColor(0x6dc441) // green
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - Success ✅'))
+                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 📤 Role Removed'))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('*`You have successfully removed yourself as an attendee from this session!`*'))
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# (${sessionID})`))
+                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`You have **successfully removed** yourself from this session!`))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
                     removalResponseContainer.addActionRowComponents(
                         new ActionRowBuilder()
                         .setComponents(
                             new ButtonBuilder()
                                 .setCustomId(`cancelSessionRemoval:${sessionID}`)
-                                .setLabel(' -  My Sessions')
+                                .setLabel('My Sessions')
                                 .setEmoji('📋')
-                                .setStyle(ButtonStyle.Primary)
+                                .setStyle(ButtonStyle.Secondary)
                         )
                     )
+                    removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
+                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# (${sessionID})`))
 
                 } else { // Role Removal Error:
                     removalResponseContainer.setAccentColor(0xd43f37) // red
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## 👋 Role Removal - ERROR ⚠️'))
+                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ⚠️ Removal Error'))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent("*`An error occurred while trying to remove yourself from this session, are you sure you're assigned it?`*"))
-                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# (${sessionID})`))
+                    removalResponseContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`An **error occurred** while trying to remove you from this session role! If this error persists, please contact support.`))
                     removalResponseContainer.addSeparatorComponents(new SeparatorBuilder())
                     removalResponseContainer.addActionRowComponents(
                         new ActionRowBuilder()
                         .setComponents(
                             new ButtonBuilder()
                                 .setCustomId(`cancelSessionRemoval:${sessionID}`)
-                                .setLabel(' -  My Sessions')
+                                .setLabel('My Sessions')
                                 .setEmoji('📋')
-                                .setStyle(ButtonStyle.Primary)
+                                .setStyle(ButtonStyle.Secondary)
                         )
                     )
 
@@ -152,6 +156,7 @@ async function execute(interaction) {
                 // Send Session List:
                 const guildRetrieval = await guildManager.guilds(interaction.guild.id).readGuild()
                 if(guildRetrieval.success){ // Retrieval Success:
+                    guildData = guildRetrieval.data;
                     await mySessionsResponses.respond(interaction).userSessionsList(guildRetrieval.data)
                 }else{ // Retrieval Error:
                     await mySessionsResponses.respond(interaction).commandError(guildRetrieval.data)
@@ -165,13 +170,13 @@ async function execute(interaction) {
         const msgContainer = new ContainerBuilder()
         const separator = new SeparatorBuilder()
         // Title
-        msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Command Error:'))
+        msgContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Command Error'))
         msgContainer.setAccentColor(0xfc9d03) // red
         // Spacer
         msgContainer.addSeparatorComponents(separator) 
         // Info
         msgContainer.addTextDisplayComponents(new TextDisplayBuilder()
-            .setContent(`*This command failed execution, please try again in a little while. If this issue persists please contact an administrator*.`)
+            .setContent(`*This command failed execution, please try again in a little while. If this issue persists please contact support.*.`)
         )
 
         // Send Response:
