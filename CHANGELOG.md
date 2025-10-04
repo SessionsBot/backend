@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.5](https://github.com/SessionsBot/backend/compare/v1.0.4...v1.0.5) (2025-10-04)
+
+### 🐞 Bug Fixes
+
+* my-sessions improvements ([15202b0](https://github.com/SessionsBot/backend/commit/15202b0e9fa6f01cc2fb2594b0a4fefd6d84c4b8))
+
+### 🎨 Styling
+
+* update my/session-signup res ([a82ae26](https://github.com/SessionsBot/backend/commit/a82ae26d5284fa74bcd7dee991926ffceda4cba8))
+
 ## [1.0.4](https://github.com/SessionsBot/backend/compare/v1.0.3...v1.0.4) (2025-10-04)
 
 ### 🐞 Bug Fixes
