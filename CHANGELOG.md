@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.4](https://github.com/SessionsBot/backend/compare/v1.0.3...v1.0.4) (2025-10-04)
+
+### 🐞 Bug Fixes
+
+* err catch ([04ab4d4](https://github.com/SessionsBot/backend/commit/04ab4d4cc2ce32150a551729a3485dce8e46aa65))
+
 ## [1.0.3](https://github.com/SessionsBot/backend/compare/v1.0.2...v1.0.3) (2025-10-01)
 
 ### 🐞 Bug Fixes
