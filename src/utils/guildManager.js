@@ -966,7 +966,7 @@ const guildSessions = (guildId) => {return {
         })
     }catch(err){ // Error occurred:
         // Permission Errors:
-        if(err?.code === 50013 || e?.code == 50001 || e?.code == 50007) {
+        if(err?.code === 50013 || err?.code == 50001 || err?.code == 50007) {
             await sendPermsDeniedAlert(guildId, 'Delete Message');
         }
         // Log error:
