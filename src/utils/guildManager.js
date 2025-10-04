@@ -645,7 +645,7 @@ const guildSessions = (guildId) => {return {
     assignUserSessionRole: async (sessionId, userId, roleName) => {
         // Confirm Guild Data:
         const guildDataRetrieval = await guilds(guildId).readGuild()
-        if(!guildDataRetrieval.success) return {success: false, data: 'Could not get Guild data for session modifications!'};
+        if(!guildDataRetrieval.success) return {success: false, data: 'Could not get guild data for session modifications!'};
         const guildData = guildDataRetrieval.data;
         
         // Confirm Session Exists:
@@ -658,20 +658,20 @@ const guildSessions = (guildId) => {return {
 
         // Check if users already assigned session:
         let existingRoleAssigned = sessionRoles.find(role => role['users'].includes(String(userId)))
-        if(existingRoleAssigned) return {success: false, data: `Already assigned to this role! Could not re-assign...`, currentRole: existingRoleAssigned['roleName'], sessionData, guildData}
+        if(existingRoleAssigned) return {success: false, data: `You're already assigned to this session! \nCould not re-assign roles... Use the ${global.cmdStrings.mySessions} command to modify.`, currentRole: existingRoleAssigned['roleName'], sessionData, guildData}
         
 
         // Find requested role:
         let requestedRole = sessionRoles.find(role => role.roleName === roleName)
-        if(!requestedRole) return {success: false, data: `Couldn't find role("${roleName}") to assign user.`};
-        if( requestedRole['users'].length >= Number(requestedRole['roleCapacity']) ) return {success: false, data: `This role is at capacity! Please choose a different role.`, sessionData, guildData};
+        if(!requestedRole) return {success: false, data: `Couldn't find role("${roleName}") to assign user to. *Contact Support!*`};
+        if( requestedRole['users'].length >= Number(requestedRole['roleCapacity']) ) return {success: false, data: `This role is at capacity! Please choose a different role...`, sessionData, guildData};
 
         // Add user to requested role:
         requestedRole.users.push(String(userId))
 
         // Save session changes to database:
         const updateSuccess = await guilds(guildId).updateDocField(`upcomingSessions.${sessionId}`, sessionData)
-        if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database!', sessionData, guildData};
+        if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database! Contact Support if this issue persists...', sessionData, guildData};
 
         // Update Guilds Signup Message:
 		await guildSessions(guildId).updateSessionSignup(sessionId)

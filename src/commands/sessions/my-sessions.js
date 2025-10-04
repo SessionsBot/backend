@@ -73,9 +73,11 @@ async function execute(interaction) {
                 confirmContainer.setAccentColor(0xfc9d03) // orange
                 confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('## ❗️ Please Confirm'))
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
-                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('Are you sure you would like to ***unassign*** yourself from this role?')) 
+                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('Are you sure you would like to **unassign** yourself from this role?')) 
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
-                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🔠 - Title:** \n> **\`${sessionTitle}\`**` + `\n\n**⏰ - Time:** \n> **<t:${sessionDate}:t>**` + `\n\n**💼 - Role:** \n> **\`${roleString}\`** \n`))
+                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🔠 - Title:** \n> **\`${sessionTitle}\`**`))
+                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder({content: `**⏰ - Time:** \n> **<t:${sessionDate}:t>**`}))
+                confirmContainer.addTextDisplayComponents(new TextDisplayBuilder({content: `**💼 - Role:** \n> **\`${roleString}\`**`}))
                 confirmContainer.addSeparatorComponents(new SeparatorBuilder())
                 confirmContainer.addActionRowComponents(
                     new ActionRowBuilder()

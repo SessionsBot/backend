@@ -17,7 +17,7 @@ export default {
     colors: {
         success: '#6dc441', // green
         error: '#d43f37', // red
-        warning: '#fc9d03', // yellow/orange
+        warning: '#fc8c03ff', // yellow/orange
         blue: '#4287f5',
         purple: '#9b42f5',
     },

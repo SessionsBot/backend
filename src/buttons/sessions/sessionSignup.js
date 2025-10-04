@@ -48,9 +48,8 @@ const responses = {
 		// Build Response:
 		const container = new ContainerBuilder();
 		const separator = new SeparatorBuilder();
-
-		container.setAccentColor(0xd43f37); // red
-		
+		// Content:
+		container.setAccentColor(Number(global.colors.error.replace('#', '0x'))); // red
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ❗️ - Already Assigned Session!`))
 		container.addSeparatorComponents(separator);
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**💼 Current Role:** \`${existingRoleAssigned}\` `))
@@ -62,13 +61,12 @@ const responses = {
 		await interaction.reply({
 			components: [container],
 			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2
-		})
+		});
 
 		// Schedule deletion:
 		setTimeout(async () => {
-			try {
-				await interaction.deleteReply();
-			} catch (err) {return}
+			try { await interaction.deleteReply() } 
+			catch (err) { return }
 		}, 15_000);
 
 	},
@@ -78,11 +76,10 @@ const responses = {
 		const container = new ContainerBuilder();
 		const separator = new SeparatorBuilder();
 
-		container.setAccentColor(0xd43f37); // red
-		
+		container.setAccentColor(Number(global.colors.warning.replace('#', '0x'))); // orange
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⌛️ Session Already Occurred!`))
 		container.addSeparatorComponents(separator);
-		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🧾 Details:** \n *You cannot sign up for this session, it has already taken place... Please choose a different session and try again!* `))
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🧾 Details:** \n> *You cannot sign up for this session, it has already taken place... Please choose a different session and try again!* `))
 		container.addSeparatorComponents(separator);
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
 		
@@ -105,11 +102,11 @@ const responses = {
 		const container = new ContainerBuilder();
 		const separator = new SeparatorBuilder();
 
-		container.setAccentColor(0x6dc441); // green
-		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ✅ Position Assigned!`))
+		container.setAccentColor(Number(global.colors.success.replace('#', '0x'))); // green
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`## 📥 Position Assigned!`))
 		container.addSeparatorComponents(separator);
-		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**💼 Role:** \`${selectedRole}\` `))
-		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**📆 Date:** <t:${sessionData['date']['discordTimestamp']}:F>\n(<t:${sessionData['date']['discordTimestamp']}:R>) `))
+		container.addTextDisplayComponents(new TextDisplayBuilder({content: `**💼 Role:** \n> **\`${selectedRole}\`**`}))
+		container.addTextDisplayComponents(new TextDisplayBuilder({content: `**📆 Date:** \n> <t:${sessionData['date']['discordTimestamp']}:t>`}))
 		container.addSeparatorComponents(separator);
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
 		
@@ -132,11 +129,12 @@ const responses = {
 		const container = new ContainerBuilder();
 		const separator = new SeparatorBuilder();
 
-		container.setAccentColor(0xd43f37); // red
-		
+		container.setAccentColor(Number(global.colors.error.replace('#', '0x'))); // red
+
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⚠️ Position Not Assigned!`))
 		container.addSeparatorComponents(separator);
-		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🧾 Details:** \n *${responseString}* `))
+		container.addTextDisplayComponents(new TextDisplayBuilder({content: `**🧾 Details:**`}))
+		container.addTextDisplayComponents(new TextDisplayBuilder({content: `> ${responseString}`}))
 		container.addSeparatorComponents(separator);
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
 		
@@ -169,7 +167,7 @@ export default {
 		// Get Guild Data:
 		const guildId = interaction.message.guildId;
 		const guildDataRetrieval = await guildManager.guilds(guildId).readGuild();
-		if(!guildDataRetrieval.success) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occurred!', 'An internal server error occurred! Cannot find guild data, please contact an administrator...');
+		if(!guildDataRetrieval.success) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occurred!', 'An internal server error occurred, cannot find server data! Please contact an administrator/support...');
 		let guildData = guildDataRetrieval.data;
 
 
@@ -179,8 +177,8 @@ export default {
 		let sessionRoles = requestedSessionData?.['roles']
 		const sessionDateDiscord = requestedSessionData?.['date']?.['discordTimestamp']
 		const nowUTCSeconds = DateTime.now().toUnixInteger()
-		if(!upcomingSessions ) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occurred!', 'An internal server error occurred! Cannot find session data, please contact an administrator...');
-		if(!requestedSessionData || !sessionRoles) return await responses.databaseFailure(interaction, interactionSessionId, '🤨 - Session not Available!', `This session's data is not accessible, it may be outdated!`);
+		if(!upcomingSessions ) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occurred!', 'An internal server error occurred, cannot find server\'s sessions data! please contact an administrator/support...');
+		if(!requestedSessionData || !sessionRoles) return await responses.databaseFailure(interaction, interactionSessionId, '🤨 - Session not Available!', `This session's data is not accessible, it may be outdated/already occurred!`);
 		// Check if Session Already Occurred:
 		const pastSession = nowUTCSeconds >= sessionDateDiscord;
 		if (pastSession){
@@ -207,7 +205,7 @@ export default {
 			if(role['users'].length >= role['roleCapacity']) return
 		 	else availableRoles.push(role)
 		});
-		if(!availableRoles.length) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Session at Capacity!', 'This session currently has no available role positions. Please select a different session and try again.');
+		if(!availableRoles.length) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Session at Capacity!', 'This session currently has no available role positions. Please select a different session and try again...');
 
 
 		// Create Role Select Container:
@@ -215,10 +213,10 @@ export default {
 		let separator = new SeparatorBuilder()
 
 		// Title
-		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('### 💼 Please select a role for this session:'))
+		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent('### 💼 - Select a role for this session:'))
 		selectRoleContainer.addSeparatorComponents(separator) // Separator
-		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`> **Title:** \`${requestedSessionData?.title}\``))
-		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`> **Date:** <t:${sessionDateDiscord}:F>`))
+		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder({content: `**🔠 Title:** \n> **\`${requestedSessionData?.title}\`** `}))
+		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder({content: `**⏰ Date:** \n> <t:${sessionDateDiscord}:t>`}))
 		selectRoleContainer.addSeparatorComponents(separator) // Separator
 
 
@@ -240,7 +238,7 @@ export default {
 		// Complete Container:
 		selectRoleContainer.addActionRowComponents(row_selectSessionRole)
 		selectRoleContainer.addSeparatorComponents(separator)
-		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Didn't mean to signup? Feel free to just ignore this message.`))
+		selectRoleContainer.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# Didn't mean to signup? Feel free to just ignore this message..`))
 
 
 		// Send the Select Role Message:
