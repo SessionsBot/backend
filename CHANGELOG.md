@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.7](https://github.com/SessionsBot/backend/compare/v1.0.6...v1.0.7) (2025-10-05)
+
+### ⚡️ Features
+
+* log to discord ([6c2b81f](https://github.com/SessionsBot/backend/commit/6c2b81f670bcd6b3aa14500aba4d54d91a2d9f6e))
+
+### 🐞 Bug Fixes
+
+* api archive logic ([4770e44](https://github.com/SessionsBot/backend/commit/4770e445d62e8f58c774f305cccd57ff91f15760))
+* logging method ([5fbf978](https://github.com/SessionsBot/backend/commit/5fbf9781b9fce1ec25db809292c5d1c366cc28cc))
+
 ## [1.0.6](https://github.com/SessionsBot/backend/compare/v1.0.5...v1.0.6) (2025-10-05)
 
 ### 🐞 Bug Fixes
