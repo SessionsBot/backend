@@ -81,7 +81,8 @@ router.delete('/:guildId', verifyToken, verifyGuildAdmin, async (req, res) => {
     const actingUser = req?.user
 
     // Archive guild:
-    const archiveAttempt = await guildManager.guilds(deleteId).archiveGuild()
+    const fetchedGuild = await global.client.guilds.fetch(deleteId)
+    const archiveAttempt = await guildManager.guilds(deleteId).archiveGuild(fetchedGuild)
     if(!archiveAttempt.success) return responder.errored(res, 'Failed to archive guild, please try again!')
     else return responder.succeeded(res, 'Guild has been archived successfully.')
 })
