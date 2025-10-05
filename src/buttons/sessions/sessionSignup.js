@@ -79,7 +79,7 @@ const responses = {
 		container.setAccentColor(Number(global.colors.warning.replace('#', '0x'))); // orange
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ⌛️ Session Already Occurred!`))
 		container.addSeparatorComponents(separator);
-		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🧾 Details:** \n> *You cannot sign up for this session, it has already taken place... Please choose a different session and try again!* `))
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`**🧾 Details:** \n> *You cannot sign up for this session, it has already taken place... \nPlease choose a different session and try again!* `))
 		container.addSeparatorComponents(separator);
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`-# This message will be deleted in 15 seconds.`))
 		
@@ -173,12 +173,14 @@ export default {
 
 		// Get Session Data:
 		let upcomingSessions = guildData?.['upcomingSessions'];
+		if(!upcomingSessions ) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occurred!', 'An internal server error occurred, cannot find server\'s sessions data! please contact an administrator/support...');
+
 		let requestedSessionData = upcomingSessions?.[interactionSessionId];
 		let sessionRoles = requestedSessionData?.['roles']
 		const sessionDateDiscord = requestedSessionData?.['date']?.['discordTimestamp']
 		const nowUTCSeconds = DateTime.now().toUnixInteger()
-		if(!upcomingSessions ) return await responses.databaseFailure(interaction, interactionSessionId, '❗️ - Error Occurred!', 'An internal server error occurred, cannot find server\'s sessions data! please contact an administrator/support...');
 		if(!requestedSessionData || !sessionRoles) return await responses.databaseFailure(interaction, interactionSessionId, '🤨 - Session not Available!', `This session's data is not accessible, it may be outdated/already occurred!`);
+		
 		// Check if Session Already Occurred:
 		const pastSession = nowUTCSeconds >= sessionDateDiscord;
 		if (pastSession){
