@@ -1,7 +1,7 @@
 // Imports
 import global from "../../../../utils/global.js";
 import logtail from "../../../../utils/logs/logtail.js";
-import { sendPermsDeniedAlert } from "../../../../utils/responses/permissionDenied.js";
+import { sendPermsDeniedAlert } from "../../../../utils/perms/permissionDenied.js";
 import responder from "./responder.js";
 
 /** __Utility function used to verify the *authorized user* is a member ***AND ADMIN*** of the requested guild.__

@@ -12,7 +12,7 @@ import {
   ComponentType,
 } from "discord.js";
 import global from "../../utils/global.js";
-import { sendPermsDeniedAlert } from "../../utils/responses/permissionDenied.js";
+import { sendPermsDeniedAlert } from "../../utils/perms/permissionDenied.js";
 import logtail from "../../utils/logs/logtail.js";
 
 const createAutoSignupChannel = async (guildId, adminId) => {

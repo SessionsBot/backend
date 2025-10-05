@@ -2,7 +2,7 @@ import { ButtonStyle, ComponentType, ContainerBuilder, MessageFlags, SectionBuil
 import global from "./global.js";
 import guildManager from "./guildManager.js";
 import { createAutoSignupChannel } from "../webService/events/createAutoSignupChannel.js";
-import { sendPermsDeniedAlert } from "./responses/permissionDenied.js";
+import { sendPermsDeniedAlert } from "./perms/permissionDenied.js";
 import discordLog from "./logs/discordLog.js";
 import { DateTime } from "luxon";
 

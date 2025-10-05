@@ -1,7 +1,7 @@
 // Imports:
 
 import { ButtonInteraction, MessageFlags } from "discord.js";
-import { sendPermsDeniedAlert } from "../../utils/responses/permissionDenied.js";
+import { sendPermsDeniedAlert } from "../../utils/perms/permissionDenied.js";
 
 // Export Button:
 export default {

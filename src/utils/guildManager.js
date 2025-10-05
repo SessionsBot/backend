@@ -17,7 +17,7 @@ import { // Discord.js:
     Guild
 } from 'discord.js';
 import logtail from "./logs/logtail.js";
-import { sendPermsDeniedAlert } from "./responses/permissionDenied.js";
+import { sendPermsDeniedAlert } from "./perms/permissionDenied.js";
 import discordLog from "./logs/discordLog.js";
 
 class Result {
