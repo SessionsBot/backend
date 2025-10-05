@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.6](https://github.com/SessionsBot/backend/compare/v1.0.5...v1.0.6) (2025-10-05)
+
+### 🐞 Bug Fixes
+
+* accent color err ([7b5ad4e](https://github.com/SessionsBot/backend/commit/7b5ad4e49fa4631727e95b5a783f712c5aa49e24))
+
+### 🎨 Styling
+
+* signup panel attendee formats ([d1f1ca5](https://github.com/SessionsBot/backend/commit/d1f1ca5299fd799669f342e8e739a4a16fe9178d))
+
 ## [1.0.5](https://github.com/SessionsBot/backend/compare/v1.0.4...v1.0.5) (2025-10-04)
 
 ### 🐞 Bug Fixes
