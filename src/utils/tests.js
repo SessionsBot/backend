@@ -3,6 +3,8 @@ import global from "./global.js";
 import guildManager from "./guildManager.js";
 import { createAutoSignupChannel } from "../webService/events/createAutoSignupChannel.js";
 import { sendPermsDeniedAlert } from "./responses/permissionDenied.js";
+import discordLog from "./logs/discordLog.js";
+import { DateTime } from "luxon";
 
 const guildId = '1379160686629880028';
 const channelId = '1413653266931122186';
@@ -16,7 +18,7 @@ export default {
         if(process.env['ENVIRONMENT'] == 'development'){
             console.info('--- \n[i] Running Development Tests!');
 
-            // sendPermsDeniedAlert('1379160686629880028');
+            
 
             console.info('[i] Development Tests Completed! \n---');
         }

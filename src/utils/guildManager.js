@@ -13,11 +13,25 @@ import { // Discord.js:
     MessageFlags,
     SectionBuilder,
     ThreadAutoArchiveDuration,
-    ChannelType
+    ChannelType,
+    Guild
 } from 'discord.js';
 import logtail from "./logs/logtail.js";
 import { sendPermsDeniedAlert } from "./responses/permissionDenied.js";
+import discordLog from "./logs/discordLog.js";
 
+class Result {
+    /** 
+     * @param {boolean} success
+     * @param {any} data
+     * @param {any} error
+    */
+    constructor(success, data=null, error=null){
+        this.success = success
+        this.data = data
+        this.error = error
+    }
+}
 
 // -------------------------- [ Functions ] -------------------------- \\
 
@@ -55,6 +69,16 @@ const guilds = (guildId) => {return {
                 joinedAt: new Date()
             }, { merge: true });
 
+            // Log to Discord of Adding Guild:
+            discordLog.events.guildAdded(
+                guildId,
+                guildBotData.name,
+                guildBotData.createdTimestamp,
+                guildBotData.memberCount,
+                guildBotData.ownerId,
+                guildBotData?.icon ? `https://cdn.discordapp.com/icons/${guildId}/${guildBotData.icon}.png` : 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/198142ac-f410-423a-bf0b-34c9cb5d9609/dbtif5j-60306864-d6b7-44b6-a9ff-65e8adcfb911.png/v1/fit/w_512,h_512,q_70,strp/discord_metro_icon_by_destuert_dbtif5j-375w-2x.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NTEyIiwicGF0aCI6Ii9mLzE5ODE0MmFjLWY0MTAtNDIzYS1iZjBiLTM0YzljYjVkOTYwOS9kYnRpZjVqLTYwMzA2ODY0LWQ2YjctNDRiNi1hOWZmLTY1ZThhZGNmYjkxMS5wbmciLCJ3aWR0aCI6Ijw9NTEyIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.1Fi0jR0YCIK_seYmEuy6R_LyBrJM4K6HOPXAtsf-3yQ'
+            )
+
             // Success:
             const result = { success: true, data: 'Successfully added new guild!' };
             return result;
@@ -82,6 +106,7 @@ const guilds = (guildId) => {return {
 
 
     // Move Guild to Archive:
+    /** @param {Guild} guildBotData */
     archiveGuild: async (guildBotData) => {
         const guildRef = db.collection('guilds').doc(guildId);
         const archivedRef = db.collection('archivedGuilds').doc(guildId);
@@ -91,17 +116,30 @@ const guilds = (guildId) => {return {
             const guildDoc = await guildRef.get();
             if (!guildDoc.exists) {
                 logtail.warn(`Guild document ${guildId} does not exist. Failed to archive!`);
-                return { success: false, error: `Couldn't find existing guild doc to archive!` };
+                return new Result(false, `Couldn't find existing guild doc to archive?!`);
             }
+            /** @type {import("@sessionsbot/api-types").FirebaseGuildDoc} */
             const guildData = guildDoc.data();
 
-            // 2. Write to archive
+            // 2. Log to Discord of Removing Guild:
+            discordLog.events.guildRemoved(
+                guildId,
+                guildBotData?.name,
+                guildData?.setupCompleted,
+                guildBotData?.joinedTimestamp,
+                guildBotData?.createdTimestamp,
+                guildBotData?.memberCount,
+                guildBotData?.ownerId,
+                guildBotData?.icon ? `https://cdn.discordapp.com/icons/${guildId}/${guildBotData.icon}.png` : 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/198142ac-f410-423a-bf0b-34c9cb5d9609/dbtif5j-60306864-d6b7-44b6-a9ff-65e8adcfb911.png/v1/fit/w_512,h_512,q_70,strp/discord_metro_icon_by_destuert_dbtif5j-375w-2x.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NTEyIiwicGF0aCI6Ii9mLzE5ODE0MmFjLWY0MTAtNDIzYS1iZjBiLTM0YzljYjVkOTYwOS9kYnRpZjVqLTYwMzA2ODY0LWQ2YjctNDRiNi1hOWZmLTY1ZThhZGNmYjkxMS5wbmciLCJ3aWR0aCI6Ijw9NTEyIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.1Fi0jR0YCIK_seYmEuy6R_LyBrJM4K6HOPXAtsf-3yQ'
+            )
+
+            // 3. Write to archive
             await archivedRef.set({
                 ...guildData,
                 archivedAt: new Date()
             });
 
-            // 3. Save guild leave log:
+            // 4. Save guild leave log:
             const joinedAtDateString = DateTime.fromMillis(guildBotData?.joinedTimestamp).setZone('America/Chicago').toJSDate()
             const removedAtDateString = DateTime.now().setZone('America/Chicago').toJSDate()
             await db.collection('events').doc('removeLogs').collection('guilds').doc(String(guildId)).set({
@@ -113,14 +151,14 @@ const guilds = (guildId) => {return {
                 removedAt: removedAtDateString
             }, { merge: true });
 
-            // 4. Delete original
+            // 5. Delete original
             await guildRef.delete();
 
-            return { success: true };
+            return new Result(true, 'Guild has been archived successfully!')
 
         } catch (e) {
             logtail.error('Error archiving guild that recently removed Sessions Bot!', {guildId})
-            return { success: false, data: `Failed to move guild ${guildId} to archive:`, rawError: e };
+            return new Result(false, `Failed to move guild(${guildId}) to archive!`, e)
         }
     },
 
