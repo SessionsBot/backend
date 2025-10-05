@@ -6,15 +6,17 @@ import LZString from "lz-string";
 import global from "../../../../../utils/global.js";
 import responder from "../../utils/responder.js";
 import { admin, db  } from "../../../../../utils/firebase.js";
-import log from "../../../../../utils/logs/log.js";
+
 import { DateTime } from "luxon";
 import verifyToken from "../../utils/verifyToken.js";
+import logtail from "../../../../../utils/logs/logtail.js";
 
 // Secure Variables:
 const ENVIRONMENT = process.env['ENVIRONMENT'];
 const CLIENT_ID = process.env['CLIENT_ID'];
 const CLIENT_SECRET = process.env['CLIENT_SECRET'];
 const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
+
 
 const FRONTEND_URL = global.frontend_Url; // Frontend root url
 const REDIRECT_URI = 'https://api.sessionsbot.fyi/api/v2/users/auth/discord'; // Old - Public
@@ -32,7 +34,7 @@ const saveSignInData = async (userData, refreshToken) => {
         }, {merge: true})
         return {success: true};
     } catch(err) { // Error saving
-        log.error(`Failed to save new sign in data for user - ${userData?.username}`, err);
+        logtail.error(`Failed to save new sign in data for user - ${userData?.username}`, err);
         return {success: false, error: err};
     }
 }
@@ -146,7 +148,7 @@ router.get('/discord', async (req, res) => {
         const encodedTokens = LZString.compressToEncodedURIComponent(payload);
 
         // Log authentication:
-        log.info(`[👤] User Authenticated: ${userData?.username}`)
+        logtail.info(`[👤] User Authenticated: ${userData?.username}`)
 
         // Step 10. Redirect User back to Frontend w/ token(s):
         return redirects.redirectAuthSuccess(res, encodedTokens);
@@ -249,7 +251,7 @@ router.get('/refresh', verifyToken, async (req, res) => {
         const encodedTokens = LZString.compressToEncodedURIComponent(payload);
 
         // Log authentication:
-        log.info(`[👤] User Refreshed Token: ${userData?.username}`);
+        logtail.info(`[👤] User Refreshed Token: ${userData?.username}`);
 
 
         // 8. Return tokens directly (no redirect here, since it's a background refresh)

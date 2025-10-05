@@ -99,7 +99,7 @@ async function initializeDailySchedules() {
             // Confirm Bot is in Guild:
             if (!clientGuildInfo) { 
                 if(ENVIRONMENT == 'development') return;
-                 log.warn(
+                 logtail.warn(
                     `{!} Bot is not in guild? (${doc.id}), skipping execution!`, 
                     {details: 'It possible the system failed to archive this guild previously, checks required.'}
                 )
@@ -125,7 +125,7 @@ async function initializeDailySchedules() {
                         // Create guild sessions for the day:
                         const sessionCreationResult = await guildManager.guildSessions(String(doc.id)).createDailySessions(guildSchedules, timeZone);
                         if (!sessionCreationResult.success) {
-                            log.warn(`{!} Failed ${doc.id} during session creation process!`, sessionCreationResult);
+                            logtail.warn(`{!} Failed ${doc.id} during session creation process!`, sessionCreationResult);
                             return
                         }
 
@@ -139,7 +139,7 @@ async function initializeDailySchedules() {
                         if (creationResult.success) {
                             log.info(`[i] Guild ${doc.id} - Schedule Ran - ${ctx.triggeredAt.toLocaleString("en-US", {timeZone: "America/Chicago"})}`); 
                         } else {
-                            log.warn(`{!} FAILED: Guild(${doc.id}) Schedule!`, {creationResult});
+                            logtail.warn(`{!} FAILED: Guild(${doc.id}) Schedule!`, {creationResult});
                             
                         }
                     },
