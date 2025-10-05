@@ -901,7 +901,7 @@ const guildSessions = (guildId) => {return {
                 return sessionTextContent += roleString;
             }else {
             // Role Available:
-                roleString = `### ${roleEmoji} ${roleName} \n > *\`AVAILABLE 🟢\`*` + ` *\`(${roleUsers.length}/${roleCapacity})\`* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n \n';
+                roleString = `### ${roleEmoji} ${roleName} \n > *\`AVAILABLE 🟢\`*` + ` *\`(${roleUsers.length}/${roleCapacity})\`* \n` + roleUsers.map(id => `> <@${id}>`).join('\n') + '\n';
                 return sessionTextContent += roleString;
             }
         })
