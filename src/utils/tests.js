@@ -19,7 +19,7 @@ export default {
 
             // Test here..
 
-            console.info('[i] Development Tests Completed! \n---');
+            console.info('[i] Development Tests Completed! \n---');            
         }
     }catch(e) { 
         console.warn('[!] Failed to run development tests:', e)
