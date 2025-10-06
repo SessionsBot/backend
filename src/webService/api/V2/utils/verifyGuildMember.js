@@ -25,6 +25,12 @@ const verifyGuildMember = async (req, res, next) => {
     if(!guildId) return responder.errored(res, {message: `Bad Request - Couldn't verify guild membership, a guild id was unprovided.`, orgRequest: req?.originalUrl}, 400)
     if(!actorUserId) return responder.errored(res, `Internal Error - Couldn't access authed user from req data.`, 500)
     
+    // Check if actor is admin:
+    if(Array.from(process.env?.['ADMIN_USER_IDS'].includes(actorUserId))) {
+        logtail.info(`[i] FORCE AUTHED API REQUEST`, {reqUrl: req.url, adminUser: req?.user});
+        return next();
+    }
+
     // Check if actor is member:
     const cachedClient = global?.client;
 
@@ -41,12 +47,12 @@ const verifyGuildMember = async (req, res, next) => {
         if(!member) throw 'Discord member not found in guild.'
 
         // If all checks passed - allow/next:
-        next();
+        return next();
         
     } catch (err) {
         if (err?.code === 10007) return responder.errored(res, `Invalid Permission - You're not a member of this guild.`)
         if (err?.code === 10004) return responder.errored(res, `Unknown Guild - Sessions Bot isn't a member of this guild.`)
-        if (err?.code === 50013 || e?.code == 50001 || e?.code == 50007) { // Permission Error:
+        if (err?.code === 50013 || err?.code == 50001 || err?.code == 50007) { // Permission Error:
             await sendPermsDeniedAlert(guildId, 'Verify Guild Member - API');
             return responder.errored(res, `Permission Error - Please re-configure the right permissions to your Bot ASAP.`);
         }

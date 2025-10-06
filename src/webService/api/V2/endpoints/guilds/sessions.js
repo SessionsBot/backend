@@ -84,7 +84,7 @@ router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
     }catch(e){
         // Error Occurred - Return Errored Response:
         logtail.warn(`{!}[API Call] Failed to post sessions early for guild: ${guildId}:`, {details: e})
-        responder.errored(res, `Failed to post sessions early for guild(${guildId})!`, 500);
+        return responder.errored(res, `Failed to post sessions early for guild(${guildId})!`, 500);
     }
 })
 
