@@ -10,6 +10,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
+  ThreadAutoArchiveDuration,
 } from "discord.js";
 import global from "../../utils/global.js";
 import { sendPermsDeniedAlert } from "../../utils/perms/permissionDenied.js";
@@ -63,6 +64,7 @@ const createAutoSignupChannel = async (guildId, adminId) => {
           ]
         }
       ],
+      defaultAutoArchiveDuration: ThreadAutoArchiveDuration.OneDay
     });
 
     // Send 'Creation Success' Message:
