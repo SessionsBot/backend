@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.8](https://github.com/SessionsBot/backend/compare/v1.0.7...v1.0.8) (2025-10-06)
+
+### ⚡️ Features
+
+* new perm denied alert ([10a2c0f](https://github.com/SessionsBot/backend/commit/10a2c0fc7a5e66abc0444b72ec2ca0e720b63a3e))
+
+### 🐞 Bug Fixes
+
+* discord log dest ([c4130f8](https://github.com/SessionsBot/backend/commit/c4130f8792d5adb4f31b2cece238f01aa75f74c5))
+* help & feedback cmd ([121445d](https://github.com/SessionsBot/backend/commit/121445d96e4e112112e321c0ff9b9fa34c9b099d))
+* perms alert path ([095bbb1](https://github.com/SessionsBot/backend/commit/095bbb13354f58160821312520769304e8e2350d))
+
 ## [1.0.7](https://github.com/SessionsBot/backend/compare/v1.0.6...v1.0.7) (2025-10-05)
 
 ### ⚡️ Features
