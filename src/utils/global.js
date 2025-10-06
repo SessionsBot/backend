@@ -7,7 +7,8 @@ const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
 export default {
     botVersion: pkg.version,
     frontend_Url: 'https://sessionsbot.fyi',
-    reInvite_Url: 'https://invite.sessionsbot.fyi',
+    botInvite_Url: 'https://invite.sessionsbot.fyi',
+    supportServerInvite_Url: 'https://discord.gg/dKp5HZPjCg',
     outputDebug_General: true,
     outputDebug_InDepth: false,
     /** Main Discord Bot Client for SessionsBot 

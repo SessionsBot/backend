@@ -1,119 +1,179 @@
-import { ContainerBuilder, ButtonBuilder, ButtonStyle, SeparatorBuilder, PermissionsBitField, ChannelType, TextDisplayBuilder, ActionRowBuilder, MessageFlags } from "discord.js";
+import { ContainerBuilder, ButtonBuilder, ButtonStyle, SeparatorBuilder, PermissionsBitField, ChannelType, TextDisplayBuilder, ActionRowBuilder, MessageFlags, Guild } from "discord.js";
 import global from "../global.js";
 import logtail from "../logs/logtail.js";
+import guildManager from "../guildManager.js";
 
-const recentlyAlerted = [];
-function trackNewAlert(guildId){
-    recentlyAlerted.push(guildId)
+/** Cooldown Utility Class for Perms Denied Alerts */
+class alertCooldown {
+    constructor(timeout = 7000){
+        this.recentlyAlerted = []
+        this.timeout = timeout
+    }
 
-    setTimeout(()=>{
-        const guildIndex = recentlyAlerted.findIndex((itm) => itm == guildId)
-        if(guildIndex && guildIndex != -1) recentlyAlerted.splice(guildIndex, 1)
-    },5_000)
+    start(guildId){
+        this.recentlyAlerted.push(guildId);
+        setTimeout(() => {
+            const idx = this.recentlyAlerted.indexOf(guildId);
+            if(idx !== -1) this.recentlyAlerted.splice(idx, 1)
+        }, this.timeout);
+    }
+
+    onCooldown(guildId){
+        return this.recentlyAlerted.includes(guildId)
+    }
 }
+const cooldown = new alertCooldown()
 
-const permissionMessage = new ContainerBuilder({
-    accent_color: 0xeb883d,
-    components: [
-        new TextDisplayBuilder({content: `## ⚠️ Uh oh! I'm missing my required permissions!`}),
-        new TextDisplayBuilder({content: `It appears somewhere along the way my default **permissions have been altered**. This will interfere with my functionality!`}),
-        new SeparatorBuilder(),
-        new TextDisplayBuilder({content: `### *You can easily..* `}),
-        new SeparatorBuilder(),
-        new TextDisplayBuilder({content: `> **🔄 Re-Invite the Bot:** \nYou can quickly refresh the internal role/permissions Sessions Bot needs for your server by re-inviting the bot. \n-# **NOTE: DO NOT REMOVE/KICK THE BOT: Doing so will DELETE your bot configuration** and break any existing sessions/schedules! Simply re-invite the bot while its already a member within this server.`}),
-        new SeparatorBuilder(),
-        new TextDisplayBuilder({content: `### *But also...* `}),
-        new SeparatorBuilder(),
-        new TextDisplayBuilder({content: `> **🧐 MAKE SURE** <@1137768181604302848> has **ALL** of its required permission within **ANY SIGNUP CHANNELS** you've setup! \n-# Check individual channel/category permission overrides that may be causing issues... \n-# **NOTE:** Re-inviting the bot will ***NOT*** resolve this issue.`}),
-        new SeparatorBuilder(),
-        new TextDisplayBuilder({content: `> **🔧 Manually Fixing Permissions:** \nTo manually re-assign Sessions Bot its required permissions check: \n1. **\`Server Settings > Roles > Sessions > Edit > Permissions\`** \n2. **\`[SIGNUP CHANNEL] > Edit Channel > Permissions > Sessions \`** \nSee documentation for ***required permissions*** and confirm each are granted.\ \n-# Feeling lazy? You can grant **all permissions** to Sessions Bot with the 'Administrator' permission.`}),
-        new SeparatorBuilder(),
-        new ActionRowBuilder({
-            components: [
-                new ButtonBuilder()
-                .setLabel("🔄 Re-invite Bot")
-                .setStyle(ButtonStyle.Link)
-                .setURL(global.reInvite_Url),
-                new ButtonBuilder()
-                .setLabel("📃 See Documentation")
-                .setStyle(ButtonStyle.Link)
-                .setURL('https://docs.sessionsbot.fyi/getting-started#required-bot-permissions'),
-            ]
-        }),
-        new SeparatorBuilder(),
-        new TextDisplayBuilder({content: `@here | [Need Help?](https://sessionsbot.fyi/support)`}),
-    ]
-})
+/** Required Permissions for SessionsBot
+ * @type { import("discord.js").PermissionResolvable[] } */
+const requiredBotPerms = [
+    "CreatePrivateThreads", "CreatePublicThreads", "EmbedLinks", "ManageChannels", 
+    "ManageMessages", "ManageThreads", "MentionEveryone", "ReadMessageHistory", 
+    "SendMessages", "SendMessagesInThreads", "ViewChannel"
+]
 
-
-/** ### Discord Permission Denied Alerter
- * Call this function whenever there is a Discord API permission based error.
- * 
- * 1. First attempts to send alert/msg in default system channel
- * 2. Then attempts to send within ANY guild channel
- * 3. Finally, will attempt to DM guild owner
- * 
- * If all above fails: stores error log
+/** Sends permission alert msg to a specified server with fallback methods
+ * @param {Guild} guild 
+ * @param {ContainerBuilder} messageContent 
  */
-export const sendPermsDeniedAlert = async (guildId, actionTitle) => { try {
-    // 0. Check if already alerted recently:
-    if(recentlyAlerted.find((item) => item == guildId))
-        return
-    // 1. Fetch guild using bot client:
-    const botClient = global.client;
-    const guild = await botClient.guilds.fetch(guildId);
+const sendMessageWFallback = async (guild, messageContent ) => { try {
 
-    // 2. Debug:
-    logtail.warn(`[!] Guild is missing required perms for ${actionTitle}!`, {guildId});
-
-    // 3. Attempt to send in default system channel:
+    // 1. Attempt to send in default system channel:
     if ( guild?.systemChannel?.viewable && guild.systemChannel.permissionsFor(guild.members.me).has(PermissionsBitField.Flags.SendMessages)){
         try {
             await guild.systemChannel.send({
-                components: [permissionMessage],
+                components: [messageContent],
                 flags: MessageFlags.IsComponentsV2
             })
-            return trackNewAlert(guildId);
-        } catch (err) {
-            // logtail.warn(`{!} Failed to send permission alert to system channel - guildId: ${guildId}`, err);
-            return
-        }
+            return cooldown.start(guild.id);
+        } catch (err) { return }
     }
 
-    // 4. Attempt to send in any chat-able channel:
+    // 2. Attempt to send in any chat-able channel:
     const fallbackChannel = guild.channels.cache.find(channel =>
         channel.type === ChannelType.GuildText &&
         channel.viewable &&
         channel.permissionsFor(guild.members.me).has(PermissionsBitField.Flags.SendMessages)
     );
-
     if (fallbackChannel) {
         try {
             await fallbackChannel.send({
-                components: [permissionMessage],
+                components: [messageContent],
                 flags: MessageFlags.IsComponentsV2
             })
-            return trackNewAlert(guildId);
+            return cooldown.start(guild.id);
         } catch (err) {
-            logtail.warn(`{!} Failed to send permission alert to fallback channel - guildId: ${guildId}`, err);
+            logtail.warn(`{!} Failed to send permission alert to any fallback channel - guildId: ${guild.id}`, err);
         }
     }
 
-    // 5. Direct message server owner:
+    // 3. Direct message server owner:
     try {
         const owner = await guild.fetchOwner();
         await owner.send({
-            components: [permissionMessage],
+            components: [messageContent],
             flags: MessageFlags.IsComponentsV2
         })
-        return trackNewAlert(guildId);
+        return cooldown.start(guild.id);
     } catch (err) {
-        logtail.error(`{!} No suitable permission alert message location for guild! - guildId: ${guildId}`, {guildId: guild?.id, guildName: guild?.name, ownerId: guild.ownerId, errDetails: err});
+        logtail.error(`{!} No suitable permission alert message destination for guild! - guildId: ${guild.id}`, {guildId: guild?.id, guildName: guild?.name, ownerId: guild.ownerId, errDetails: err});
         return
     }
 
 } catch (err) {
     // Failed - Log Error:
-    logtail.warn(`{!} Failed to send permissions denied alert within guild(${guildId}).`, {errorDetails: err});
+    logtail.error(`{!} Failed to send permissions denied alert within guild(${guild.id}).`, {errorDetails: err});
 }}
+
+
+/** Check each required permission is granted to the bot within a specified server. */
+export const sendPermsDeniedAlert = async (guildId, reasonString) => {try{
+    // 1. Fetch Guild:
+    const botClient = global?.client
+    if(!guildId) throw 'Invalid Input - Missing "guildId"';
+    if(!botClient) throw 'Error - Bot client not accessible!';
+    const guild = await botClient.guilds.fetch(guildId)
+    if(!guild) throw 'Error - Couldn\'t fetch guild!';
+
+    // 2. Fetch Guild DB Data
+    const guildDataFetchAttempt = await guildManager.guilds(guildId).readGuild()
+    if(!guildDataFetchAttempt.success) throw `Error - Failed to fetch guild data from database!`
+    const signupChannelId = guildDataFetchAttempt.data?.sessionSignup?.panelChannelId
+
+    // 3 .Fetch Signup Channel:
+    const signupChannel = signupChannelId ? await guild.channels.fetch(signupChannelId) : null
     
+    // 4 .Get Granted Permissions:
+    const guildBotRole = guild.roles.botRoleFor(botClient.user);
+    if(!guildBotRole) throw `Error - Failed to fetch bot role within guild!`
+    const guildBotRolePerms = guild.roles.botRoleFor(botClient.user).permissions.serialize(true)
+    const guildBotRoleCHANNELPerms = signupChannel ? guild.roles.botRoleFor(botClient.user).permissionsIn(signupChannel).serialize(true) : []
+
+    // 5. Confirm Required Perms are Granted Globally:
+    /** @type {import("discord.js").PermissionResolvable[]} */
+    let missingGlobalPerms = [];
+    Object.entries(guildBotRolePerms).forEach(globalPerm => {
+        // Check if perm required:
+        if(requiredBotPerms.includes(globalPerm[0])){
+            // Check if not granted:
+            if(!globalPerm[1]){
+                missingGlobalPerms.push(globalPerm[0])
+            }
+        }
+    })
+
+    // 6. Confirm Required Perms are Granted in SignupChannel:
+    /** @type {import("discord.js").PermissionResolvable[]} */
+    let missingSignupChannelPerms = [];
+    Object.entries(guildBotRoleCHANNELPerms).forEach(channelPerm => {
+        // Check if perm required:
+        if(signupChannel && requiredBotPerms.includes(channelPerm[0])){
+            // Check if not granted:
+            if(!channelPerm[1]){
+                missingSignupChannelPerms.push(channelPerm[0])
+            }
+        }
+    })
+
+    // 7. Build Permission Alert Message:
+    const botRoleId = guild.roles.botRoleFor(guild.members.me.user).id
+    const missingPermissionsMsg = new ContainerBuilder({
+        accent_color: Number(global.colors.warning.replace('#', '0x')),
+        components: [
+            new TextDisplayBuilder({content: `## ⚠️ Uh oh! I'm missing required permissions..`}),
+            new TextDisplayBuilder({content: `It appears somewhere along the way my **required permissions have been altered**. This **WILL** interfere with my functionality! \n@here`}),
+            new SeparatorBuilder(),
+            new TextDisplayBuilder({content: `### ${missingGlobalPerms.length ? '❌' : '✅'} SERVER-WIDE Permissions: \ \n-# These are permissions that must be granted by the <@&${botRoleId}> role for Sessions Bot within your server. You can adjust permissions in *"Server Settings"*.`}),
+            new TextDisplayBuilder({content: `> ### Missing Permissions: \n` + (missingGlobalPerms.length ? `> - \`${Array.from(missingGlobalPerms).join('\`\n> - `') + '`'}` : '> - `NONE ✔︎`') }),
+            new SeparatorBuilder(),
+            new TextDisplayBuilder({content: `### ${missingSignupChannelPerms.length ? '❌' : '✅'} SIGNUP-CHANNEL Permissions: \ \n-# These are permissions that must be granted by the <@&${botRoleId}> role for Sessions Bot within your signup channel. ${!signupChannel ? `\ \n-# **NOTE:** You currently don't have a "Signup Channel" configured, you can disregard this section.` : `You can adjust permissions of your signup channel(<#${signupChannelId}>) in *"Channel Settings"*.`} `}),
+            new TextDisplayBuilder({content: `> ### Missing Permissions: \n` + (missingSignupChannelPerms.length ? `> - \`${Array.from(missingSignupChannelPerms).join('\`\n> - `') + '`'}` : '> - `NONE ✔︎`') }),
+            new SeparatorBuilder(),
+            new TextDisplayBuilder({content: `### 📋 All Permissions Needed: \ \n-# This is the **FULL list** of permissions the Sessions Bot's role(<@&${botRoleId}>) requires both within this server and any setup *"Signup Channel"*.`}),
+            new TextDisplayBuilder({content: `> \`${requiredBotPerms.join('`, `') + '`'}`}),
+            new SeparatorBuilder(),
+                new ActionRowBuilder({
+                    components: [
+                        new ButtonBuilder()
+                        .setLabel("📃 See Documentation")
+                        .setStyle(ButtonStyle.Link)
+                        .setURL('https://docs.sessionsbot.fyi/getting-started#required-bot-permissions'),
+                        new ButtonBuilder()
+                        .setLabel("❓ Get Support")
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(global.supportServerInvite_Url)
+                    ]
+                }),
+            new SeparatorBuilder(),
+        ]
+    })
+
+    // 8. Send Message & Debug:
+    await sendMessageWFallback(guild, missingPermissionsMsg);
+    logtail.warn(`[!] Guild is missing required perms for ${reasonString}!`, {guildId, guildName: guild?.name, missingGlobalPerms, missingSignupChannelPerms});
+
+} catch(err) {
+    // Return error result
+    logtail.warn(`[!] Failed to run permission checks for guild - ${guildId}`, {rawError: err});
+    return {success: false, error: err}
+}}

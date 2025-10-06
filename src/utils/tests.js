@@ -1,4 +1,4 @@
-import { ButtonStyle, ComponentType, ContainerBuilder, MessageFlags, SectionBuilder, SeparatorBuilder, TextDisplayBuilder } from "discord.js";
+import { ButtonStyle, ComponentType, ContainerBuilder, ActionRowBuilder, ButtonBuilder, MessageFlags, SectionBuilder, SeparatorBuilder, TextDisplayBuilder } from "discord.js";
 import global from "./global.js";
 import guildManager from "./guildManager.js";
 import { createAutoSignupChannel } from "../webService/events/createAutoSignupChannel.js";
@@ -6,10 +6,9 @@ import { sendPermsDeniedAlert } from "./perms/permissionDenied.js";
 import discordLog from "./logs/discordLog.js";
 import { DateTime } from "luxon";
 
-const guildId = '1379160686629880028';
+const guildId = process.env["GUILD_ID_DEVELOPMENT"]
 const channelId = '1413653266931122186';
 
-const accentColor = 0x00000;
 
 
 
@@ -18,12 +17,12 @@ export default {
         if(process.env['ENVIRONMENT'] == 'development'){
             console.info('--- \n[i] Running Development Tests!');
 
-            
+            // Test here..
 
             console.info('[i] Development Tests Completed! \n---');
         }
     }catch(e) { 
-        console.warn('[!] Failed to initialize tests:', e)
+        console.warn('[!] Failed to run development tests:', e)
     }},
 }
 
