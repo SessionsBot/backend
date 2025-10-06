@@ -36,8 +36,7 @@ const requiredBotPerms = [
  * @param {Guild} guild 
  * @param {ContainerBuilder} messageContent 
  */
-const sendMessageWFallback = async (guild, messageContent ) => { try {
-
+const sendMessageWFallback = async (guild, messageContent ) => { try {    
     // 1. Attempt to send in default system channel:
     if ( guild?.systemChannel?.viewable && guild.systemChannel.permissionsFor(guild.members.me).has(PermissionsBitField.Flags.SendMessages)){
         try {
@@ -169,7 +168,7 @@ export const sendPermsDeniedAlert = async (guildId, reasonString) => {try{
     })
 
     // 8. Send Message & Debug:
-    await sendMessageWFallback(guild, missingPermissionsMsg);
+    if(!cooldown.onCooldown(guildId)) {await sendMessageWFallback(guild, missingPermissionsMsg);}
     logtail.warn(`[!] Guild is missing required perms for ${reasonString}!`, {guildId, guildName: guild?.name, missingGlobalPerms, missingSignupChannelPerms});
 
 } catch(err) {
