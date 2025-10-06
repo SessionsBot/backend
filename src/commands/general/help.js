@@ -1,4 +1,5 @@
 import { CommandInteraction, ActionRowBuilder, ButtonBuilder, ContainerBuilder, MessageFlags, SeparatorBuilder, SlashCommandBuilder, TextDisplayBuilder, InteractionContextType, ButtonStyle } from "discord.js";
+import global from "../../utils/global.js";
 
 export default {
     data: new SlashCommandBuilder()
@@ -12,29 +13,37 @@ export default {
         await interaction.reply({
             flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
             components: [
-                new ContainerBuilder()
-                .setAccentColor(0xeb883d)
-                .addTextDisplayComponents(new TextDisplayBuilder({content: `## 🤔 Need Help?`}))
-                .addSeparatorComponents(new SeparatorBuilder())
-                .addActionRowComponents(new ActionRowBuilder()
-                    .addComponents(new ButtonBuilder()
-                        .setStyle(ButtonStyle.Link)
-                        .setLabel('Bot Commands')
-                        .setURL(`https://docs.sessionsbot.fyi/commands`)
-                    )
-                    .addComponents(new ButtonBuilder()
-                        .setStyle(ButtonStyle.Link)
-                        .setLabel('Documentation')
-                        .setURL(`https://docs.sessionsbot.fyi`)
-                    )
-                    .addComponents(new ButtonBuilder()
-                        .setStyle(ButtonStyle.Link)
-                        .setLabel('More Resources')
-                        .setURL(`https://sessionsbot.fyi/support`)
-                    )
-                )
-                .addSeparatorComponents(new SeparatorBuilder())
-                .addTextDisplayComponents(new TextDisplayBuilder({content: `-# Still need help? You can [send an email](mailto:support@sessionsbot.fyi) to our Support Team.`}))
+                new ContainerBuilder({
+                    accent_color: 0xeb883d,
+                    components: [
+                        new TextDisplayBuilder({content: `## 🤔 Need Help?`}),
+                        new TextDisplayBuilder({content: `-# Lets get your sessions running smoothly!`}),
+                        new SeparatorBuilder(),
+                        new TextDisplayBuilder({content: `> Experiencing strange reoccurring issues? \n> > View our [Status Page](https://status.sessionsbot.fyi)`}),
+                        new TextDisplayBuilder({content: `> Looking to get in touch with someone? \n> > Join our Support Server or send an [email](mailto:support@sessionsbot.fyi).`}),
+                        new SeparatorBuilder(),
+                        new ActionRowBuilder({
+                            components:[
+                                new ButtonBuilder({
+                                    style: ButtonStyle.Link,
+                                    label: 'Support Server',
+                                    url: global.supportServerInvite_Url
+                                }),
+                                new ButtonBuilder({
+                                    style: ButtonStyle.Link,
+                                    label: 'Documentation',
+                                    url: 'https://docs.sessionsbot.fyi'
+                                }),
+                                new ButtonBuilder({
+                                    style: ButtonStyle.Link,
+                                    label: 'More Resources',
+                                    url: 'https://sessionsbot.fyi/support'
+                                }),
+                            ]
+                        }),
+                        new SeparatorBuilder()
+                    ]
+                })
             ]
         })
     }

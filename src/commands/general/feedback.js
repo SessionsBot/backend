@@ -17,6 +17,7 @@ async function execute(interaction) {
         const feedbackUrl = 'https://sessionsbot.fyi/feedback';
         const container = new ContainerBuilder();
         const separator = new SeparatorBuilder();
+        container.setAccentColor(Number(global.colors.blue.replace('#', '0x')))
         container.addTextDisplayComponents(new TextDisplayBuilder({content: `### 🙏 Thank you for using <@${global.client.user.id}>! \ \n-# Please take a short amount of time to complete a usage survey regarding *Sessions Bot* and it's features.`}))
         container.addSeparatorComponents(separator);
         container.addActionRowComponents(
