@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.9](https://github.com/SessionsBot/backend/compare/v1.0.8...v1.0.9) (2025-10-06)
+
+### 🐞 Bug Fixes
+
+* **auto-channel:** auto thread archive ([d08296c](https://github.com/SessionsBot/backend/commit/d08296c34df1f48480814f4f3fbe9912834f84d1))
+* discord logs ([9ef66ec](https://github.com/SessionsBot/backend/commit/9ef66ec2a24ef6ffee76daa94909870be6a88647))
+* **perms alert:** cooldown ([0cf56a2](https://github.com/SessionsBot/backend/commit/0cf56a25734113b480ada5bb5661b2c302f9beb1))
+
 ## [1.0.8](https://github.com/SessionsBot/backend/compare/v1.0.7...v1.0.8) (2025-10-06)
 
 ### ⚡️ Features
