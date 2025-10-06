@@ -46,7 +46,7 @@ events: {
 
 
         // Fetch Log Channel
-        const logGuild = await global.client.guilds.fetch(guildId);
+        const logGuild = await global.client.guilds.fetch(logGuildId);
         if(!logGuild) throw `Failed to fetch guild for logging event`
         const logChannel = await logGuild.channels.fetch(joinLeaveLogChannelId)
         if(!logChannel) throw `Failed to fetch channel for logging event`
@@ -96,7 +96,7 @@ events: {
 
 
         // Fetch Log Channel
-        const logGuild = await global.client.guilds.fetch(guildId);
+        const logGuild = await global.client.guilds.fetch(logGuildId);
         if(!logGuild) throw `Failed to fetch guild for logging event`
         const logChannel = await logGuild.channels.fetch(joinLeaveLogChannelId)
         if(!logChannel) throw `Failed to fetch channel for logging event`
