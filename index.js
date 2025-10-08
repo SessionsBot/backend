@@ -1,7 +1,7 @@
 // ------- [ Variables/Setup: ] -------
 import 'dotenv/config'
 import dotenv from "dotenv";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {  Client, Collection, GatewayIntentBits  } from "discord.js";
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 import global from "./src/utils/global.js";
@@ -35,7 +35,7 @@ client.commands = new Collection();
 const commandFiles = getAllFiles(path.join(__dirname, 'src', 'commands'), '.js');
 
 for (const filePath of commandFiles) {
-	const { default: command } = await import(filePath);
+	const { default: command } = await import(pathToFileURL(filePath).href);
 	if ('data' in command && 'execute' in command) {
 		client.commands.set(command.data.name, command);
 	} else {
@@ -50,7 +50,7 @@ client.buttons = new Collection();
 const buttonFiles = getAllFiles(path.join(__dirname, 'src', 'buttons'), '.js');
 
 for (const filePath of buttonFiles) {
-	const { default: button } = await import(filePath);
+	const { default: button } = await import(pathToFileURL(filePath).href);
 	if ('data' in button && 'execute' in button) {
 		client.buttons.set(button.data.customId, button);
 	} else {
@@ -65,7 +65,7 @@ const eventFiles = fs.readdirSync(path.join(__dirname, 'src', 'events')).filter(
 
 for (const file of eventFiles) {
 	const filePath = path.join(__dirname, 'src', 'events', file);
-	const { default: event } = await import(filePath);
+	const { default: event } = await import(pathToFileURL(filePath).href);
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args));
 	} else {
