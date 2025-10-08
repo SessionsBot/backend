@@ -166,12 +166,16 @@ router.get('/discord', async (req, res) => {
 // Token Refresh - /api/v2/users/auth/refresh
 router.get('/refresh', verifyToken, async (req, res) => {
     try {
+        // 0. Prepare for/read request:
         /** Acting/re-authorizing user's data 
          * @type {import("@sessionsbot/api-types").DecodedUserData} 
          * */
         const actingUserData = req?.user;
         if (!actingUserData) throw { message: "Failed to access user data from token verification!" };
         const userId = actingUserData?.id;
+
+        const manuallyTriggered = req.headers?.['manual-call'] || 'UNKNOWN';
+        const triggeredBy =  manuallyTriggered == 'true' ? 'manual' : manuallyTriggered == 'false' ? 'automatic' : 'triggeredBy: unknown'
         
         // 1. Get users refresh token from db:
         const userDoc = await admin.firestore().collection("users").doc(userId).get();
@@ -251,7 +255,7 @@ router.get('/refresh', verifyToken, async (req, res) => {
         const encodedTokens = LZString.compressToEncodedURIComponent(payload);
 
         // Log authentication:
-        logtail.info(`[👤] User Refreshed Token: ${userData?.username}`);
+        logtail.info(`[👤] User Refreshed Token: ${userData?.username} - ${triggeredBy}`);
 
 
         // 8. Return tokens directly (no redirect here, since it's a background refresh)
