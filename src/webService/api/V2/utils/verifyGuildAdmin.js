@@ -20,7 +20,8 @@ const verifyGuildAdmin = async (req, res, next) => {
 
     // Check if Bot Admin 'forcible' fn:
     const checkForBotAdmin = async () => {
-        if(Array.from(process.env?.['ADMIN_USER_IDS'].includes(actorUserId))) {
+        const botAdminIds = JSON.parse(process.env?.['ADMIN_USER_IDS'] || '[]')
+        if(botAdminIds?.includes(actorUserId)) {
             logtail.info(`[i] FORCE AUTHED API REQUEST`, {reqUrl: req.url, adminUser: req?.user});
             return next();
         }
