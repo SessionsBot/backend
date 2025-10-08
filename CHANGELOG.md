@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.0](https://github.com/SessionsBot/backend/compare/v1.0.9...v1.1.0) (2025-10-08)
+
+### ⚡️ Features
+
+* global counters ([0896a4a](https://github.com/SessionsBot/backend/commit/0896a4a2e2e6919f800c65e7200ca7683b5d7a11))
+
+### 🐞 Bug Fixes
+
+* api admin users ([357a0f7](https://github.com/SessionsBot/backend/commit/357a0f7d7015e1778e3278794d9feba3498382a5))
+* file imports for Windows ([d7bca97](https://github.com/SessionsBot/backend/commit/d7bca97db21fbea24b33602e2d26720e8950755d))
+* refresh auth trigger method ([c11f592](https://github.com/SessionsBot/backend/commit/c11f592e0d561eed0fb8b3665b860a3dafd02659))
+
+### ♻️ Refactoring
+
+* type dec ([2c1512c](https://github.com/SessionsBot/backend/commit/2c1512cb3dc836bdcc7f9e55a757ffb18885755e))
+
 ## [1.0.9](https://github.com/SessionsBot/backend/compare/v1.0.8...v1.0.9) (2025-10-06)
 
 ### 🐞 Bug Fixes
