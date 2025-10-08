@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.1](https://github.com/SessionsBot/backend/compare/v1.1.0...v1.1.1) (2025-10-08)
+
+### ⚡️ Features
+
+* hex color num convertor ([8f2a62c](https://github.com/SessionsBot/backend/commit/8f2a62c36191fa410e8a9440bd1ae15536cc7970))
+* **internal:** server setup alert ([2042e61](https://github.com/SessionsBot/backend/commit/2042e61e79cc3ed20a575f397a1281bdfcbae339))
+
+### 🐞 Bug Fixes
+
+* **api:** force admin grant switch ([26e2e3d](https://github.com/SessionsBot/backend/commit/26e2e3dfee860c5f1a5abda58ffa9ee0646f531a))
+* **api:** prev fix parsing ([1ebf28f](https://github.com/SessionsBot/backend/commit/1ebf28fab8f35bac01ae8370b8a29b0c54be6c0c))
+
+### ♻️ Refactoring
+
+* minor changes ([b1f237a](https://github.com/SessionsBot/backend/commit/b1f237af1ae8234b6de906c8622cc88de3e44ba7))
+
 ## [1.1.0](https://github.com/SessionsBot/backend/compare/v1.0.9...v1.1.0) (2025-10-08)
 
 ### ⚡️ Features
