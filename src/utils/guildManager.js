@@ -19,6 +19,7 @@ import { // Discord.js:
 import logtail from "./logs/logtail.js";
 import { sendPermsDeniedAlert } from "./perms/permissionDenied.js";
 import discordLog from "./logs/discordLog.js";
+import databaseManager from "./databaseManager.js";
 
 class Result {
     /** 
@@ -705,6 +706,9 @@ const guildSessions = (guildId) => {return {
         // Add user to requested role:
         requestedRole.users.push(String(userId))
 
+        // Increment Global Counter:
+        databaseManager.globalCounters.incrementRolesAssigned(1);
+
         // Save session changes to database:
         const updateSuccess = await guilds(guildId).updateDocField(`upcomingSessions.${sessionId}`, sessionData)
         if(!updateSuccess.success) return {success: false, data: 'Failed to update guild data within database! Contact Support if this issue persists...', sessionData, guildData};
@@ -807,6 +811,9 @@ const guildSessions = (guildId) => {return {
         // If no schedules for the day:
         const upcomingSessionsLength = Object.entries(upcomingSessions)?.length || 0
         if(upcomingSessionsLength <= 0) return { success: true, emptyDay: true, data: `No sessions scheduled for today!`}
+
+        // Increment Global Counter:
+        databaseManager.globalCounters.incrementSessionsCreated(Object.entries(upcomingSessions)?.length || 0);
 
         // Save all Session to Upcoming Sessions:
         const saveResult = await guilds(guildId).updateDocField('upcomingSessions', upcomingSessions);
