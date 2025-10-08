@@ -4,7 +4,7 @@ import path from 'path';
 const pkgPath = path.resolve('./package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
 
-export default {
+const global = {
     botVersion: pkg.version,
     frontend_Url: 'https://sessionsbot.fyi',
     botInvite_Url: 'https://invite.sessionsbot.fyi',
@@ -16,11 +16,21 @@ export default {
     */
     client: null,
     colors: {
-        success: '#6dc441', // green
-        error: '#d43f37', // red
-        warning: '#fc8c03', // yellow/orange
+        success: '#6dc441',
+        error: '#d43f37', 
+        warning: '#fc8c03',
+        yellow: '#e3f542ff',
         blue: '#4287f5',
         purple: '#9b42f5',
+        gray: '#585858'
+    },
+    /** Returns a converted 0x hex color number from a provided global color
+     * @param {'success'|'error'|'yellow'|'warning'|'blue'|'purple'|'gray'} colorName
+     */
+    getOxColor: (colorName) => {
+        const reqColor = global.colors?.[colorName]
+        const convertedColor = Number(reqColor.replace('#', "0x"));
+        return convertedColor
     },
     emojis: {
         sessionsWText: '<:sessionsWText:1381323876176236575>',
@@ -31,3 +41,5 @@ export default {
         myNotifications: '</my-notifications:1410361146082463818>',
     }
 }
+
+export default global
