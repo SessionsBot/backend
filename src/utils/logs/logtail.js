@@ -3,7 +3,9 @@ const ENVIRONMENT = process.env['ENVIRONMENT'];
 const sourceToken = process.env['SOURCE_TOKEN'];
 const ingestingHost = process.env['INGESTING_HOST'];
 
-/** Utility function to store logs to online storage. */
+/** Utility function to store logs to online storage. 
+ * @type {Logtail}
+*/
 let logtail;
 
 if (ENVIRONMENT !== 'development') {
