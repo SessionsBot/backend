@@ -19,6 +19,14 @@ import responder from "./responder.js";
  */
 const verifyGuildMember = async (req, res, next) => {
 
+    // Check if Bot Admin 'forcible' fn:
+    const checkForBotAdmin = async () => {
+        if(Array.from(process.env?.['ADMIN_USER_IDS'].includes(actorUserId))) {
+            logtail.info(`[i] FORCE AUTHED API REQUEST`, {reqUrl: req.url, adminUser: req?.user});
+            return next();
+        }
+    }
+
     // Guild from request:
     const guildId = req.params?.guildId
     const actorUserId = req?.user?.id
@@ -50,6 +58,9 @@ const verifyGuildMember = async (req, res, next) => {
         return next();
         
     } catch (err) {
+        // Check if this request can be force granted by BOT Admin:
+        await checkForBotAdmin();
+
         if (err?.code === 10007) return responder.errored(res, `Invalid Permission - You're not a member of this guild.`)
         if (err?.code === 10004) return responder.errored(res, `Unknown Guild - Sessions Bot isn't a member of this guild.`)
         if (err?.code === 50013 || err?.code == 50001 || err?.code == 50007) { // Permission Error:
