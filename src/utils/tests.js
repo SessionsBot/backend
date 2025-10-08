@@ -10,8 +10,6 @@ const guildId = process.env["GUILD_ID_DEVELOPMENT"]
 const channelId = '1413653266931122186';
 
 
-
-
 export default {
     init: async () => { try {
         if(process.env['ENVIRONMENT'] == 'development'){

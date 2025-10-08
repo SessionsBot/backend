@@ -21,161 +21,159 @@ if(process.env?.['ENVIRONMENT'] == 'development'){
 /** Logging methods to internal Discord Server! */ 
 export default {
 
-/** Log a specific event occurrence to logs. */
-events: {
+    /** Log a specific event occurrence to logs. */
+    events: {
 
-    /** Logs a guild that had just added Sessions Bot */
-    guildAdded: async (guildId, guildName, createdAt, joinedAt, memberCount, guildIcon) => { try {
+        /** Logs a guild that had just added Sessions Bot */
+        guildAdded: async (guildId, guildName, createdAt, joinedAt, memberCount, guildIcon) => { try {
 
-        // Convert Timestamp
-        createdAt = Math.floor(DateTime.fromMillis(createdAt).toSeconds());
-        joinedAt = Math.floor(DateTime.fromMillis(joinedAt).toSeconds());
-        
-        // Build 'Event Message'
-        const container = new ContainerBuilder()
-        const separator = new SeparatorBuilder()
+            // Convert Timestamp
+            createdAt = Math.floor(DateTime.fromMillis(createdAt).toSeconds());
+            joinedAt = Math.floor(DateTime.fromMillis(joinedAt).toSeconds());
+            
+            // Build 'Event Message'
+            const container = new ContainerBuilder()
+            const separator = new SeparatorBuilder()
 
-        container.setAccentColor(Number(global.colors.success.replace('#', '0x')))
-        container.addSeparatorComponents(separator)
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `## ✅ Bot Added to Server`}))
-        container.addSeparatorComponents(separator)
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Name: \n> ${guildName}`}))
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Created at: \n> <t:${createdAt}:F>`}))
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Joined at: \n> <t:${joinedAt}:F>`}))
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Member Count: \n> ${memberCount}`}))
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Guild Icon:`}))
-        container.addMediaGalleryComponents(new MediaGalleryBuilder({
-            items: [
-                {
-                    description: 'Guild Icon',
-                    media: {url: guildIcon || defaultGuildIcon}
-                }
-            ]
-        }))
-        container.addSeparatorComponents(separator)
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `-# Guild Id: ${guildId}`}))
-        container.addSeparatorComponents(separator)
-
-
-        // Fetch Log Channel
-        const logGuild = await global.client.guilds.fetch(logGuildId);
-        if(!logGuild) throw `Failed to fetch guild for logging event`
-        const logChannel = await logGuild.channels.fetch(joinLeaveLogChannelId)
-        if(!logChannel) throw `Failed to fetch channel for logging event`
-        
-        await logChannel.send({
-            components: [container],
-            flags: MessageFlags.IsComponentsV2
-        })
-
-    } catch(err) { // Error Occurred
-        logtail.warn(`[?] Failed to post event "Guild Added" to internal Discord Log.`, {err})
-    }},
-
-    /** Logs a guild that had just removed Sessions Bot */
-    guildRemoved: async (guildId, guildName, wasSetup, joinedAt, memberCount, guildIcon) => {try {
-        
-        // Convert Timestamps
-        joinedAt = Math.floor(DateTime.fromMillis(joinedAt).toSeconds());
-        const leftAt = Math.floor(DateTime.now().toSeconds());
-
-        // Build 'Event Message'
-        const container = new ContainerBuilder()
-        const separator = new SeparatorBuilder()
-
-        container.setAccentColor(Number(global.colors.warning.replace('#', '0x')))
-        container.addSeparatorComponents(separator)
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `## ❌ Bot Removed from Server`}))
-        container.addSeparatorComponents(separator)
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Name: \n> ${guildName}`}))
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Was Setup: \n> ${wasSetup}`}))
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Joined at: \n> <t:${joinedAt}:F>`}))
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Left at: \n> <t:${leftAt}:F>`}))
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Member Count: \n> ${memberCount}`}))
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Guild Icon:`}))
-        container.addMediaGalleryComponents(new MediaGalleryBuilder({
-            items: [
-                {
-                    description: 'Guild Icon',
-                    media: {url: guildIcon || defaultGuildIcon}
-                }
-            ]
-        }))
-        container.addSeparatorComponents(separator)
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `-# Guild Id: ${guildId}`}))
-        container.addSeparatorComponents(separator)
+            container.setAccentColor(Number(global.colors.success.replace('#', '0x')))
+            container.addSeparatorComponents(separator)
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `## ✅ Bot Added to Server`}))
+            container.addSeparatorComponents(separator)
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Name: \n> ${guildName}`}))
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Created at: \n> <t:${createdAt}:F>`}))
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Joined at: \n> <t:${joinedAt}:F>`}))
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Member Count: \n> ${memberCount}`}))
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Guild Icon:`}))
+            container.addMediaGalleryComponents(new MediaGalleryBuilder({
+                items: [
+                    {
+                        description: 'Guild Icon',
+                        media: {url: guildIcon || defaultGuildIcon}
+                    }
+                ]
+            }))
+            container.addSeparatorComponents(separator)
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `-# Guild Id: ${guildId}`}))
+            container.addSeparatorComponents(separator)
 
 
-        // Fetch Log Channel
-        const logGuild = await global.client.guilds.fetch(logGuildId);
-        if(!logGuild) throw `Failed to fetch guild for logging event`
-        const logChannel = await logGuild.channels.fetch(joinLeaveLogChannelId)
-        if(!logChannel) throw `Failed to fetch channel for logging event`
-        
-        await logChannel.send({
-            components: [container],
-            flags: MessageFlags.IsComponentsV2
-        })
+            // Fetch Log Channel
+            const logGuild = await global.client.guilds.fetch(logGuildId);
+            if(!logGuild) throw `Failed to fetch guild for logging event`
+            const logChannel = await logGuild.channels.fetch(joinLeaveLogChannelId)
+            if(!logChannel) throw `Failed to fetch channel for logging event`
+            
+            await logChannel.send({
+                components: [container],
+                flags: MessageFlags.IsComponentsV2
+            })
 
-    } catch(err) { // Error Occurred
-        logtail.warn(`[?] Failed to post event "Guild Removed" to internal Discord Log.`, {err})
-    }},
+        } catch(err) { // Error Occurred
+            logtail.warn(`[?] Failed to post event "Guild Added" to internal Discord Log.`, {err})
+        }},
 
-    /** Logs a guild that had just configured their Sessions Bot */
-    guildSetup: async (guildId, configuration = {accentColor, allGuildSchedules, panelChannelId, dailySignupPostTime, signupMentionIds, timeZone}) => {try {
-        if(!guildId || !configuration) throw {message: 'Invalid Input - missing either "guildId", or "configuration"!', inputs: {guildId, configuration}}
+        /** Logs a guild that had just removed Sessions Bot */
+        guildRemoved: async (guildId, guildName, wasSetup, joinedAt, memberCount, guildIcon) => {try {
+            
+            // Convert Timestamps
+            joinedAt = Math.floor(DateTime.fromMillis(joinedAt).toSeconds());
+            const leftAt = Math.floor(DateTime.now().toSeconds());
 
-        // Fetch Discord Guild Data
-        const guildDiscordData = await global.client.guilds.fetch(guildId)
-        // Icon
-        const guildIcon = guildDiscordData?.iconURL({size: 128}) || undefined
-        // Timestamps
-        const guildJoinedAt = Math.floor(DateTime.fromMillis(guildDiscordData.joinedTimestamp).toSeconds());
-        const guildSetupAt = Math.floor(DateTime.now().toSeconds())
+            // Build 'Event Message'
+            const container = new ContainerBuilder()
+            const separator = new SeparatorBuilder()
 
-        // Build Message:
-        const container = new ContainerBuilder({
-            accent_color: Number(configuration?.accentColor) || Number(global.colors.purple.replace('#', '0x')),
-            components: [
-                new TextDisplayBuilder({content: `## ✅ \`${guildDiscordData?.name}\` Completed Setup!`}),
-                new SeparatorBuilder(),
-                new TextDisplayBuilder({content: `### Name: \n> ${guildDiscordData?.name}`}),
-                new TextDisplayBuilder({content: `### Joined At: \n> <t:${guildJoinedAt}:F>`}),
-                new TextDisplayBuilder({content: `### Setup At: \n> <t:${guildSetupAt}:F>`}),
-                new TextDisplayBuilder({content: `### Sessions Scheduled: \n> ${configuration?.allGuildSchedules?.length}`}),
-                new TextDisplayBuilder({content: `### Member Count: \n> ${guildDiscordData?.memberCount}`}),
-                new TextDisplayBuilder({content: `### Guild Icon:`}),
-                new MediaGalleryBuilder({
-                    items: [
-                        {
-                            description: 'Guild Icon',
-                            media: {url: guildIcon || defaultGuildIcon}
-                        }
-                    ]
-                }),
-                new SeparatorBuilder(),
-                new TextDisplayBuilder({content: `-# Guild Id: ${guildId}`}),
-                new SeparatorBuilder(),
-            ]
-        })
-
-        // Send Message:
-        const logGuild = await global.client.guilds.fetch(logGuildId);
-        if(!logGuild) throw `Failed to fetch internal guild for log event.`
-        const logChannel = await logGuild.channels.fetch(serverSetupsChannelId)
-        if(!logChannel) throw `Failed to fetch internal guild chanel for log event.`
-        
-        await logChannel.send({
-            components: [container],
-            flags: MessageFlags.IsComponentsV2
-        })
-
-    } catch (err) { // Error Occurred
-        logtail.warn(`[?] Failed to post event "Guild Setup" to internal Discord Log.`, {err})
-    }},
-
-}
+            container.setAccentColor(Number(global.colors.warning.replace('#', '0x')))
+            container.addSeparatorComponents(separator)
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `## ❌ Bot Removed from Server`}))
+            container.addSeparatorComponents(separator)
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Name: \n> ${guildName}`}))
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Was Setup: \n> ${wasSetup}`}))
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Joined at: \n> <t:${joinedAt}:F>`}))
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Left at: \n> <t:${leftAt}:F>`}))
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Member Count: \n> ${memberCount}`}))
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `### Guild Icon:`}))
+            container.addMediaGalleryComponents(new MediaGalleryBuilder({
+                items: [
+                    {
+                        description: 'Guild Icon',
+                        media: {url: guildIcon || defaultGuildIcon}
+                    }
+                ]
+            }))
+            container.addSeparatorComponents(separator)
+            container.addTextDisplayComponents(new TextDisplayBuilder({content: `-# Guild Id: ${guildId}`}))
+            container.addSeparatorComponents(separator)
 
 
+            // Fetch Log Channel
+            const logGuild = await global.client.guilds.fetch(logGuildId);
+            if(!logGuild) throw `Failed to fetch guild for logging event`
+            const logChannel = await logGuild.channels.fetch(joinLeaveLogChannelId)
+            if(!logChannel) throw `Failed to fetch channel for logging event`
+            
+            await logChannel.send({
+                components: [container],
+                flags: MessageFlags.IsComponentsV2
+            })
+
+        } catch(err) { // Error Occurred
+            logtail.warn(`[?] Failed to post event "Guild Removed" to internal Discord Log.`, {err})
+        }},
+
+        /** Logs a guild that had just configured their Sessions Bot */
+        guildSetup: async (guildId, configuration = {accentColor, allGuildSchedules, panelChannelId, dailySignupPostTime, signupMentionIds, timeZone}) => {try {
+            if(!guildId || !configuration) throw {message: 'Invalid Input - missing either "guildId", or "configuration"!', inputs: {guildId, configuration}}
+
+            // Fetch Discord Guild Data
+            const guildDiscordData = await global.client.guilds.fetch(guildId)
+            // Icon
+            const guildIcon = guildDiscordData?.iconURL({size: 128}) || undefined
+            // Timestamps
+            const guildJoinedAt = Math.floor(DateTime.fromMillis(guildDiscordData.joinedTimestamp).toSeconds());
+            const guildSetupAt = Math.floor(DateTime.now().toSeconds())
+
+            // Build Message:
+            const container = new ContainerBuilder({
+                accent_color: Number(configuration?.accentColor) || Number(global.colors.purple.replace('#', '0x')),
+                components: [
+                    new TextDisplayBuilder({content: `## ✅ \`${guildDiscordData?.name}\` Completed Setup!`}),
+                    new SeparatorBuilder(),
+                    new TextDisplayBuilder({content: `### Name: \n> ${guildDiscordData?.name}`}),
+                    new TextDisplayBuilder({content: `### Joined At: \n> <t:${guildJoinedAt}:F>`}),
+                    new TextDisplayBuilder({content: `### Setup At: \n> <t:${guildSetupAt}:F>`}),
+                    new TextDisplayBuilder({content: `### Sessions Scheduled: \n> ${configuration?.allGuildSchedules?.length}`}),
+                    new TextDisplayBuilder({content: `### Member Count: \n> ${guildDiscordData?.memberCount}`}),
+                    new TextDisplayBuilder({content: `### Guild Icon:`}),
+                    new MediaGalleryBuilder({
+                        items: [
+                            {
+                                description: 'Guild Icon',
+                                media: {url: guildIcon || defaultGuildIcon}
+                            }
+                        ]
+                    }),
+                    new SeparatorBuilder(),
+                    new TextDisplayBuilder({content: `-# Guild Id: ${guildId}`}),
+                    new SeparatorBuilder(),
+                ]
+            })
+
+            // Send Message:
+            const logGuild = await global.client.guilds.fetch(logGuildId);
+            if(!logGuild) throw `Failed to fetch internal guild for log event.`
+            const logChannel = await logGuild.channels.fetch(serverSetupsChannelId)
+            if(!logChannel) throw `Failed to fetch internal guild chanel for log event.`
+            
+            await logChannel.send({
+                components: [container],
+                flags: MessageFlags.IsComponentsV2
+            })
+
+        } catch (err) { // Error Occurred
+            logtail.warn(`[?] Failed to post event "Guild Setup" to internal Discord Log.`, {err})
+        }},
+
+    }
 
 }
