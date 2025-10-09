@@ -10,6 +10,7 @@ import verifyGuildMember from "../../utils/verifyGuildMember.js";
 import verifyGuildAdmin from "../../utils/verifyGuildAdmin.js";
 import global from "../../../../../utils/global.js";
 import logtail from "../../../../../utils/logs/logtail.js";
+import { DateTime } from "luxon";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -50,10 +51,27 @@ router.get('/:sessionId', verifyToken, verifyGuildMember, async (req, res) => { 
 
 
 // PATCH/UPDATE Run Post Schedule Early:
+const postEarlyCooldown = {
+    activity: {},
+    minTimeDifference: (60*60*3), // 3 hours (in s)
+    start: (guildId) => { postEarlyCooldown.activity[guildId] = DateTime.now() },
+    allowed: (guildId) => {
+        /** @type {DateTime} */
+        const lastCallDate = postEarlyCooldown.activity?.[guildId]
+        if(!lastCallDate) return true;
+        const elapsedSecs = Math.abs(lastCallDate.diffNow('second').seconds)    
+        if(elapsedSecs >= postEarlyCooldown.minTimeDifference) return true
+        else return false
+    }
+}
 router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
     // Get req data:
     const guildId = req.params?.guildId;
     if(!guildId) return responder.errored(res, `Invalid Input - Missing required 'guildId'.`, 400)
+
+    // Check Cooldown:
+    if(!postEarlyCooldown.allowed(guildId)) return responder.errored(res, 'Cooldown - You have to wait before reposting sessions again!')
+
     // Attempt to post / run daily schedule for guild early:
     try { 
         // Get Guild Data:
@@ -79,6 +97,7 @@ router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
         if (!panelThreadCreationAttempt.success) return responder.errored(res, `Failed to create signup panel/thread for guild(${guildId})! Please try again.`, 500);
 
         // If all processes succeeded - Return Success:
+        postEarlyCooldown.start(guildId)
         return responder.succeeded(res, `Successfully posted guild sessions schedules early for guild(${guildId})!`);
 
     }catch(e){
