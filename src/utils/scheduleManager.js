@@ -1,189 +1,215 @@
-// -------------------------- [ Imports/Variables ] -------------------------- \\
-import cron, { schedule } from "node-cron";
-import global from "./global.js"; // Import Global Variables
+// Imports:
+import cron, { nodeCron, schedule } from "node-cron";
+import global from "./global.js";
 import guildManager from "./guildManager.js";
 import { db } from "./firebase.js";
-import axios from "axios"; // Import Firebase
+import axios from "axios";
 import logtail from "./logs/logtail.js";
 
-// Dev Testing
-const ENVIRONMENT = process.env['ENVIRONMENT'];
-const devTesting = {
-    enabled: false,
-    guildId: "1379160686629880028",
-};
+const ENVIRONMENT = process.env?.['ENVIRONMENT'];
 
-// Logging
-const log = logtail
+/** Internal logging endpoint to track sessions schedule initialization globally.
+ * @param {boolean} success
+*/
+const heartbeatUrl = (success) => {return (`https://uptime.betterstack.com/api/v1/heartbeat/CReNYEQ9a6PZWdSmW5kR21Lf` + (!success ? '/fail' : ''))}
 
-
-if (devTesting.enabled) console.info("Dev-Testing enabled within scheduleManager.js... please modify settings if this is unexpected.");
+/** Boolean representing if onBotStartup() has already been executed. */
+let botInitializedAlready = false
 
 /** Object containing the **currently scheduled guild's** for their daily session thread/signup creation.
  * - Indexed by: `guildId`
- * @type { Record<string, import("node-cron").ScheduledTask> }
+ * @type {Record<string, import("node-cron").ScheduledTask>}
  */
-let currentDayGuildSchedules = {}; // <-- Store node schedules to be replaced each day w/ fresh data
+let currentServerSessionSchedules = {}
 
-// -------------------------- [ Functions ] -------------------------- \\
-
-let alreadyInitialized = false;
 
 /** ### Bot Initialization Fn
  * - *Runs on server* **startup**
  * - Loads and schedules existing guild schedules
- * - Creates *"Daily Initialize"* Schedule
+ * - Starts *"Daily Initialization"* Schedule
 */
-async function botInitialize() {
-    // Confirm first/only call:
-    if (alreadyInitialized)
-        return logtail.warn(`[!] botInitialize already called, skipping duplicate initialization!`);
-    alreadyInitialized = true;
+async function onBotStartup() { try {
+    // Check for previous initialization/completion:
+    if(botInitializedAlready) throw {errMsg: `[!!] onBotStartup() has already been called and completed.... IGNORING REQUEST TO INITIALIZE AGAIN!`}
+    botInitializedAlready = true
 
-    // Runs Daily @11:59 PM - Loads and schedules all other 'Guild Schedules':
-    const dailyInitializeShd = cron.schedule(
-        "0 59 23 * * *",
-        async (ctx) => {
-            // schedule execution
+    // Start daily initialization/load schedule:
+    const dailyInitializeShd = nodeCron.schedule(
+        `0 59 23 * * *`, // cron exp
+        async (ctx) => { // shd fn:
+            // Log
             logtail.info(`[⏳] Loading All Guild Schedules`);
-            await initializeDailySchedules();
+            // Load/Create Schedules for Today:
+            await dailyInitialization();
+            // Flush Logs
             logtail.flush();
-        },
-        {
-            // schedule options
-            timezone: "America/Chicago", // Ensures it's CST/CDT
+        }, 
+        { // shd options
+            timezone: 'America/Chicago'
         }
-    );
+    )
 
-    // Run Initialize on Bot Startup:
+    // Run Immediately on Bot Startup:
     await dailyInitializeShd.execute();
-}
+
+} catch(err) { // error occurred:
+    // Log failure
+    logtail.error(`[!!] FAILED SCHEDULE INITIALIZATION! - ${err?.errMsg ? err.errMsg : 'see details...'}`, {err})
+}}
+
 
 /** ### Initialize Daily Schedules fn
  * - *Runs each day at `11:59 PM`
  * - Loads and schedules existing guild schedules
  *     - Schedules a new 'signup panel post' at the guild's specified `Post Time`.
 */
-async function initializeDailySchedules() {
+async function dailyInitialization() { 
     // Compressed Logs:
-    const setupGuilds = [];
-    const unsetupGuilds = [];
+    let setupGuilds = []
+    let unsetupGuilds = [];
+
     try {
-        // Stop and clear all previous schedules
-        Object.values(currentDayGuildSchedules).forEach((job) => job.stop());
-        currentDayGuildSchedules = {};
+        // Stop & Destroy Previous Days Schedules:
+        Object.values(currentServerSessionSchedules).forEach((shd) => { shd?.stop(); shd?.destroy() })
+        currentServerSessionSchedules = {}
 
-        // Get current guilds bot resides:
+        // Fetch Current Guilds the Bot is Within:
+        /** @type {{name: string, id:string}[]} */
         let currentClientGuilds = [];
-        const fetchedGuilds = await global.client.guilds.fetch();
-        fetchedGuilds.forEach((guild) => {
-            currentClientGuilds.push({
-                id: guild.id,
-                name: guild.name,
-            });
-        });
+        const clientGuilds = await global.client.guilds.fetch();
+        clientGuilds.forEach((guild) => currentClientGuilds.push({name: guild.name, id: guild.id}))
 
-        // Get all guilds in database:
-        const guildsRef = db.collection("guilds");
-        const guildsSnapshot = await guildsRef.get();
+        // Fetch Guilds from Database:
+        const dbGuilds = await db.collection('guilds').get()
 
-        // For each guild doc:
-        guildsSnapshot.forEach((doc) => {
-            // Get Guild Data:
-            const guildData = doc.data();
-            const setupCompleted = guildData?.["setupCompleted"];
-            const guildSchedules = guildData?.["sessionSchedules"];
-            const dailySignupPostTime = guildData?.["sessionSignup"]?.["dailySignupPostTime"];
-            const clientGuildInfo = currentClientGuilds.find((itm) => itm.id == doc.id);
+        // For Each Guild in Database - Schedule After Checks:
+        for (const guildDoc of dbGuilds.docs) {
+            // Get guild doc data
+            /** @type {import("@sessionsbot/api-types").FirebaseGuildDoc} */
+            const guildData = guildDoc.data()
 
-            // Confirm Bot is in Guild:
-            if (!clientGuildInfo) { 
-                if(ENVIRONMENT == 'development') return;
-                 logtail.warn(
-                    `{!} Bot is not in guild? (${doc.id}), skipping execution!`, 
-                    {details: 'It possible the system failed to archive this guild previously, checks required.'}
-                )
-                return
+            // Confirm SessionsBot is Still Within Guild:
+            const clientGuildItem = currentClientGuilds.find((itm) => itm?.id == guildDoc.id)
+            if(!clientGuildItem) {
+                if(ENVIRONMENT == 'development') continue; // false alarm
+                else { logtail.warn(`{!} Bot is not found in guild (${guildDoc.id}), skipping schedule execution!`, {details: 'It possible the system failed to archive this guild previously, checks required.'}); continue; }
             }
 
-            // Confirm Guild Setup Properly:
-            if (!guildData || !setupCompleted || !guildSchedules || !dailySignupPostTime) {
+            // Check if Guild is Improperly/Not Setup:
+            if(!guildData || !guildData?.setupCompleted || !guildData?.sessionSchedules?.length || !guildData?.sessionSignup?.dailySignupPostTime) {
                 // NOT SETUP PROPERLY - Log & Return:
-                unsetupGuilds.push({name: clientGuildInfo?.name, id: clientGuildInfo?.id})
-                return
-            } else {
-                // SETUP PROPERLY - Schedule Signup Post:
-                // Get Guild Schedule Data:
-                const hours = Number(dailySignupPostTime?.["hours"] ?? 6);
-                const minuets = Number(dailySignupPostTime?.["minutes"] ?? 0);
-                const timeZone = guildData?.["timeZone"] || "America/Chicago";
-
-                // Create Guilds 'Daily Post' Schedule:
-                const guildPostSchedule = cron.schedule(
-                    `${minuets} ${hours} * * *`,
-                    async (ctx) => {
-                        // Create guild sessions for the day:
-                        const sessionCreationResult = await guildManager.guildSessions(String(doc.id)).createDailySessions(guildSchedules, timeZone);
-                        if (!sessionCreationResult.success) {
-                            logtail.warn(`{!} Failed ${doc.id} during session creation process!`, sessionCreationResult);
-                            return
-                        }
-
-                        // If no sessions scheduled for today:
-                        if (sessionCreationResult.emptyDay){
-                            return log.info(`[i] Guild ${doc.id} - Schedule Ran - NO SCHEDULES TODAY - ${ctx.triggeredAt.toLocaleString("en-US", {timeZone: "America/Chicago"})}`); 
-                        }
-
-                        // Create/Update guild panel for the day:
-                        const creationResult = await guildManager.guildPanel(String(doc.id)).createDailySessionsThreadPanel();
-                        if (creationResult.success) {
-                            log.info(`[i] Guild ${doc.id} - Schedule Ran - ${ctx.triggeredAt.toLocaleString("en-US", {timeZone: "America/Chicago"})}`); 
-                        } else {
-                            logtail.warn(`{!} FAILED: Guild(${doc.id}) Schedule!`, {creationResult});
-                            
-                        }
-                    },
-                    {
-                        // schedule options
-                        timezone: timeZone,
-                        maxExecutions: 1,
-                        maxRandomDelay: 5000,
-                    }
-                );
-
-                // Store reference to guilds posting schedule:
-                currentDayGuildSchedules[doc.id] = guildPostSchedule;
-                setupGuilds.push({name: clientGuildInfo?.name, id: clientGuildInfo?.id})
-
-                // [DEV - ENVIRONMENT] Run 'dev testing' / guild schedule early:
-                if (ENVIRONMENT == 'development' && devTesting.enabled && doc.id == devTesting.guildId) {
-                    logtail.info("[🛠️] RUNNING GUILD SCHEDULE EARLY...");
-                    guildPostSchedule.execute();
-                    guildPostSchedule.destroy();
-                }
+                unsetupGuilds.push({name: clientGuildItem?.name, id: clientGuildItem?.id});
+                continue;
             }
-        });
+
+            // Get Guilds Session Post Time:
+            const atHour = guildData?.sessionSignup?.dailySignupPostTime?.hours
+            const atMinute = guildData?.sessionSignup?.dailySignupPostTime?.minutes
+            const inTimezone = guildData?.timeZone
+            if(atMinute == null || atHour == null || inTimezone == null) { logtail.warn(`Schedule FAILED - Invalid Daily Post Time Configuration!`, {actionNeeded: `This server must change their 'dailySignupPostTime'!`, currentConfig: {atHour, atMinute, inTimezone}}); continue; }
+
+            // SETUP - Queue Guilds Sessions Post @ Requested Post Time:
+            setupGuilds.push({name: clientGuildItem?.name, id: clientGuildItem?.id})
+            await scheduleGuildSessionsPost(guildDoc.id, atHour, atMinute, inTimezone);
+        }
 
         // Report Completion & Debug:
         logtail.info(`[⌛️] Loaded All Guild Schedules!`, {scheduled: setupGuilds, NOT_scheduled: unsetupGuilds});
-        if (ENVIRONMENT != 'development') await axios.post("https://uptime.betterstack.com/api/v1/heartbeat/CReNYEQ9a6PZWdSmW5kR21Lf");
-       
-    } catch (error) { 
-        // Report Schedule's Initialization Failure:
-        logtail.error(`[!] CRITICAL | Failed to initialize scheduling system! Bot restart required...`, {details: error})
-        try { 
-            if (ENVIRONMENT != 'development') await axios.post("https://uptime.betterstack.com/api/v1/heartbeat/CReNYEQ9a6PZWdSmW5kR21Lf/fail");
-        } catch (e) {
-            logtail.warn("{!} Failed to log failed schedule heartbeat/monitor...", {details: e});
-        }
+        if (ENVIRONMENT != 'development') await axios.post(heartbeatUrl(true));
+
+    } catch(err) { // error occurred:
+        // Log failure
+        logtail.error(`[!!] FAILED DAILY SCHEDULE INITIALIZATION! - ${err?.errMsg ? err.errMsg : 'see details...'}`, {err});
+        try { if (ENVIRONMENT != 'development') await axios.post(heartbeatUrl(false)); }
+        catch (e) { logtail.warn("{!} Failed to log failed schedule heartbeat/monitor...", {details: e}); }
     }
 }
 
 
+/** ### Schedule a Guilds Daily Sessions Post FOR CURRENT DAY
+ * Utility function to schedule a specific **guild's** sessions posts.
+ * - Should be re-called if there are session post time changes during the day. (if before new sch time)
+ * - This will **OVERWRITE** the guilds existing post schedule for the day if it exists.
+ * @param {string} guildId The guild by id to schedule.
+ * @param {string|number} atHour The hour of day to post.
+ * @param {string|number} atMinute The minuet of hour to post.
+ * @param {string} inTimezone The timezone to use for times.
+ */
+async function scheduleGuildSessionsPost(guildId, atHour, atMinute, inTimezone = 'America/Chicago') { try {
+    // Schedule Guilds Daily Sessions Post:
+    const guildSchedule = cron.schedule(
+        `${atMinute} ${atHour} * * *`, // cron exp
+        async (ctx) => { // shd fn
+            // Get Fresh/Updated Guild Data from Database:
+            const readGuild = await guildManager.guilds(guildId).readGuild()
+            if(!readGuild.success){
+                // Failed to read guild DURING schedule:
+                logtail.warn(`{!!} Failed to read guild during session post execution!`, {readAttempt: readGuild, guildId});
+                return null;
+            }
+            /** @type {import("@sessionsbot/api-types").FirebaseGuildDoc} */
+            const guildData = readGuild.data
+
+            // Create Guilds' sessions for the Day:
+            const sessionCreationResult = await guildManager.guildSessions(String(guildId)).createDailySessions(guildData?.sessionSchedules, inTimezone);
+            if (!sessionCreationResult.success) {
+                return logtail.warn(`{!} Failed ${guildId} during session creation process!`, sessionCreationResult);
+            }
+
+            // If no Sessions Scheduled for Today:
+            if (sessionCreationResult.emptyDay){
+                return logtail.info(`[i] Guild ${guildId} - Schedule Ran - NO SCHEDULES TODAY - ${ctx.triggeredAt.toLocaleString("en-US", {timeZone: "America/Chicago"})}`); 
+            }
+
+            // Create/Update Guild Panel for the Day:
+            const creationResult = await guildManager.guildPanel(String(guildId)).createDailySessionsThreadPanel();
+            if (creationResult.success) {
+                logtail.info(`[i] Guild ${guildId} - Schedule Ran - ${ctx.triggeredAt.toLocaleString("en-US", {timeZone: "America/Chicago"})}`); 
+            } else {
+                logtail.warn(`{!} FAILED: Guild(${guildId}) Schedule!`, {creationResult});
+                
+            }
+
+        },
+        { // shd options
+            timezone: inTimezone,
+            maxExecutions: 1,
+            maxRandomDelay: 5000
+        }
+    )
+
+    // + ? Could maybe add checks here to see if theres already an existing schedule?
+    // + if so: prevent/overwrite that schedule?
+    const existing = currentServerSessionSchedules?.[guildId]
+    if(existing){ existing.stop(); existing.destroy(); }
+
+    // Add to All Schedules List:
+    currentServerSessionSchedules[guildId] = guildSchedule;
+
+} catch(err) { // error occurred:
+    // Log schedule creation failure:
+    logtail.warn(`{!} Failed to schedule guild (${guildId}) for daily sessions post!`)
+    return null
+}}
 
 
-// -------------------------- [ Exports ] -------------------------- \\
+/** ### Cancels & Destroys a Guilds Daily Sessions Post Schedule FOR CURRENT DAY
+ * @param {string} guildId The guild by id to remove from schedule queue.
+*/
+async function cancelGuildSessionsPost(guildId) {
+    const currentSchedule = currentServerSessionSchedules?.[guildId] || null;
+    if(!currentSchedule) return {success: false, message: `Could not find that guild in current schedule queue to remove/destroy. - ${guildId}`}
+    else{
+        currentSchedule.stop();
+        currentSchedule.destroy();
+        return {success: true, message: `Successfully un-scheduled guild's sessions posts - ${guildId}`}
+    }
+}
+
+// Exports:
 export default {
-    botInitialize,
-    currentDayGuildSchedules
-};
+    onBotStartup,
+    scheduleGuildSessionsPost,
+    cancelGuildSessionsPost,
+    currentServerSessionSchedules
+}

@@ -24,7 +24,7 @@ export default {
 
 		// After Startup - Initialize Schedule System::
 		setTimeout(async () => {
-			await scheduleManager.botInitialize();
+			await scheduleManager.onBotStartup()
 			await tests.init()
 		}, 1_500);
 
