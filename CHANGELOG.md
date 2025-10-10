@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.2](https://github.com/SessionsBot/backend/compare/v1.1.1...v1.1.2) (2025-10-10)
+
+### ⚡️ Features
+
+* **api:** view current schedules endpoint ([8fa8033](https://github.com/SessionsBot/backend/commit/8fa803342afd06d7b6a66d2742af71b2cd9b5521))
+* refresh sch for guild on configured ([248c7b8](https://github.com/SessionsBot/backend/commit/248c7b80244bec6a5cb527bcac5eb73736980e2a))
+* **scheduleManager:** improvements ([9ba04f8](https://github.com/SessionsBot/backend/commit/9ba04f871f10acafc8b9c45c26fe79f7e22833c3))
+
+### 🐞 Bug Fixes
+
+* **api:** post sessions early -> cancels shd ([651a17a](https://github.com/SessionsBot/backend/commit/651a17a3cc5df1e9146f1a285c6a16bb41e988cb))
+* **api:** post sessions early cooldown ([d9a87df](https://github.com/SessionsBot/backend/commit/d9a87df546a84f14d19f8b7c96775a476add6213))
+* clear post sch for removing guilds ([5c3a883](https://github.com/SessionsBot/backend/commit/5c3a88398a04fc2191b0eaacc1900122f0cd89e2))
+
 ## [1.1.1](https://github.com/SessionsBot/backend/compare/v1.1.0...v1.1.1) (2025-10-08)
 
 ### ⚡️ Features
