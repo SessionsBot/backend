@@ -11,6 +11,7 @@ import verifyGuildAdmin from "../../utils/verifyGuildAdmin.js";
 import global from "../../../../../utils/global.js";
 import logtail from "../../../../../utils/logs/logtail.js";
 import { DateTime } from "luxon";
+import scheduleManager from "../../../../../utils/scheduleManager.js";
 
 
 //-----------------------------------------[ Endpoints ]-----------------------------------------\\
@@ -97,7 +98,8 @@ router.patch('/post-early', verifyToken, verifyGuildAdmin, async (req, res) => {
         if (!panelThreadCreationAttempt.success) return responder.errored(res, `Failed to create signup panel/thread for guild(${guildId})! Please try again.`, 500);
 
         // If all processes succeeded - Return Success:
-        postEarlyCooldown.start(guildId)
+        postEarlyCooldown.start(guildId) // start cooldown
+        scheduleManager.cancelGuildSessionsPost(guildId) // cancel today's reg schedule for guild
         return responder.succeeded(res, `Successfully posted guild sessions schedules early for guild(${guildId})!`);
 
     }catch(e){
