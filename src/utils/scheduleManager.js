@@ -21,7 +21,7 @@ let botInitializedAlready = false
  * @type {Record<string, import("node-cron").ScheduledTask>}
  */
 let currentServerSessionSchedules = {}
-
+function getCurrentServerSessionSchedules() { return currentServerSessionSchedules }
 
 /** ### Bot Initialization Fn
  * - *Runs on server* **startup**
@@ -178,8 +178,7 @@ async function scheduleGuildSessionsPost(guildId, atHour, atMinute, inTimezone =
         }
     )
 
-    // + ? Could maybe add checks here to see if theres already an existing schedule?
-    // + if so: prevent/overwrite that schedule?
+    // Check/Overwrite Any Existing Schedule:
     const existing = currentServerSessionSchedules?.[guildId]
     if(existing){ existing.stop(); existing.destroy(); }
 
@@ -211,5 +210,5 @@ export default {
     onBotStartup,
     scheduleGuildSessionsPost,
     cancelGuildSessionsPost,
-    currentServerSessionSchedules
+    getCurrentServerSessionSchedules
 }

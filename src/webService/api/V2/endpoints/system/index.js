@@ -2,6 +2,7 @@ import express from "express";
 import {  HttpStatusCode  } from "axios";
 import responder from "../../utils/responder.js";
 import { checkSystemStatuses } from "../../utils/systemStatuses.js";
+import scheduleManager from "../../../../../utils/scheduleManager.js";
 const router = express.Router()
 
 // Root Call - $URL/api/v2/system/
@@ -21,6 +22,21 @@ router.get('/status', async (req, res) => {
         // Respond/Return Success 
         return responder.succeeded(res, results?.data);
     }
+});
+
+
+/** System - View Current Guild Session Postings Scheduled */
+router.get('/current-post-schedules', async (req, res) => {
+    const currentObjectSchedules = Object.entries(scheduleManager.getCurrentServerSessionSchedules())
+    const jsonSchedules = currentObjectSchedules.map(item => { 
+        return {
+            [item[0]]: {
+                status: item[1].getStatus(),
+                nextRun: item[1].getNextRun(),
+            }
+        }
+    })
+    return res.send(jsonSchedules)
 });
 
 
