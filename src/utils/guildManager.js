@@ -20,6 +20,7 @@ import logtail from "./logs/logtail.js";
 import { sendPermsDeniedAlert } from "./perms/permissionDenied.js";
 import discordLog from "./logs/discordLog.js";
 import databaseManager from "./databaseManager.js";
+import scheduleManager from "./scheduleManager.js";
 
 class Result {
     /** 
@@ -188,34 +189,35 @@ const guilds = (guildId) => {return {
 const guildConfiguration = (guildId) => {return {
 
     // -- Top Level Configure Function:
-    configureGuild : async (configuration) => {
+    configureGuild : async (configuration) => { try {
         // Confirm Data:
-        if(!configuration.panelChannelId || !configuration.allGuildSchedules) return {success: false, data: 'Missing required data for guild configuration!', rawError: {invalid_Config: configuration}}
+        if(!configuration.panelChannelId || !configuration.allGuildSchedules || !configuration.dailySignupPostTime || !configuration.timeZone) return {success: false, data: 'Missing required data for guild configuration!', rawError: {invalid_Config: configuration}}
+        
         // Update Guild Doc:
-        try {
-            await db.collection('guilds').doc(String(guildId)).set({
-                ['accentColor']: configuration.accentColor,
-                ['sessionSchedules']: configuration.allGuildSchedules,
-                ['sessionSignup']: {
-                    'panelChannelId': configuration.panelChannelId,
-                    'dailySignupPostTime': configuration.dailySignupPostTime,
-                    'mentionRoleIds': configuration.signupMentionIds,
-                },
-                ['timeZone']: configuration.timeZone,
-                ['setupCompleted']: true
-            }, { merge: true });
-            // Send Guild Setup Alert:
-            discordLog.events.guildSetup(guildId, configuration)
-            // Success:
-            logtail.info(`[i] GUILD SETUP - ${guildId} - Completed at ${DateTime.now().toLocaleString(DateTime.DATETIME_SHORT)}`);
-            return {success: true, data: 'Saved new guild configuration to database!'}
+        await db.collection('guilds').doc(String(guildId)).set({
+            ['accentColor']: configuration.accentColor,
+            ['sessionSchedules']: configuration.allGuildSchedules,
+            ['sessionSignup']: {
+                'panelChannelId': configuration.panelChannelId,
+                'dailySignupPostTime': configuration.dailySignupPostTime,
+                'mentionRoleIds': configuration.signupMentionIds,
+            },
+            ['timeZone']: configuration.timeZone,
+            ['setupCompleted']: true
+        }, { merge: true });
+        // Send Guild Setup Alert:
+        discordLog.events.guildSetup(guildId, configuration)
+        // Refresh guild schedules for today:
+        scheduleManager.scheduleGuildSessionsPost(guildId, configuration?.dailySignupPostTime?.hours, configuration?.dailySignupPostTime?.minutes, configuration?.timeZone)
+        // Success:
+        logtail.info(`[i] GUILD SETUP - ${guildId} - Completed at ${DateTime.now().toLocaleString(DateTime.DATETIME_SHORT)}`);
+        return {success: true, data: 'Saved new guild configuration to database!'}
 
-        } catch (e) {
+    } catch (e) {
             // Error:
             logtail.error('Error saving guild configuration to database!', {guildId, configuration, details: e})
             return {success: false, data: 'Failed to save new guild configuration to database!', rawError: e}
-        }
-    },
+    }},
     
     // Updating Accent Color:
     setAccentColor : async (hexNumber) => {
