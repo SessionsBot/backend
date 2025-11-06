@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.3](https://github.com/SessionsBot/backend/compare/v1.1.2...v1.1.3) (2025-11-06)
+
+### 🐞 Bug Fixes
+
+* switch oAuth redirect ([cd9bb97](https://github.com/SessionsBot/backend/commit/cd9bb9731a2ef784cda50ac6ef6499f8d5e3506e))
+
 ## [1.1.2](https://github.com/SessionsBot/backend/compare/v1.1.1...v1.1.2) (2025-10-10)
 
 ### ⚡️ Features
