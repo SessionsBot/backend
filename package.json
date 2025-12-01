@@ -26,7 +26,7 @@
     "node-cron": "^4.0.5"
   },
   "devDependencies": {
-    "@release-it/conventional-changelog": "^10.0.1",
+    "@release-it/conventional-changelog": "^10.0.2",
     "@sessionsbot/api-types": "^2.2.1",
     "release-it": "^19.0.5",
     "typescript": "^5.9.2"
