@@ -20,7 +20,7 @@ async function checkIfUserInGuild(guildId, userId) {
     }
 
     // Fetch the member from the guild
-    const member = await guild.members.fetch(userId, {force: true});
+    const member = await guild?.members?.fetch({user: userId, force: true});
 
     if (member) {
       return {
