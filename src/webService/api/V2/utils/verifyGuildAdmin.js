@@ -45,7 +45,7 @@ const verifyGuildAdmin = async (req, res, next) => {
         const guild = await client?.guilds?.fetch(guildId);
         if(!guild) throw 'Discord guild is not accessible.'
 
-        const member = await guild?.members?.fetch(actorUserId);
+        const member = await guild?.members?.fetch(actorUserId, {force: true});
         if(!member) throw 'Discord member not found in guild.'
 
         // Confirm user has guild admin perms:
