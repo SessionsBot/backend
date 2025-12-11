@@ -50,7 +50,14 @@ router.get('/discord', async (req, res) => {
         /** _Sign in failed:_ Send user back to frontend to page notifying of failed attempt.
         * @param {Response} res Response object from initial API call.
         */
-        redirectAuthError : (res) => {res.redirect(`${FRONTEND_URL}/api/sign-in/discord-redirect?failed=true`)},
+        redirectAuthError : (res, message) => {
+            if(message) {
+                const safeMsg = encodeURIComponent(message)
+                return res.redirect(`${FRONTEND_URL}/api/sign-in/discord-redirect?failed=true&message=${safeMsg}`)
+            }else{
+                return res.redirect(`${FRONTEND_URL}/api/sign-in/discord-redirect?failed=true&untraceableError=true`)
+            }
+        },
 
         /** _Sign in success:_ Send user back to frontend with encoded user token/data.
         * @param {Response} res Response object from initial API call.
@@ -155,9 +162,16 @@ router.get('/discord', async (req, res) => {
 
     } catch (err) {
         // Error Occurred - OAuth2 process:
-        // console.error('{!}[OAuth2] Error Occurred:', err.response?.data || err.message);
         // Redirect to Homepage - FAILED sign in page:
-        return redirects.redirectAuthError(res);
+        if(err?.message) {
+            logtail.warn(`[👤❌] Authentication Failed! - ${err?.message}`)
+        } else {
+            console.warn('---SENSITIVE ERROR---');
+            console.log(err);
+            console.warn('---END ERROR---');
+        }
+
+        return redirects.redirectAuthError(res, err?.message);
     }
 
 })
