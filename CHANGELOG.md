@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.4](https://github.com/SessionsBot/backend/compare/v1.1.3...v1.1.4) (2025-12-11)
+
+### 🐞 Bug Fixes
+
+* **api:** force member fetch ([d06df01](https://github.com/SessionsBot/backend/commit/d06df01c3470e751979044417095593f39e55ed1))
+* auth ([e3be023](https://github.com/SessionsBot/backend/commit/e3be023d45f7cd31742715d9e10f78c4d405989d))
+* prev ([f491810](https://github.com/SessionsBot/backend/commit/f4918104e5d389be7697c809cf69bae8674d74ac))
+
 ## [1.1.3](https://github.com/SessionsBot/backend/compare/v1.1.2...v1.1.3) (2025-11-06)
 
 ### 🐞 Bug Fixes
