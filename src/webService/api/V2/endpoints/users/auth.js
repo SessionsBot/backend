@@ -1,8 +1,9 @@
-import express from "express";
+import express, { json } from "express";
 const router = express.Router();
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import LZString from "lz-string";
+import * as jose from 'jose';
 import global from "../../../../../utils/global.js";
 import responder from "../../utils/responder.js";
 import { admin, db  } from "../../../../../utils/firebase.js";
@@ -17,6 +18,7 @@ const CLIENT_ID = process.env['CLIENT_ID'];
 const CLIENT_SECRET = process.env['CLIENT_SECRET'];
 const JSON_SECRET = process.env['JSON_WEBTOKEN_SECRET'];
 
+const encoder = new TextEncoder()
 
 const FRONTEND_URL = global.frontend_Url; // Frontend root url
 // const REDIRECT_URI = 'https://api.sessionsbot.fyi/api/v2/users/auth/discord'; // Old - Public
@@ -63,7 +65,9 @@ router.get('/discord', async (req, res) => {
         * @param {Response} res Response object from initial API call.
         * @param {any} encodedToken Generated encoded auth token(s) to assign user within app.
         */
-        redirectAuthSuccess: (res, encodedTokens) => {res.redirect(`${FRONTEND_URL}/api/sign-in/discord-redirect?token=${encodedTokens}`)}
+        redirectAuthSuccess: (res, encodedTokens) => {
+            res.redirect(`${FRONTEND_URL}/api/sign-in/discord-redirect#token=${encodedTokens}`)
+        }
     }
 
     // Check for errors/access code provided from Discord:
@@ -152,7 +156,14 @@ router.get('/discord', async (req, res) => {
             jwt: authToken,
             firebase: firebaseToken
         });
-        const encodedTokens = LZString.compressToEncodedURIComponent(payload);
+        // const encodedTokens = LZString.compressToEncodedURIComponent(payload);
+        const encodedTokens = await new jose.CompactEncrypt(
+            encoder.encode(payload)
+        ).setProtectedHeader({
+            alg: "dir",
+            enc: "A256GCM",
+            zip: "DEF"
+        }).encrypt(encoder.encode('SESSIONSBOT-AUTH-DECODING-KEY123'));
 
         // Log authentication:
         logtail.info(`[👤] User Authenticated: ${userData?.username}`)
