@@ -162,7 +162,6 @@ router.get('/discord', async (req, res) => {
         ).setProtectedHeader({
             alg: "dir",
             enc: "A256GCM",
-            zip: "DEF"
         }).encrypt(encoder.encode('SESSIONSBOT-AUTH-DECODING-KEY123'));
 
         // Log authentication:
